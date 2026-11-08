@@ -51,7 +51,6 @@
     print-color-adjust: exact !important;
   }
 
-  /* Ocultar absolutamente toda la interfaz de la plataforma al imprimir */
   .no-print,
   header.app-navbar,
   footer.app-footer,
@@ -63,7 +62,6 @@
     display: none !important;
   }
 
-  /* Asegurar que solo el lienzo A4 del CV ocupe el 100% de la hoja */
   .print-only-wrapper {
     display: block !important;
     width: 100% !important;

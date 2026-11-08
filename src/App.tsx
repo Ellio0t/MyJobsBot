@@ -865,7 +865,7 @@ export function App() {
       </main>
 
       {/* =====================================================================
-          FOOTER MINIMALISTA
+          FOOTER MINIMALISTA CON INDICADOR EN VIVO E ICONOS DE TIENDAS
           ===================================================================== */}
       <footer className="app-footer no-print mt-12 border-t border-neutral-200 dark:border-[#20242c] bg-white dark:bg-[#0c0d11] py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-neutral-500 dark:text-neutral-400">
@@ -875,26 +875,38 @@ export function App() {
               {brand.name}
             </span>
             <span>•</span>
-            <span className="text-[11px]">{apiStatusText}</span>
+            {/* Indicador de Punto Verde animado (En Vivo) */}
+            <span className="inline-flex items-center gap-1.5 text-[11px] text-neutral-600 dark:text-neutral-300">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4ade80] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#4ade80]"></span>
+              </span>
+              {apiStatusText}
+            </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
+            {/* Botón Google Play Store con ícono característico */}
             <button
               onClick={() => alert('Compilación para Android disponible mediante CapacitorJS (npx cap open android)')}
-              className="px-2.5 py-1 rounded text-[11px] font-montserrat font-semibold bg-neutral-100 dark:bg-[#181c25] hover:bg-neutral-200 dark:hover:bg-[#232835] text-neutral-700 dark:text-neutral-300 border border-transparent dark:border-[#2b3040] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-montserrat font-bold uppercase tracking-wider bg-neutral-100 dark:bg-[#181c25] hover:bg-neutral-200 dark:hover:bg-[#232835] text-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-[#2b3040] hover:border-neutral-400 dark:hover:border-[#4ade80]/50 transition-all cursor-pointer shadow-xs"
             >
-              Android App
+              <i className="fa-brands fa-google-play text-xs text-[#4ade80]" />
+              <span>Google Play</span>
             </button>
+
+            {/* Botón Apple App Store con ícono característico */}
             <button
               onClick={() => alert('Compilación para iOS disponible mediante CapacitorJS (npx cap open ios)')}
-              className="px-2.5 py-1 rounded text-[11px] font-montserrat font-semibold bg-neutral-100 dark:bg-[#181c25] hover:bg-neutral-200 dark:hover:bg-[#232835] text-neutral-700 dark:text-neutral-300 border border-transparent dark:border-[#2b3040] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-montserrat font-bold uppercase tracking-wider bg-neutral-100 dark:bg-[#181c25] hover:bg-neutral-200 dark:hover:bg-[#232835] text-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-[#2b3040] hover:border-neutral-400 dark:hover:border-[#4ade80]/50 transition-all cursor-pointer shadow-xs"
             >
-              iOS App
+              <i className="fa-brands fa-app-store-ios text-sm text-[#4ade80]" />
+              <span>App Store</span>
             </button>
 
             <button
               onClick={() => setShowLegalModal(true)}
-              className="ml-2 text-[11px] font-montserrat font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white underline cursor-pointer"
+              className="ml-2 text-[11px] font-montserrat font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-[#4ade80] underline cursor-pointer"
             >
               Políticas & APIs
             </button>

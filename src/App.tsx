@@ -20,6 +20,7 @@ import { EmailModal } from './components/EmailModal';
 import { AuthModal } from './components/AuthModal';
 import { LegalComplianceModal } from './components/LegalComplianceModal';
 import { JobDetailModal } from './components/JobDetailModal';
+import { CompanyLogo } from './components/CompanyLogo';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
@@ -67,6 +68,7 @@ export function App() {
   const [cvVersions, setCvVersions] = useState<CVVersion[]>([VISITOR_SAMPLE_CV]);
   const [activeCvId, setActiveCvId] = useState<string>(VISITOR_SAMPLE_CV.id);
   const activeCv = cvVersions.find((v) => v.id === activeCvId) || cvVersions[0];
+  const hasCustomCv = activeCv.id !== 'cv-sample-visitor';
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const cvFileInputRef = useRef<HTMLInputElement>(null);
@@ -98,7 +100,8 @@ export function App() {
   // Sincronización automática de vacantes con múltiples APIs en paralelo
   const handleSyncLiveJobs = async (customQuery?: string) => {
     setIsSyncingApi(true);
-    const q = customQuery || searchQuery || 'remote';
+    const defaultSearch = hasCustomCv && activeCv.targetRole ? activeCv.targetRole : 'remote';
+    const q = customQuery !== undefined ? customQuery : (searchQuery || defaultSearch);
     try {
       const liveOffers = await fetchLiveJobsFromApis(q);
       if (liveOffers.length > 0) {
@@ -119,8 +122,17 @@ export function App() {
   };
 
   useEffect(() => {
-    handleSyncLiveJobs('remote');
+    handleSyncLiveJobs();
   }, []);
+
+  // Adaptación dinámica del radar cuando el usuario muta o selecciona otro CV
+  useEffect(() => {
+    if (hasCustomCv && activeCv.targetRole) {
+      if (!searchQuery) {
+        handleSyncLiveJobs(activeCv.targetRole);
+      }
+    }
+  }, [activeCvId]);
 
   const requireAuthAndRun = (target: 'studio' | 'upload') => {
     if (!session.isAuthenticated) {
@@ -307,7 +319,7 @@ export function App() {
   const processedJobs = jobs
     .map((job) => ({
       ...job,
-      matchScore: calculateAtsMatch(activeCv.profile, job),
+      matchScore: hasCustomCv ? calculateAtsMatch(activeCv.profile, job) : 0,
     }))
     .filter((job) => {
       if (selectedCategory !== 'all' && job.category !== selectedCategory) return false;
@@ -320,7 +332,13 @@ export function App() {
       }
       return true;
     })
-    .sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+    .sort((a, b) => {
+      if (hasCustomCv) {
+        // Ordena automáticamente por afinidad con el CV activo del usuario
+        return (b.matchScore || 0) - (a.matchScore || 0);
+      }
+      return 0;
+    });
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F3F4F6] dark:bg-[#070709] text-[#111111] dark:text-[#E2E8F0] transition-colors duration-200">
@@ -546,7 +564,7 @@ export function App() {
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#2f3545] bg-neutral-50 dark:bg-[#181c25] hover:bg-neutral-100 dark:hover:bg-[#202633] text-neutral-800 dark:text-neutral-200 cursor-pointer transition-colors"
                   >
                     <i className={`ri-refresh-line text-sm ${isSyncingApi ? 'animate-spin' : ''}`} />
-                    Actualizar APIs
+                    Actualizar
                   </button>
                 </div>
               </div>
@@ -613,20 +631,11 @@ export function App() {
                 >
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="flex items-start gap-4 flex-1 min-w-0">
-                      <div className="w-12 h-12 rounded-lg border border-neutral-200 dark:border-[#2b313f] bg-neutral-100 dark:bg-[#191d27] flex items-center justify-center overflow-hidden shrink-0">
-                        {job.companyLogo ? (
-                          <img
-                            src={job.companyLogo}
-                            alt={job.company}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).style.display = 'none';
-                            }}
-                          />
-                        ) : (
-                          renderCategoryFallbackIcon(job.category)
-                        )}
-                      </div>
+                      <CompanyLogo
+                        logoUrl={job.companyLogo}
+                        companyName={job.company}
+                        sizeClass="w-12 h-12"
+                      />
 
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -657,10 +666,24 @@ export function App() {
 
                     <div className="flex lg:flex-col items-center lg:items-end justify-between gap-2 shrink-0 border-t lg:border-t-0 pt-3 lg:pt-0 border-neutral-100 dark:border-[#202532]">
                       <div className="text-right">
-                        <div className="font-montserrat text-lg font-black text-[#111111] dark:text-[#4ade80] leading-none">
-                          {job.matchScore}% MATCH
-                        </div>
-                        <div className="text-[10px] text-neutral-500 dark:text-neutral-400">
+                        {hasCustomCv ? (
+                          <div className="font-montserrat text-lg font-black text-[#111111] dark:text-[#4ade80] leading-none">
+                            {job.matchScore}% MATCH
+                          </div>
+                        ) : (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              requireAuthAndRun('upload');
+                            }}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-montserrat font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/25 dark:border-[#4ade80]/30 hover:bg-emerald-500/20 transition-all cursor-pointer shadow-xs"
+                            title="Sube tu CV para calcular tu afinidad ATS exacta"
+                          >
+                            <i className="ri-upload-cloud-2-line text-xs" />
+                            <span>Subir CV para Match</span>
+                          </button>
+                        )}
+                        <div className="text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5">
                           {job.source}
                         </div>
                       </div>
@@ -921,7 +944,7 @@ export function App() {
               </span>
             </button>
             <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
-              v1.1.0
+              v1.1.1
             </span>
             <span>•</span>
             {/* Indicador de Punto Verde animado (En Vivo) */}

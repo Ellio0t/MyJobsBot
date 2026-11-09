@@ -15,6 +15,7 @@ import {
   FileText,
 } from 'lucide-react';
 import { CVVersion, JobOffer } from '../types';
+import { CompanyLogo } from './CompanyLogo';
 
 interface JobDetailModalProps {
   job: JobOffer;
@@ -81,6 +82,8 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
     );
   };
 
+  const hasCustomCv = activeCv.id !== 'cv-sample-visitor';
+
   const matchColor =
     (job.matchScore || 0) >= 75
       ? 'text-[#4ade80] bg-[#4ade80]/10 border-[#4ade80]/30'
@@ -102,20 +105,11 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
             =================================================================== */}
         <header className="px-5 py-4 border-b border-neutral-200 dark:border-[#202532] bg-neutral-50/70 dark:bg-[#141722] flex items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-3.5 min-w-0">
-            <div className="w-12 h-12 rounded-xl border border-neutral-200 dark:border-[#2b313f] bg-white dark:bg-[#191d27] flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
-              {job.companyLogo ? (
-                <img
-                  src={job.companyLogo}
-                  alt={job.company}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-              ) : (
-                <Building2 className="w-6 h-6 text-emerald-500 dark:text-[#4ade80]" />
-              )}
-            </div>
+            <CompanyLogo
+              logoUrl={job.companyLogo}
+              companyName={job.company}
+              sizeClass="w-12 h-12"
+            />
 
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-0.5">
@@ -134,11 +128,18 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            {/* Score ATS */}
-            <div className={`px-2.5 py-1 rounded-lg border text-xs font-montserrat font-black uppercase tracking-wider flex items-center gap-1.5 ${matchColor}`}>
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{job.matchScore ?? 68}% ATS</span>
-            </div>
+            {/* Score ATS solo si hay un CV real cargado */}
+            {hasCustomCv ? (
+              <div className={`px-2.5 py-1 rounded-lg border text-xs font-montserrat font-black uppercase tracking-wider flex items-center gap-1.5 ${matchColor}`}>
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>{job.matchScore ?? 68}% ATS</span>
+              </div>
+            ) : (
+              <div className="px-2.5 py-1 rounded-lg border border-neutral-300 dark:border-[#2b3040] text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5 bg-neutral-100 dark:bg-[#181c25]">
+                <Sparkles className="w-3 h-3 text-emerald-500 dark:text-[#4ade80]" />
+                <span>Subir CV para Match</span>
+              </div>
+            )}
 
             {/* Botón de cierre */}
             <button

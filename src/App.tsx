@@ -921,7 +921,7 @@ export function App() {
               </span>
             </button>
             <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
-              v1.0.9
+              v1.1.0
             </span>
             <span>•</span>
             {/* Indicador de Punto Verde animado (En Vivo) */}

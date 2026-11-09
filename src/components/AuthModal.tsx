@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Lock, Mail, UserCheck, ShieldCheck } from 'lucide-react';
 import { UserSession } from '../types';
 
@@ -13,6 +13,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({ brandName, onClose, onSucc
   const [email, setEmail] = useState('elliotbarrios.dev@gmail.com');
   const [password, setPassword] = useState('••••••••••••');
   const [fullName, setFullName] = useState('Elliot Barrios');
+
+  // BLOQUEO ESTRICTO DEL SCROLL DEL BODY
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    const originalPaddingRight = document.body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+    document.body.style.overflow = 'hidden';
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
 
   const handleGoogleLogin = () => {
     onSuccessLogin({
@@ -40,42 +63,48 @@ export const AuthModal: React.FC<AuthModalProps> = ({ brandName, onClose, onSucc
   };
 
   return (
-    <div className="modal-overlay fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-[#121418] text-neutral-900 dark:text-neutral-100 w-full max-w-md rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div
+      onClick={onClose}
+      className="modal-overlay fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overscroll-contain"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white dark:bg-[#12151c] text-neutral-900 dark:text-neutral-100 w-full max-w-md max-h-[92vh] flex flex-col rounded-2xl border border-neutral-300 dark:border-[#2b3140] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+      >
         {/* HEADER */}
-        <div className="px-6 py-5 bg-neutral-950 text-white flex items-center justify-between border-b border-neutral-800">
+        <div className="px-6 py-4 bg-neutral-950 dark:bg-[#0c0e13] text-white flex items-center justify-between border-b border-neutral-800 dark:border-[#202532] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center">
-              <i className="ri-robot-3-line text-xl text-emerald-400" />
+            <div className="w-9 h-9 rounded-xl bg-white/10 dark:bg-[#181c26] border border-white/10 dark:border-[#2d3444] flex items-center justify-center">
+              <i className="ri-robot-3-line text-xl text-emerald-400 dark:text-[#4ade80]" />
             </div>
             <div>
               <span className="text-[10px] font-montserrat font-bold tracking-[2px] uppercase text-neutral-400 block">
                 ACCESO EJECUTIVO • {brandName}
               </span>
-              <h3 className="font-montserrat text-base font-extrabold tracking-wide uppercase mt-0.5">
-                {isRegistering ? 'Crear Cuenta Profesional' : 'Iniciar Sesión'}
+              <h3 className="font-montserrat text-sm sm:text-base font-extrabold tracking-wide uppercase mt-0.5">
+                {isRegistering ? 'Crear Cuenta' : 'Iniciar Sesión'}
               </h3>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* CONTENT */}
-        <div className="p-6 space-y-5">
+        <div className="p-6 space-y-4 overflow-y-auto overscroll-contain flex-1">
           <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-            El radar de empleos siempre es libre para visitantes. Inicia sesión para **subir o crear tu CV ATS**, usar tu **foto como avatar**, calcular tu **% de Match automático** y crear múltiples versiones con IA.
+            El radar de empleos es 100% libre para visitantes. Inicia sesión para **subir y gestionar tus CVs ATS**, usar tu **avatar personalizado** y crear múltiples versiones con IA.
           </p>
 
           {/* GOOGLE OAUTH BUTTON */}
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="w-full py-3 px-4 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors flex items-center justify-center gap-3 font-montserrat text-xs font-bold uppercase tracking-wider cursor-pointer shadow-xs"
+            className="w-full py-2.5 px-4 rounded-xl border border-neutral-300 dark:border-[#2f3545] bg-white dark:bg-[#181c25] hover:bg-neutral-50 dark:hover:bg-[#202532] text-neutral-900 dark:text-white transition-colors flex items-center justify-center gap-3 font-montserrat text-xs font-bold uppercase tracking-wider cursor-pointer shadow-xs"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -99,15 +128,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ brandName, onClose, onSucc
           </button>
 
           <div className="relative flex py-1 items-center">
-            <div className="grow border-t border-neutral-200 dark:border-neutral-800" />
+            <div className="grow border-t border-neutral-200 dark:border-[#232835]" />
             <span className="shrink mx-3 text-[10px] font-montserrat uppercase tracking-widest text-neutral-400">
               o con tu correo
             </span>
-            <div className="grow border-t border-neutral-200 dark:border-neutral-800" />
+            <div className="grow border-t border-neutral-200 dark:border-[#232835]" />
           </div>
 
-          {/* EMAIL & PASSWORD FORM */}
-          <form onSubmit={handleEmailSubmit} className="space-y-3.5">
+          <form onSubmit={handleEmailSubmit} className="space-y-3">
             {isRegistering && (
               <div>
                 <label className="block font-montserrat text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-1">
@@ -118,7 +146,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ brandName, onClose, onSucc
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-lg text-sm bg-neutral-50 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-neutral-900 dark:focus:border-white"
+                  className="w-full px-3.5 py-2 rounded-lg text-xs bg-neutral-50 dark:bg-[#181c25] border border-neutral-300 dark:border-[#2f3545] text-neutral-900 dark:text-white focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80]"
                 />
               </div>
             )}
@@ -128,13 +156,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ brandName, onClose, onSucc
                 Correo Electrónico
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-neutral-400 absolute left-3.5 top-3" />
+                <Mail className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-2.5" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-lg text-sm bg-neutral-50 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-neutral-900 dark:focus:border-white"
+                  className="w-full pl-9 pr-3.5 py-2 rounded-lg text-xs bg-neutral-50 dark:bg-[#181c25] border border-neutral-300 dark:border-[#2f3545] text-neutral-900 dark:text-white focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80]"
                 />
               </div>
             </div>
@@ -144,36 +172,36 @@ export const AuthModal: React.FC<AuthModalProps> = ({ brandName, onClose, onSucc
                 Contraseña
               </label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-neutral-400 absolute left-3.5 top-3" />
+                <Lock className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-2.5" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-lg text-sm bg-neutral-50 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-neutral-900 dark:focus:border-white"
+                  className="w-full pl-9 pr-3.5 py-2 rounded-lg text-xs bg-neutral-50 dark:bg-[#181c25] border border-neutral-300 dark:border-[#2f3545] text-neutral-900 dark:text-white focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80]"
                 />
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 rounded-lg bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 font-montserrat text-xs font-extrabold uppercase tracking-widest hover:opacity-90 transition-opacity flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-montserrat text-xs font-extrabold uppercase tracking-widest hover:opacity-90 transition-opacity flex items-center justify-center gap-2 cursor-pointer shadow-xs"
             >
               <UserCheck className="w-4 h-4" />
-              {isRegistering ? 'Crear Cuenta y Cargar mi CV' : 'Entrar y Sincronizar mi CV'}
+              {isRegistering ? 'Crear Cuenta' : 'Entrar al Sistema'}
             </button>
           </form>
 
-          <div className="flex items-center justify-between text-xs pt-2 border-t border-neutral-200 dark:border-neutral-800">
+          <div className="flex items-center justify-between text-xs pt-2 border-t border-neutral-200 dark:border-[#202532]">
             <button
               type="button"
               onClick={() => setIsRegistering(!isRegistering)}
-              className="font-montserrat font-bold underline cursor-pointer"
+              className="font-montserrat font-bold text-neutral-900 dark:text-[#4ade80] underline cursor-pointer"
             >
               {isRegistering ? '¿Ya tienes cuenta? Inicia sesión' : '¿Nuevo aquí? Regístrate gratis'}
             </button>
             <span className="inline-flex items-center gap-1 text-[11px] text-neutral-500">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Cifrado OAuth 2.0
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Seguro OAuth 2.0
             </span>
           </div>
         </div>
@@ -181,4 +209,3 @@ export const AuthModal: React.FC<AuthModalProps> = ({ brandName, onClose, onSucc
     </div>
   );
 };
-

@@ -342,18 +342,26 @@ export function App() {
           ===================================================================== */}
       <header className="app-navbar no-print sticky top-0 z-40 bg-white/95 dark:bg-[#0f1115]/95 backdrop-blur-md border-b border-neutral-200 dark:border-[#20242c] shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-          {/* LOGO: Ícono de Robot y Título en Verde Claro Neón/Esmeralda (#4ade80) */}
-          <div className="flex items-center gap-2.5">
-            <i className="ri-robot-3-line text-2xl text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.25)]" />
+          {/* LOGO: Ícono de Robot y Título en Verde Claro Neón/Esmeralda (#4ade80) -> Clic lleva al Home */}
+          <button
+            onClick={() => {
+              setActiveTab('jobs');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="flex items-center gap-2.5 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden"
+            title="Ir al Inicio (Radar de Empleos)"
+            aria-label="Ir al Inicio de MyJobsBOT"
+          >
+            <i className="ri-robot-3-line text-2xl text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.25)] group-hover:scale-105 transition-transform" />
             <div>
-              <span className="font-montserrat font-extrabold text-base sm:text-lg tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80]">
+              <span className="font-montserrat font-extrabold text-base sm:text-lg tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
                 {brand.name}
               </span>
               <p className="text-[10px] text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
                 Tu Agente Personal de Búsqueda de Empleo
               </p>
             </div>
-          </div>
+          </button>
 
           {/* NAVEGACIÓN CENTRAL: "EMPLEOS" Y "My CV" */}
           <nav className="flex items-center gap-1 bg-neutral-100 dark:bg-[#15181f] p-1 rounded-lg border border-neutral-200 dark:border-[#232732]">
@@ -870,12 +878,21 @@ export function App() {
       <footer className="app-footer no-print mt-12 border-t border-neutral-200 dark:border-[#20242c] bg-white dark:bg-[#0c0d11] py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-neutral-500 dark:text-neutral-400">
           <div className="flex items-center gap-2">
-            <i className="ri-robot-3-line text-base text-emerald-600 dark:text-[#4ade80]" />
-            <span className="font-montserrat font-extrabold text-emerald-600 dark:text-[#4ade80] uppercase tracking-wider">
-              {brand.name}
-            </span>
+            <button
+              onClick={() => {
+                setActiveTab('jobs');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="flex items-center gap-2 text-left cursor-pointer group hover:opacity-90 transition-all bg-transparent border-0 p-0 outline-hidden"
+              title="Ir al Inicio (Radar de Empleos)"
+            >
+              <i className="ri-robot-3-line text-base text-emerald-600 dark:text-[#4ade80] group-hover:scale-105 transition-transform" />
+              <span className="font-montserrat font-extrabold text-emerald-600 dark:text-[#4ade80] uppercase tracking-wider group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
+                {brand.name}
+              </span>
+            </button>
             <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
-              v1.0.5
+              v1.0.6
             </span>
             <span>•</span>
             {/* Indicador de Punto Verde animado (En Vivo) */}

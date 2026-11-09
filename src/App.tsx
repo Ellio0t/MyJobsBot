@@ -19,6 +19,7 @@ import { CvA4Canvas, openStandaloneBrowserCv } from './components/CvA4Canvas';
 import { EmailModal } from './components/EmailModal';
 import { AuthModal } from './components/AuthModal';
 import { LegalComplianceModal } from './components/LegalComplianceModal';
+import { JobDetailModal } from './components/JobDetailModal';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
@@ -80,6 +81,7 @@ export function App() {
 
   // 6. Modales
   const [selectedJobForEmail, setSelectedJobForEmail] = useState<JobOffer | null>(null);
+  const [selectedJobForDetails, setSelectedJobForDetails] = useState<JobOffer | null>(null);
   const [showLegalModal, setShowLegalModal] = useState(false);
 
   // 7. JoBOT — Asistente IA Proactivo
@@ -606,7 +608,8 @@ export function App() {
               {processedJobs.map((job) => (
                 <article
                   key={job.id}
-                  className="bg-white dark:bg-[#12151c] rounded-xl border border-neutral-200 dark:border-[#242935] p-5 hover:border-neutral-400 dark:hover:border-[#4ade80]/60 transition-all shadow-sm"
+                  onClick={() => setSelectedJobForDetails(job)}
+                  className="bg-white dark:bg-[#12151c] rounded-xl border border-neutral-200 dark:border-[#242935] p-5 hover:border-neutral-400 dark:hover:border-[#4ade80]/60 transition-all shadow-sm cursor-pointer group"
                 >
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="flex items-start gap-4 flex-1 min-w-0">
@@ -642,7 +645,7 @@ export function App() {
                           </span>
                         </div>
 
-                        <h4 className="font-montserrat text-base font-extrabold text-[#111111] dark:text-white leading-snug">
+                        <h4 className="font-montserrat text-base font-extrabold text-[#111111] dark:text-white leading-snug group-hover:text-emerald-600 dark:group-hover:text-[#4ade80] transition-colors">
                           {job.title}
                         </h4>
 
@@ -666,8 +669,24 @@ export function App() {
 
                   <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-[#202532] flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-2">
+                      {/* Botón Ver Propuesta / Oferta Completa */}
                       <button
-                        onClick={() => setSelectedJobForEmail(job)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedJobForDetails(job);
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-neutral-100 hover:bg-neutral-200 dark:bg-[#1a1f2b] dark:hover:bg-[#232938] text-neutral-900 dark:text-white border border-neutral-300 dark:border-[#2b3345] hover:border-neutral-400 dark:hover:border-[#4ade80]/60 transition-all cursor-pointer shadow-xs"
+                        title="Ver detalles completos de esta vacante"
+                      >
+                        <i className="ri-file-list-3-line text-xs text-emerald-600 dark:text-[#4ade80]" />
+                        <span>Ver Oferta</span>
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedJobForEmail(job);
+                        }}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-[#111111] text-white dark:bg-[#1c222e] dark:hover:bg-[#252c3c] dark:text-white border border-transparent dark:border-[#32394c] transition-colors cursor-pointer"
                       >
                         <i className="fa-solid fa-envelope text-xs text-amber-400 dark:text-[#4ade80]" />
@@ -675,7 +694,10 @@ export function App() {
                       </button>
 
                       <button
-                        onClick={() => handleWhatsAppContact(job)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleWhatsAppContact(job);
+                        }}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-emerald-600/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-600/25 dark:border-[#4ade80]/30 hover:bg-emerald-600/20 transition-colors cursor-pointer"
                       >
                         <i className="fa-brands fa-whatsapp text-sm" />
@@ -683,7 +705,10 @@ export function App() {
                       </button>
 
                       <button
-                        onClick={() => handleTelegramContact(job)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleTelegramContact(job);
+                        }}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/25 dark:border-sky-500/30 hover:bg-sky-500/20 transition-colors cursor-pointer"
                       >
                         <i className="fa-brands fa-telegram text-sm" />
@@ -693,7 +718,10 @@ export function App() {
 
                     <div className="flex flex-wrap items-center gap-2">
                       <button
-                        onClick={() => handleAdaptCvToJob(job)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAdaptCvToJob(job);
+                        }}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#32394c] bg-transparent dark:bg-[#171a23] hover:bg-neutral-100 dark:hover:bg-[#222634] text-neutral-800 dark:text-neutral-200 transition-colors cursor-pointer"
                       >
                         <i className="ri-robot-3-line text-sm text-amber-500 dark:text-[#4ade80]" />
@@ -704,6 +732,7 @@ export function App() {
                         href={job.applyUrl}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 hover:underline"
                       >
                         <span>Portal Oficial</span>
@@ -892,7 +921,7 @@ export function App() {
               </span>
             </button>
             <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
-              v1.0.7
+              v1.0.8
             </span>
             <span>•</span>
             {/* Indicador de Punto Verde animado (En Vivo) */}
@@ -977,6 +1006,24 @@ export function App() {
         <LegalComplianceModal
           brandName={brand.name}
           onClose={() => setShowLegalModal(false)}
+        />
+      )}
+
+      {selectedJobForDetails && (
+        <JobDetailModal
+          job={selectedJobForDetails}
+          activeCv={activeCv}
+          onClose={() => setSelectedJobForDetails(null)}
+          onOpenEmailModal={(job) => {
+            setSelectedJobForDetails(null);
+            setSelectedJobForEmail(job);
+          }}
+          onAdaptCv={(job) => {
+            setSelectedJobForDetails(null);
+            handleAdaptCvToJob(job);
+          }}
+          onWhatsApp={(job) => handleWhatsAppContact(job)}
+          onTelegram={(job) => handleTelegramContact(job)}
         />
       )}
     </div>

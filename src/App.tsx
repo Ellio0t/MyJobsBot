@@ -490,7 +490,7 @@ export function App() {
                     <i className="ri-robot-3-line text-xs" /> MYJOBSBOT • Radar Inteligente
                   </div>
                   <h2 className="font-montserrat text-lg sm:text-xl font-extrabold uppercase tracking-wide leading-snug">
-                    Optimiza tu búsqueda subiendo tu CV o elabora el tuyo desde aquí
+                    Optimiza tu búsqueda subiendo tu CV
                   </h2>
                   <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
                     Estandariza tu perfil a formato ATS para plataformas como{' '}
@@ -875,7 +875,7 @@ export function App() {
               {brand.name}
             </span>
             <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
-              v1.0.3
+              v1.0.4
             </span>
             <span>•</span>
             {/* Indicador de Punto Verde animado (En Vivo) */}

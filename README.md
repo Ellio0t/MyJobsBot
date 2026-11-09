@@ -122,3 +122,4 @@ npx firebase-tools deploy --only hosting --project myjobsbot
 ## 📜 Licencia
 
 Distribuido bajo la Licencia **MIT**. Consulta el archivo `LICENSE` para más información.
+

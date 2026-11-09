@@ -875,7 +875,7 @@ export function App() {
               {brand.name}
             </span>
             <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
-              v1.0.4
+              v1.0.5
             </span>
             <span>•</span>
             {/* Indicador de Punto Verde animado (En Vivo) */}
@@ -888,23 +888,24 @@ export function App() {
             </span>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            {/* Botón Google Play Store con ícono característico */}
-            <button
-              onClick={() => alert('Compilación para Android disponible mediante CapacitorJS (npx cap open android)')}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-montserrat font-bold uppercase tracking-wider bg-neutral-100 dark:bg-[#181c25] hover:bg-neutral-200 dark:hover:bg-[#232835] text-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-[#2b3040] hover:border-neutral-400 dark:hover:border-[#4ade80]/50 transition-all cursor-pointer shadow-xs"
-            >
-              <i className="fa-brands fa-google-play text-xs text-[#4ade80]" />
-              <span>Google Play</span>
-            </button>
-
-            {/* Botón Apple App Store con ícono característico */}
+          <div className="flex items-center gap-3">
+            {/* Íconos FontAwesome Apple e iOS puros en verde, sin recuadro */}
             <button
               onClick={() => alert('Compilación para iOS disponible mediante CapacitorJS (npx cap open ios)')}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-montserrat font-bold uppercase tracking-wider bg-neutral-100 dark:bg-[#181c25] hover:bg-neutral-200 dark:hover:bg-[#232835] text-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-[#2b3040] hover:border-neutral-400 dark:hover:border-[#4ade80]/50 transition-all cursor-pointer shadow-xs"
+              className="text-emerald-600 dark:text-[#4ade80] hover:text-emerald-500 dark:hover:text-[#86efac] transition-all hover:scale-110 cursor-pointer p-0 bg-transparent border-0 outline-hidden"
+              title="Disponible para iOS / Apple (CapacitorJS)"
+              aria-label="Apple iOS"
             >
-              <i className="fa-brands fa-app-store-ios text-sm text-[#4ade80]" />
-              <span>App Store</span>
+              <i className="fa-brands fa-apple text-base" />
+            </button>
+
+            <button
+              onClick={() => alert('Compilación para Android disponible mediante CapacitorJS (npx cap open android)')}
+              className="text-emerald-600 dark:text-[#4ade80] hover:text-emerald-500 dark:hover:text-[#86efac] transition-all hover:scale-110 cursor-pointer p-0 bg-transparent border-0 outline-hidden"
+              title="Disponible para Android (CapacitorJS)"
+              aria-label="Android"
+            >
+              <i className="fa-brands fa-android text-base" />
             </button>
 
             <button

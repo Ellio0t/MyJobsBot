@@ -1,21 +1,41 @@
-# Logs y temporales
+# Dependencias y compilación
 node_modules/
 dist/
-.DS_Store
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+build/
+*.tsbuildinfo
+
+# Cachés y temporales de Firebase
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
 
 # Documentos personales y CVs privados con datos sensibles
 curriculum/
 *.pdf
+*.doc
+*.docx
 
 # Variables de entorno y llaves secretas
 .env
 .env.local
 .env.*.local
-firebase-debug.log*
-firestore-debug.log*
-ui-debug.log*
+*.pem
+*.key
+*.keystore
+*.p12
+*serviceAccount*.json
+google-services.json
+GoogleService-Info.plist
 
+# Logs y depuración
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de sistema y editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

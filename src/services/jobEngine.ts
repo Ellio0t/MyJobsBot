@@ -85,9 +85,9 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
 
           const oneLine =
             cleanFunc.length > 20
-              ? cleanFunc.slice(0, 140) + '...'
+              ? cleanFunc.slice(0, 320) + '...'
               : cleanDesc.length > 20
-              ? cleanDesc.slice(0, 140) + '...'
+              ? cleanDesc.slice(0, 320) + '...'
               : `Posición verificada en modalidad ${attr.remote_modality || 'remota'}.`;
 
           const lower = combined.toLowerCase();
@@ -172,7 +172,7 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
             languageReq: 'Inglés Escrito / Técnico',
             oneLineSummary:
               cleanDesc.length > 20
-                ? cleanDesc.slice(0, 140) + '...'
+                ? cleanDesc.slice(0, 320) + '...'
                 : `Oportunidad remota en ${rJob.company_name}.`,
             description: cleanDesc,
             requirements: ['Validado vía Remotive Public API (Worldwide)'],
@@ -253,7 +253,7 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
               : lower.includes(' the ') && lower.includes(' and ')
               ? 'Inglés Escrito / Técnico'
               : 'Español 100%',
-            oneLineSummary: cleanDesc.length > 20 ? cleanDesc.slice(0, 140) + '...' : `Posición en ${item.employer_name}.`,
+            oneLineSummary: cleanDesc.length > 20 ? cleanDesc.slice(0, 320) + '...' : `Posición en ${item.employer_name}.`,
             description: cleanDesc,
             requirements: item.job_highlights?.Qualifications || item.job_required_skills || ['Verificado vía Google Jobs / ' + src],
             keywords: (item.job_required_skills || []).slice(0, 7),

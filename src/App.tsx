@@ -15,6 +15,7 @@ import {
   fetchLiveJobsFromApis,
   generateOutreachDraft,
 } from './services/jobEngine';
+import { parseUploadedCvFile } from './services/cvParser';
 import { CvA4Canvas, openStandaloneBrowserCv } from './components/CvA4Canvas';
 import { EmailModal } from './components/EmailModal';
 import { AuthModal } from './components/AuthModal';
@@ -24,7 +25,7 @@ import { CompanyLogo } from './components/CompanyLogo';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.1.3';
+  const APP_VERSION = 'v1.1.4';
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
@@ -200,27 +201,43 @@ export function App() {
     reader.readAsDataURL(file);
   };
 
-  const handleCvUploadParse = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCvUploadParse = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const fileNameClean = file.name.replace(/\.[^/.]+$/, '');
-    const { newVersion, explanation } = createTailoredCvVersion(
-      activeCv,
-      `CV Importado: ${fileNameClean}`,
-      cvVersions.length
-    );
-    setCvVersions((prev) => [newVersion, ...prev]);
-    setActiveCvId(newVersion.id);
-    setChatMessages((prev) => [
-      ...prev,
-      {
-        id: `upload-${Date.now()}`,
-        sender: 'bot',
-        text: `📄 He procesado tu documento "${file.name}". Lo estandaricé bajo el formato ATS limpio de 2 columnas, inyecté las palabras clave recomendadas y creé una versión lista para descargar. ${explanation}`,
-        timestamp: 'Ahora',
-        createdVersionId: newVersion.id,
-      },
-    ]);
+
+    try {
+      const { version, detectedSkillsCount } = await parseUploadedCvFile(
+        file,
+        cvVersions.length,
+        session.displayName || 'Candidato Profesional'
+      );
+
+      setCvVersions((prev) => [version, ...prev]);
+      setActiveCvId(version.id);
+      setActiveTab('studio'); // Directo al Estudio para ver el CV Virtual rellenado
+
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          id: `upload-${Date.now()}`,
+          sender: 'bot',
+          text: `📄 ¡Tu CV "${file.name}" fue digitalizado con éxito! He completado tu CV Virtual ATS con tus datos de contacto (${version.profile.email}, ${version.profile.phone}), detecté ${detectedSkillsCount} habilidades y estructuré tus experiencias. Ya puedes afinar cualquier campo a mano o generar nuevas adaptaciones automáticas.`,
+          timestamp: 'Ahora',
+          createdVersionId: version.id,
+        },
+      ]);
+    } catch (err) {
+      console.error('Error al procesar el archivo de CV:', err);
+      const fileNameClean = file.name.replace(/\.[^/.]+$/, '');
+      const { newVersion, explanation } = createTailoredCvVersion(
+        activeCv,
+        `CV Importado: ${fileNameClean}`,
+        cvVersions.length
+      );
+      setCvVersions((prev) => [newVersion, ...prev]);
+      setActiveCvId(newVersion.id);
+      setActiveTab('studio');
+    }
   };
 
   const handleSendChatPrompt = (e: React.FormEvent) => {
@@ -664,7 +681,7 @@ export function App() {
                           {job.title}
                         </h4>
 
-                        <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 line-clamp-1">
+                        <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-2 line-clamp-2 sm:line-clamp-3 leading-relaxed">
                           {job.oneLineSummary}
                         </p>
                       </div>

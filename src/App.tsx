@@ -892,7 +892,7 @@ export function App() {
               </span>
             </button>
             <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
-              v1.0.6
+              v1.0.7
             </span>
             <span>•</span>
             {/* Indicador de Punto Verde animado (En Vivo) */}
@@ -905,24 +905,41 @@ export function App() {
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Íconos FontAwesome Apple e iOS puros en verde, sin recuadro */}
-            <button
-              onClick={() => alert('Compilación para iOS disponible mediante CapacitorJS (npx cap open ios)')}
-              className="text-emerald-600 dark:text-[#4ade80] hover:text-emerald-500 dark:hover:text-[#86efac] transition-all hover:scale-110 cursor-pointer p-0 bg-transparent border-0 outline-hidden"
-              title="Disponible para iOS / Apple (CapacitorJS)"
-              aria-label="Apple iOS"
-            >
-              <i className="fa-brands fa-apple text-base" />
-            </button>
-
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Botón Adaptado de Descarga en Google Play (Android) */}
             <button
               onClick={() => alert('Compilación para Android disponible mediante CapacitorJS (npx cap open android)')}
-              className="text-emerald-600 dark:text-[#4ade80] hover:text-emerald-500 dark:hover:text-[#86efac] transition-all hover:scale-110 cursor-pointer p-0 bg-transparent border-0 outline-hidden"
-              title="Disponible para Android (CapacitorJS)"
-              aria-label="Android"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 dark:bg-[#141720] dark:hover:bg-[#1c212e] text-left border border-neutral-300 dark:border-[#252b39] hover:border-neutral-400 dark:hover:border-[#4ade80]/50 transition-all cursor-pointer shadow-xs group"
+              title="Descargar para Android en Google Play (CapacitorJS)"
+              aria-label="Descargar en Google Play"
             >
-              <i className="fa-brands fa-android text-base" />
+              <i className="fa-brands fa-google-play text-sm text-emerald-600 dark:text-[#4ade80] group-hover:scale-110 transition-transform shrink-0" />
+              <div className="flex flex-col leading-tight">
+                <span className="text-[8px] font-montserrat font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                  Disponible en
+                </span>
+                <span className="text-[11px] font-montserrat font-extrabold text-neutral-900 dark:text-white">
+                  Google Play
+                </span>
+              </div>
+            </button>
+
+            {/* Botón Adaptado de Descarga en App Store (iOS) */}
+            <button
+              onClick={() => alert('Compilación para iOS disponible mediante CapacitorJS (npx cap open ios)')}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 dark:bg-[#141720] dark:hover:bg-[#1c212e] text-left border border-neutral-300 dark:border-[#252b39] hover:border-neutral-400 dark:hover:border-[#4ade80]/50 transition-all cursor-pointer shadow-xs group"
+              title="Descargar para iOS en App Store (CapacitorJS)"
+              aria-label="Descargar en App Store"
+            >
+              <i className="fa-brands fa-apple text-base text-emerald-600 dark:text-[#4ade80] group-hover:scale-110 transition-transform shrink-0" />
+              <div className="flex flex-col leading-tight">
+                <span className="text-[8px] font-montserrat font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                  Consíguelo en el
+                </span>
+                <span className="text-[11px] font-montserrat font-extrabold text-neutral-900 dark:text-white">
+                  App Store
+                </span>
+              </div>
             </button>
 
             <button

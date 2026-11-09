@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MYJOBSBOT</string>
+    <string name="title_activity_main">MYJOBSBOT</string>
+    <string name="package_name">com.elliotbarrios.myjobsbot</string>
+    <string name="custom_url_scheme">com.elliotbarrios.myjobsbot</string>
+</resources>

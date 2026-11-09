@@ -24,7 +24,7 @@ import { CompanyLogo } from './components/CompanyLogo';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.1.2';
+  const APP_VERSION = 'v1.1.3';
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {

@@ -193,9 +193,9 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
   const rapidApiKey = import.meta.env.VITE_RAPIDAPI_KEY;
   if (rapidApiKey) {
     try {
-      const jsearchUrl = `https://jsearch.p.rapidapi.com/search?query=${encodeURIComponent(
-        q || 'remote'
-      )}&page=1&num_pages=1`;
+      const jsearchUrl = `https://jsearch.p.rapidapi.com/search-v2?query=${encodeURIComponent(
+        q || 'developer'
+      )}&num_pages=1`;
 
       const jRes = await fetch(jsearchUrl, {
         headers: {
@@ -206,57 +206,62 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
 
       if (jRes.ok) {
         const jJson = await jRes.json();
-        if (Array.isArray(jJson.data)) {
-          for (const item of jJson.data) {
-            const cleanDesc = (item.job_description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-            const lower = `${item.job_title} ${cleanDesc}`.toLowerCase();
+        const rawJobs = Array.isArray(jJson.data?.jobs)
+          ? jJson.data.jobs
+          : Array.isArray(jJson.data)
+          ? jJson.data
+          : [];
 
-            let cat: JobOffer['category'] = 'tech';
-            if (lower.includes('qa') || lower.includes('test') || lower.includes('quality') || lower.includes('tester'))
-              cat = 'qa';
-            else if (lower.includes('data') || lower.includes('datos') || lower.includes('excel') || lower.includes('analytics'))
-              cat = 'data';
-            else if (lower.includes('support') || lower.includes('soporte') || lower.includes('customer'))
-              cat = 'support';
-            else if (lower.includes('operations') || lower.includes('operaciones') || lower.includes('admin') || lower.includes('logistica'))
-              cat = 'ops';
+        for (const item of rawJobs) {
+          const cleanDesc = (item.job_description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+          const lower = `${item.job_title} ${cleanDesc}`.toLowerCase();
 
-            let salary = 'A convenir (USD)';
-            if (item.job_min_salary && item.job_max_salary) {
-              salary = `$${item.job_min_salary.toLocaleString()} - $${item.job_max_salary.toLocaleString()} ${item.job_salary_currency || 'USD'}`;
-            }
+          let cat: JobOffer['category'] = 'tech';
+          if (lower.includes('qa') || lower.includes('test') || lower.includes('quality') || lower.includes('tester'))
+            cat = 'qa';
+          else if (lower.includes('data') || lower.includes('datos') || lower.includes('excel') || lower.includes('analytics'))
+            cat = 'data';
+          else if (lower.includes('support') || lower.includes('soporte') || lower.includes('customer'))
+            cat = 'support';
+          else if (lower.includes('operations') || lower.includes('operaciones') || lower.includes('admin') || lower.includes('logistica'))
+            cat = 'ops';
 
-            const applyLink = item.job_apply_link || '';
-            let src: JobOffer['source'] = 'Google Jobs API';
-            if (applyLink.includes('linkedin.com')) src = 'LinkedIn';
-            else if (applyLink.includes('indeed.com')) src = 'Indeed';
-
-            const emailMatch = cleanDesc.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-
-            aggregated.push({
-              id: `jsearch-${item.job_id}`,
-              title: item.job_title,
-              company: item.employer_name || 'Empresa Confidencial',
-              companyLogo: item.employer_logo || undefined,
-              category: cat,
-              salary,
-              modality: item.job_is_remote ? '100% Remoto (Global)' : 'Híbrido / Presencial',
-              countryScope: item.job_country || (item.job_is_remote ? 'Global' : 'Local'),
-              languageReq: lower.includes('fluent english') || lower.includes('advanced english')
-                ? 'Inglés Conversacional'
-                : lower.includes(' the ') && lower.includes(' and ')
-                ? 'Inglés Escrito / Técnico'
-                : 'Español 100%',
-              oneLineSummary: cleanDesc.length > 20 ? cleanDesc.slice(0, 140) + '...' : `Posición en ${item.employer_name}.`,
-              description: cleanDesc,
-              requirements: item.job_highlights?.Qualifications || item.job_required_skills || ['Verificado vía Google Jobs / LinkedIn'],
-              keywords: (item.job_required_skills || []).slice(0, 7),
-              source: src,
-              applyUrl: applyLink || `https://www.google.com/search?q=${encodeURIComponent(item.job_title + ' ' + item.employer_name + ' jobs')}`,
-              contactEmail: emailMatch ? emailMatch[0] : undefined,
-              publishedAt: 'En vivo (Google Jobs)',
-            });
+          let salary = item.job_salary_string || 'A convenir (USD)';
+          if (item.job_min_salary && item.job_max_salary) {
+            salary = `$${item.job_min_salary.toLocaleString()} - $${item.job_max_salary.toLocaleString()} ${item.job_salary_currency || 'USD'}`;
           }
+
+          const applyLink = item.job_apply_link || '';
+          const publisher = (item.job_publisher || '').toLowerCase();
+          let src: JobOffer['source'] = 'Google Jobs API';
+          if (publisher.includes('linkedin') || applyLink.includes('linkedin.com')) src = 'LinkedIn';
+          else if (publisher.includes('indeed') || applyLink.includes('indeed.com')) src = 'Indeed';
+
+          const emailMatch = cleanDesc.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+
+          aggregated.push({
+            id: `jsearch-${item.job_id}`,
+            title: item.job_title,
+            company: item.employer_name || 'Empresa Confidencial',
+            companyLogo: item.employer_logo || undefined,
+            category: cat,
+            salary,
+            modality: item.job_is_remote ? '100% Remoto (Global)' : (item.job_location || 'Híbrido / Presencial'),
+            countryScope: item.job_country || (item.job_is_remote ? 'Global' : 'Local'),
+            languageReq: lower.includes('fluent english') || lower.includes('advanced english')
+              ? 'Inglés Conversacional'
+              : lower.includes(' the ') && lower.includes(' and ')
+              ? 'Inglés Escrito / Técnico'
+              : 'Español 100%',
+            oneLineSummary: cleanDesc.length > 20 ? cleanDesc.slice(0, 140) + '...' : `Posición en ${item.employer_name}.`,
+            description: cleanDesc,
+            requirements: item.job_highlights?.Qualifications || item.job_required_skills || ['Verificado vía Google Jobs / ' + src],
+            keywords: (item.job_required_skills || []).slice(0, 7),
+            source: src,
+            applyUrl: applyLink || `https://www.google.com/search?q=${encodeURIComponent(item.job_title + ' ' + item.employer_name + ' jobs')}`,
+            contactEmail: emailMatch ? emailMatch[0] : undefined,
+            publishedAt: 'En vivo (' + src + ')',
+          });
         }
       }
     } catch (err) {

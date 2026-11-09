@@ -1,0 +1,45 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // 1. REGLA MAESTRA DE BOLSA DE EMPLEOS (PÚBLICA DE LECTURA, BLINDADA DE ESCRITURA)
+    // =========================================================================
+    // Cualquier usuario en la web o app puede consultar y leer las ofertas,
+    // pero NINGÚN usuario desde el navegador puede crear, modificar o borrar ofertas.
+    // Solo el backend / Cloud Functions / Admin SDK con llave privada puede escribir aquí.
+    match /jobs/{jobId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Colección de vacantes cacheadas o históricas (si usas otro nombre)
+    match /cached_jobs/{jobId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // =========================================================================
+    // 2. PRIVACIDAD ESTRICTA DE USUARIOS (CADA USUARIO SOLO ACCEDE A LO SUYO)
+    // =========================================================================
+    // Un usuario autenticado solo puede leer y guardar sus propios CVs, favoritos o notas.
+    // Un atacante no puede ver el CV de otro usuario ni alterar sus datos.
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      // Subcolecciones del usuario (CVs adaptados, postulaciones guardadas, historial)
+      match /{userSubcollection=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // =========================================================================
+    // 3. REGLA POR DEFECTO: ZERO-TRUST (CERRADO TOTAL PARA CUALQUIER OTRA RUTA)
+    // =========================================================================
+    // Cualquier colección nueva o no listada queda 100% bloqueada tanto en lectura como escritura.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

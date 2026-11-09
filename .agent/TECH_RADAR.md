@@ -84,9 +84,15 @@ Este inventario audita las herramientas y tecnologías utilizadas en todos los p
 - **Función:** Inyección de inteligencia artificial para análisis contextual, clasificación y resúmenes automáticos.
 - **¿Por qué la IA depende del humano aquí?:** La IA comete alucinaciones y requiere *Prompt Engineering* robusto, validación de esquemas JSON estructurados y control estricto de costes de tokens.
 
-### **MCP (Model Context Protocol) & Agentic Workflows**
-- **Proyectos:** Ecosistema Antigravity (`firebase-mcp`, `n8n-render`, `firestore`) y plataformas B2B como *Get on Board MCP*.
-- **Función:** Protocolo estándar que actúa como una "super-API" diseñada para que Agentes de IA (ChatGPT, Claude, Antigravity) consulten bases de datos y ejecuten acciones en sistemas externos en lenguaje natural.
-- **¿Por qué la IA depende del humano aquí?:** Un humano debe diseñar qué herramientas expone el servidor MCP, autorizar los permisos de seguridad y estructurar los datos (o perfiles profesionales) para que el agente los indexe sin errores.
+### **RapidAPI JSearch Engine (LinkedIn, Indeed & Google Jobs Aggregator)**
+- **Proyectos:** `MYJOBSBOT` (`src/services/jobEngine.ts`)
+- **Función:** Indexación en vivo de ofertas laborales masivas agregando fuentes de LinkedIn, Indeed, Glassdoor y Google Jobs mediante el endpoint `/search-v2` de RapidAPI con deduplicación cruzada y extracción de salarios.
+- **¿Por qué la IA depende del humano aquí?:** Las APIs de terceros cambian de versión (`/search` a `/search-v2`), mutan esquemas JSON y tienen cuotas estrictas de rate-limiting. Se requiere criterio de arquitectura para implementar fallbacks de fuentes públicas (Get on Board, Remotive) y caché para no agotar presupuestos de API.
+
+### **Client-Side CV Stream Parser & ATS Match Engine**
+- **Proyectos:** `MYJOBSBOT` (`src/services/cvParser.ts`, `src/services/jobEngine.ts`)
+- **Función:** Extracción de texto y entidades clave en tiempo de ejecución del navegador a partir de documentos subidos por el usuario (PDFs, TXT, HTML, MD) para poblar automáticamente el CV Virtual editable y calcular afinidad algorítmica ATS frente a cada vacante.
+- **¿Por qué la IA depende del humano aquí?:** Los documentos subidos por los usuarios no tienen una estructura predecible: vienen con formatos de dos columnas, texto incrustado binario en PDFs, o fuentes no estándar. Diseñar heurísticas de extracción de contacto, normalización de habilidades técnicas y formateo A4 limpio sin llamadas costosas a un backend es una decisión de alta eficiencia e ingeniería humana.
+
 
 

@@ -48,3 +48,4 @@ export const CompanyLogo: React.FC<CompanyLogoProps> = ({
     </div>
   );
 };
+

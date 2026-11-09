@@ -24,6 +24,7 @@ import { CompanyLogo } from './components/CompanyLogo';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
+  const APP_VERSION = 'v1.1.2';
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
@@ -374,9 +375,14 @@ export function App() {
           >
             <i className="ri-robot-3-line text-2xl text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.25)] group-hover:scale-105 transition-transform" />
             <div>
-              <span className="font-montserrat font-extrabold text-base sm:text-lg tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
-                {brand.name}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-montserrat font-extrabold text-base sm:text-lg tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
+                  {brand.name}
+                </span>
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
+                  {APP_VERSION}
+                </span>
+              </div>
               <p className="text-[10px] text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
                 Tu Agente Personal de Búsqueda de Empleo
               </p>
@@ -944,7 +950,7 @@ export function App() {
               </span>
             </button>
             <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
-              v1.1.1
+              {APP_VERSION}
             </span>
             <span>•</span>
             {/* Indicador de Punto Verde animado (En Vivo) */}

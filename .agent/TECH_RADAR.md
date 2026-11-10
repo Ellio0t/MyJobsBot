@@ -27,8 +27,8 @@ Este inventario audita las herramientas y tecnologías utilizadas en todos los p
 ## ☁️ 2. Cloud Serverless, Bases de Datos & Backend
 
 ### **Google Firebase Suite (Firestore, Auth, Functions, Hosting, FCM)**
-- **Proyectos:** `Code`, `Master`, `Monitor`, `NotiHub`
-- **Función:** Base de datos NoSQL reactiva en tiempo real, autenticación, notificaciones push nativas y funciones backend serverless.
+- **Proyectos:** `Code`, `Master`, `Monitor`, `NotiHub`, `MYJOBSBOT`
+- **Función:** Base de datos NoSQL reactiva en tiempo real, autenticación OAuth/Email, notificaciones push nativas y hosting CDN global.
 - **¿Por qué la IA depende del humano aquí?:** Las IAs suelen escribir reglas de seguridad demasiado permisivas (`allow read, write: if true;`) que provocan hackeos de datos o facturas sorpresa de miles de dólares por lecturas recursivas innecesarias. El diseño de índices compuestos, cuotas y caching offline requiere diseño arquitectónico humano.
 
 ### **Server-to-Server (S2S) Webhooks & Anti-Fraude**

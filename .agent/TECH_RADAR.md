@@ -94,5 +94,11 @@ Este inventario audita las herramientas y tecnologías utilizadas en todos los p
 - **Función:** Extracción de texto y entidades clave en tiempo de ejecución del navegador a partir de documentos subidos por el usuario (PDFs, TXT, HTML, MD) para poblar automáticamente el CV Virtual editable y calcular afinidad algorítmica ATS frente a cada vacante.
 - **¿Por qué la IA depende del humano aquí?:** Los documentos subidos por los usuarios no tienen una estructura predecible: vienen con formatos de dos columnas, texto incrustado binario en PDFs, o fuentes no estándar. Diseñar heurísticas de extracción de contacto, normalización de habilidades técnicas y formateo A4 limpio sin llamadas costosas a un backend es una decisión de alta eficiencia e ingeniería humana.
 
+### **Portal Branding & Multi-Network Trust Verification System**
+- **Proyectos:** `MYJOBSBOT` (`src/components/PortalBadge.tsx`, `src/components/NetworkTrustBanner.tsx`)
+- **Función:** Presentación premium y estandarizada de marcas oficiales (Google Jobs, LinkedIn, Indeed, Get on Board, Remotive) eliminando jerga técnica como "API" en favor de distintivos visuales verificados y banners de indexación en vivo para maximizar la confianza del usuario final.
+- **¿Por qué la IA depende del humano aquí?:** Los desarrolladores y la IA tienden a exponer detalles de implementación técnica (nombres de endpoints, siglas de APIs, payloads crudos). El criterio humano de producto y diseño UX sabe que el consumidor final busca legitimidad, respaldo de marca conocida y confianza, no detalles de infraestructura backend.
+
+
 
 

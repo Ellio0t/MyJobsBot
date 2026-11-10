@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { CVVersion, JobOffer } from '../types';
 import { CompanyLogo } from './CompanyLogo';
+import { PortalBadge } from './PortalBadge';
 
 interface JobDetailModalProps {
   job: JobOffer;
@@ -118,9 +119,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                   {job.company}
                 </span>
                 <span className="text-neutral-300 dark:text-neutral-600">•</span>
-                <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2a3040]">
-                  {job.source}
-                </span>
+                <PortalBadge source={job.source} size="sm" />
               </div>
               <h2 className="font-montserrat text-base sm:text-lg font-black text-neutral-900 dark:text-white leading-snug truncate">
                 {job.title}

@@ -47,9 +47,11 @@ async function fetchJSearchJobs() {
 
         const applyLink = item.job_apply_link || '';
         const pub = (item.job_publisher || '').toLowerCase();
-        let src = 'Google Jobs API';
+        let src = 'Google Jobs';
         if (pub.includes('linkedin') || applyLink.includes('linkedin.com')) src = 'LinkedIn';
         else if (pub.includes('indeed') || applyLink.includes('indeed.com')) src = 'Indeed';
+        else if (pub.includes('glassdoor') || applyLink.includes('glassdoor.com')) src = 'Glassdoor';
+        else if (pub.includes('ziprecruiter') || applyLink.includes('ziprecruiter.com')) src = 'ZipRecruiter';
 
         const emailMatch = cleanDesc.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
 

@@ -23,10 +23,12 @@ import { AuthModal } from './components/AuthModal';
 import { LegalComplianceModal } from './components/LegalComplianceModal';
 import { JobDetailModal } from './components/JobDetailModal';
 import { CompanyLogo } from './components/CompanyLogo';
+import { PortalBadge } from './components/PortalBadge';
+import { NetworkTrustBanner } from './components/NetworkTrustBanner';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.1.7';
+  const APP_VERSION = 'v1.1.8';
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
@@ -102,7 +104,7 @@ export function App() {
   const [languageFilter, setLanguageFilter] = useState<'all' | 'es' | 'written-en'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSyncingApi, setIsSyncingApi] = useState(false);
-  const [apiStatusText, setApiStatusText] = useState('Conectando a APIs públicas...');
+  const [apiStatusText, setApiStatusText] = useState('Sincronizando con redes de empleo...');
 
   // 6. Modales
   const [selectedJobForEmail, setSelectedJobForEmail] = useState<JobOffer | null>(null);
@@ -555,6 +557,9 @@ export function App() {
         </div>
       </header>
 
+      {/* BANNER DE PORTALES CONECTADOS EN TIEMPO REAL */}
+      <NetworkTrustBanner totalIndexed={jobs.length} />
+
       {/* =====================================================================
           CONTENIDO: MODO DARK CARBONE (#121419 / #191c24 CON CONTRASTE ELEVADO)
           ===================================================================== */}
@@ -735,8 +740,8 @@ export function App() {
                           <span className="sm:hidden">Match ATS</span>
                         </button>
                       )}
-                      <div className="text-[9px] sm:text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5">
-                        {job.source}
+                      <div className="mt-1">
+                        <PortalBadge source={job.source} size="sm" />
                       </div>
                     </div>
                   </div>
@@ -1061,7 +1066,7 @@ export function App() {
               onClick={() => setShowLegalModal(true)}
               className="ml-2 text-[11px] font-montserrat font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-[#4ade80] underline cursor-pointer"
             >
-              Políticas & APIs
+              Políticas & Portales
             </button>
           </div>
         </div>

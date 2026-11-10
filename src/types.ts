@@ -75,7 +75,7 @@ export interface JobOffer {
   description: string;
   requirements: string[];
   keywords: string[];
-  source: 'Get on Board' | 'Remotive' | 'RemoteOK' | 'Google Jobs API' | 'LinkedIn' | 'Indeed';
+  source: 'Get on Board' | 'Remotive' | 'RemoteOK' | 'Google Jobs' | 'LinkedIn' | 'Indeed' | 'Glassdoor' | 'ZipRecruiter';
   applyUrl: string;
   contactEmail?: string;
   contactWhatsapp?: string;

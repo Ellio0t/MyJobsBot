@@ -45,7 +45,7 @@ export const LegalComplianceModal: React.FC<LegalComplianceModalProps> = ({ bran
             <Shield className="w-5 h-5 text-emerald-400 dark:text-[#4ade80]" />
             <div>
               <h3 className="font-montserrat text-xs sm:text-sm font-extrabold uppercase tracking-wider">
-                Marco Legal, Políticas de Tiendas & APIs Públicas
+                Marco Legal, Políticas de Tiendas & Fuentes Oficiales
               </h3>
               <p className="text-[11px] text-neutral-400">
                 Cumplimiento Normativo • {brandName}
@@ -65,10 +65,10 @@ export const LegalComplianceModal: React.FC<LegalComplianceModalProps> = ({ bran
           <div className="p-4 rounded-xl bg-neutral-50 dark:bg-[#181c25] border border-neutral-200 dark:border-[#282d3b]">
             <div className="flex items-center gap-2 font-montserrat font-bold text-neutral-900 dark:text-white uppercase tracking-wider mb-2">
               <Globe className="w-4 h-4 text-[#4ade80]" />
-              1. Aclaratoria de Uso de APIs Públicas
+              1. Aclaratoria de Uso de Redes y Fuentes Públicas de Empleo
             </div>
             <p className="mb-2">
-              <strong>{brandName}</strong> opera como un motor de lectura asistida y optimización curricular para candidatos. Las ofertas provienen de endpoints y APIs públicas oficiales (Get on Board, Remotive y agregadores abiertos).
+              <strong>{brandName}</strong> opera como un motor de lectura asistida y optimización curricular para candidatos. Las ofertas provienen de fuentes oficiales abiertas y redes de empleo verificadas (Google Jobs, LinkedIn, Indeed, Get on Board, Remotive y agregadores abiertos).
             </p>
             <ul className="list-disc pl-5 space-y-1">
               <li>Logotipos y nombres pertenecen a sus respectivos empleadores y plataformas de origen.</li>

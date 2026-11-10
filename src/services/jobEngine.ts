@@ -125,7 +125,7 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
             languageReq: langReq,
             oneLineSummary: oneLine,
             description: cleanDesc || oneLine,
-            requirements: ['Validado vía Get on Board Public API'],
+            requirements: ['Validado vía Get on Board'],
             keywords: attr.title
               .split(/[\s,/()-]+/)
               .filter((w: string) => w.length > 2)
@@ -134,7 +134,7 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
             applyUrl: attr.links?.public_url || `https://www.getonbrd.com/jobs/${item.id}`,
             contactEmail: emailMatch ? emailMatch[0] : undefined,
             contactWhatsapp: phoneMatch ? phoneMatch[0].replace(/\D/g, '') : undefined,
-            publishedAt: 'En vivo API',
+            publishedAt: 'En vivo',
           });
         }
       }
@@ -177,12 +177,12 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
                 ? cleanDesc.slice(0, 320) + '...'
                 : `Oportunidad remota en ${rJob.company_name}.`,
             description: cleanDesc,
-            requirements: ['Validado vía Remotive Public API (Worldwide)'],
+            requirements: ['Validado vía Remotive (Worldwide)'],
             keywords: (rJob.tags || []).slice(0, 6),
             source: 'Remotive',
             applyUrl: rJob.url,
             contactEmail: emailMatch ? emailMatch[0] : undefined,
-            publishedAt: 'En vivo API',
+            publishedAt: 'En vivo',
           });
         }
       }
@@ -235,7 +235,7 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
 
           const applyLink = item.job_apply_link || '';
           const publisher = (item.job_publisher || '').toLowerCase();
-          let src: JobOffer['source'] = 'Google Jobs API';
+          let src: JobOffer['source'] = 'Google Jobs';
           if (publisher.includes('linkedin') || applyLink.includes('linkedin.com')) src = 'LinkedIn';
           else if (publisher.includes('indeed') || applyLink.includes('indeed.com')) src = 'Indeed';
 

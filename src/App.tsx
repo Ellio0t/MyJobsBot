@@ -16,6 +16,7 @@ import {
   generateOutreachDraft,
 } from './services/jobEngine';
 import { parseUploadedCvFile } from './services/cvParser';
+import { onAuthStatusChanged, logoutUserReal } from './services/firebaseAuth';
 import { CvA4Canvas, openStandaloneBrowserCv } from './components/CvA4Canvas';
 import { EmailModal } from './components/EmailModal';
 import { AuthModal } from './components/AuthModal';
@@ -25,7 +26,7 @@ import { CompanyLogo } from './components/CompanyLogo';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.1.4';
+  const APP_VERSION = 'v1.1.5';
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
@@ -54,10 +55,30 @@ export function App() {
     return () => mediaQuery.removeEventListener('change', applyTheme);
   }, [themeMode]);
 
-  // 2. SESIÓN DE USUARIO: SIEMPRE ABRE COMO VISITANTE
+  // 2. SESIÓN DE USUARIO: SINCRONIZADA CON FIREBASE AUTHENTICATION
   const [session, setSession] = useState<UserSession>({
     isAuthenticated: false,
   });
+
+  useEffect(() => {
+    const unsubscribe = onAuthStatusChanged((fbSession) => {
+      if (fbSession.isAuthenticated) {
+        setSession(fbSession);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logoutUserReal();
+    } catch (err) {
+      console.warn('Error al cerrar sesión:', err);
+    }
+    setSession({ isAuthenticated: false });
+    setCvVersions([VISITOR_SAMPLE_CV]);
+    setActiveCvId(VISITOR_SAMPLE_CV.id);
+  };
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingActionAfterAuth, setPendingActionAfterAuth] = useState<'studio' | 'upload' | null>(
     null
@@ -376,49 +397,49 @@ export function App() {
       />
 
       {/* =====================================================================
-          HEADER EJECUTIVO: TÍTULO E ÍCONO EN VERDE CLARO (#4ade80)
+          HEADER EJECUTIVO: ADAPTABLE A MÓVILES Y ANDROID
           ===================================================================== */}
       <header className="app-navbar no-print sticky top-0 z-40 bg-white/95 dark:bg-[#0f1115]/95 backdrop-blur-md border-b border-neutral-200 dark:border-[#20242c] shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-          {/* LOGO: Ícono de Robot y Título en Verde Claro Neón/Esmeralda (#4ade80) -> Clic lleva al Home */}
+        <div className="max-w-7xl mx-auto px-2.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-4">
+          {/* LOGO: Ícono de Robot y Título en Verde Claro Neón (#4ade80) */}
           <button
             onClick={() => {
               setActiveTab('jobs');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="flex items-center gap-2.5 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden"
+            className="flex items-center gap-1.5 sm:gap-2.5 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden shrink-0"
             title="Ir al Inicio (Radar de Empleos)"
             aria-label="Ir al Inicio de MyJobsBOT"
           >
-            <i className="ri-robot-3-line text-2xl text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.25)] group-hover:scale-105 transition-transform" />
+            <i className="ri-robot-3-line text-xl sm:text-2xl text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.25)] group-hover:scale-105 transition-transform" />
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-montserrat font-extrabold text-base sm:text-lg tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
+              <div className="flex items-center gap-1 sm:gap-2">
+                <span className="font-montserrat font-extrabold text-xs sm:text-base md:text-lg tracking-[1px] sm:tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
                   {brand.name}
                 </span>
-                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
+                <span className="text-[9px] sm:text-[10px] font-mono font-bold px-1 sm:px-1.5 py-0.2 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
                   {APP_VERSION}
                 </span>
               </div>
-              <p className="text-[10px] text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
+              <p className="hidden md:block text-[10px] text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
                 Tu Agente Personal de Búsqueda de Empleo
               </p>
             </div>
           </button>
 
           {/* NAVEGACIÓN CENTRAL: "EMPLEOS" Y "My CV" */}
-          <nav className="flex items-center gap-1 bg-neutral-100 dark:bg-[#15181f] p-1 rounded-lg border border-neutral-200 dark:border-[#232732]">
+          <nav className="flex items-center gap-1 bg-neutral-100 dark:bg-[#15181f] p-0.5 sm:p-1 rounded-lg border border-neutral-200 dark:border-[#232732] shrink-0">
             <button
               onClick={() => setActiveTab('jobs')}
-              className={`px-3.5 py-1.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-md font-montserrat text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
                 activeTab === 'jobs'
                   ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
                   : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
               }`}
             >
-              <i className="ri-briefcase-4-line text-sm" />
+              <i className="ri-briefcase-4-line text-xs sm:text-sm" />
               <span>EMPLEOS</span>
-              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+              <span className={`px-1 sm:px-1.5 py-0.2 rounded-full text-[9px] sm:text-[10px] font-bold ${
                 activeTab === 'jobs' 
                   ? 'bg-black/15 text-white dark:bg-black/20 dark:text-black' 
                   : 'bg-emerald-500/20 text-emerald-600 dark:text-[#4ade80]'
@@ -429,16 +450,16 @@ export function App() {
 
             <button
               onClick={() => setActiveTab('studio')}
-              className={`px-3.5 py-1.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-md font-montserrat text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
                 activeTab === 'studio'
                   ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
                   : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
               }`}
             >
-              <i className="ri-file-user-line text-sm" />
+              <i className="ri-file-user-line text-xs sm:text-sm" />
               <span>My CV</span>
               {session.isAuthenticated && (
-                <span className="hidden md:inline-block px-1.5 py-0.2 rounded-full text-[10px] bg-neutral-500/20">
+                <span className="hidden sm:inline-block px-1.5 py-0.2 rounded-full text-[10px] bg-neutral-500/20">
                   {cvVersions.length} v
                 </span>
               )}
@@ -446,8 +467,18 @@ export function App() {
           </nav>
 
           {/* CONTROLES: SELECTOR DE TEMA + VISITANTE / LOGIN */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center bg-neutral-100 dark:bg-[#15181f] p-1 rounded-lg border border-neutral-200 dark:border-[#232732]">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            {/* Versión móvil del botón de tema (un solo botón alternador) */}
+            <button
+              onClick={() => setThemeMode(themeMode === 'dark' ? 'light' : 'dark')}
+              title="Cambiar tema de color"
+              className="sm:hidden p-1.5 rounded-lg border border-neutral-200 dark:border-[#232732] bg-neutral-100 dark:bg-[#15181f] text-neutral-700 dark:text-[#4ade80] text-xs cursor-pointer"
+            >
+              {themeMode === 'dark' ? <i className="ri-sun-line text-amber-400" /> : <i className="ri-moon-clear-line text-emerald-600" />}
+            </button>
+
+            {/* Versión desktop del selector de tema (3 botones) */}
+            <div className="hidden sm:flex items-center bg-neutral-100 dark:bg-[#15181f] p-1 rounded-lg border border-neutral-200 dark:border-[#232732]">
               <button
                 onClick={() => setThemeMode('auto')}
                 title="Modo Automático según tu sistema"
@@ -484,25 +515,26 @@ export function App() {
             </div>
 
             {!session.isAuthenticated ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <span className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-montserrat font-bold uppercase tracking-wider bg-neutral-200/80 dark:bg-[#1a1e27] text-neutral-600 dark:text-neutral-300 border border-transparent dark:border-[#2a2f3d]">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#4ade80] animate-pulse" />
                   VISITANTE
                 </span>
                 <button
                   onClick={() => setShowAuthModal(true)}
-                  className="px-3.5 py-1.5 rounded-lg bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-montserrat text-xs font-extrabold uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-montserrat text-[10px] sm:text-xs font-extrabold uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center gap-1 sm:gap-1.5 cursor-pointer shadow-xs whitespace-nowrap"
                 >
-                  <i className="ri-user-shared-line" />
-                  <span>Iniciar Sesión</span>
+                  <i className="ri-user-shared-line text-xs" />
+                  <span className="hidden sm:inline">Iniciar Sesión</span>
+                  <span className="sm:hidden">Entrar</span>
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2.5 pl-2 border-l border-neutral-200 dark:border-[#20242c]">
+              <div className="flex items-center gap-1.5 sm:gap-2.5 pl-1.5 sm:pl-2 border-l border-neutral-200 dark:border-[#20242c]">
                 <div
                   onClick={() => avatarInputRef.current?.click()}
                   title="Cambiar foto de perfil"
-                  className="w-8 h-8 rounded-full overflow-hidden border border-neutral-300 dark:border-[#4ade80]/50 cursor-pointer relative group shrink-0"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden border border-neutral-300 dark:border-[#4ade80]/50 cursor-pointer relative group shrink-0"
                 >
                   <img
                     src={session.photoURL || 'https://ui-avatars.com/api/?name=User&background=111&color=4ade80'}
@@ -511,15 +543,11 @@ export function App() {
                   />
                 </div>
                 <button
-                  onClick={() => {
-                    setSession({ isAuthenticated: false });
-                    setCvVersions([VISITOR_SAMPLE_CV]);
-                    setActiveCvId(VISITOR_SAMPLE_CV.id);
-                  }}
-                  title="Salir a modo visitante"
+                  onClick={handleLogout}
+                  title="Cerrar sesión"
                   className="p-1 rounded text-neutral-400 hover:text-red-500 transition-colors cursor-pointer"
                 >
-                  <i className="ri-logout-box-r-line text-base" />
+                  <i className="ri-logout-box-r-line text-sm sm:text-base" />
                 </button>
               </div>
             )}
@@ -644,145 +672,156 @@ export function App() {
               </div>
             </div>
 
-            {/* TARJETAS DE EMPLEO (CARBÓN #12151c CON HOVER EN BORDE #4ade80) */}
-            <div className="space-y-3.5">
+            {/* TARJETAS DE EMPLEO OPTIMIZADAS PARA MÓVIL Y DESKTOP */}
+            <div className="space-y-3 sm:space-y-3.5">
               {processedJobs.map((job) => (
                 <article
                   key={job.id}
                   onClick={() => setSelectedJobForDetails(job)}
-                  className="bg-white dark:bg-[#12151c] rounded-xl border border-neutral-200 dark:border-[#242935] p-5 hover:border-neutral-400 dark:hover:border-[#4ade80]/60 transition-all shadow-sm cursor-pointer group"
+                  className="bg-white dark:bg-[#12151c] rounded-xl border border-neutral-200 dark:border-[#242935] p-3.5 sm:p-5 hover:border-neutral-400 dark:hover:border-[#4ade80]/60 transition-all shadow-sm cursor-pointer group"
                 >
-                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div className="flex items-start gap-4 flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-2.5 sm:gap-4 flex-1 min-w-0">
                       <CompanyLogo
                         logoUrl={job.companyLogo}
                         companyName={job.company}
-                        sizeClass="w-12 h-12"
+                        sizeClass="w-10 h-10 sm:w-12 sm:h-12 shrink-0"
                       />
 
                       <div className="flex-1 min-w-0">
-                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
                           <span className="font-montserrat text-xs font-extrabold uppercase tracking-wider text-neutral-600 dark:text-[#4ade80]">
                             {job.company}
                           </span>
                           <span className="text-neutral-300 dark:text-neutral-600">•</span>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-montserrat font-bold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-[#2a3040]">
+                          <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-montserrat font-bold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-[#2a3040]">
                             {job.salary}
                           </span>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2a3040]">
+                          <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-semibold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2a3040]">
                             {job.languageReq}
                           </span>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/20 dark:border-[#4ade80]/30">
+                          <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/20 dark:border-[#4ade80]/30">
                             {job.countryScope}
                           </span>
                         </div>
 
-                        <h4 className="font-montserrat text-base font-extrabold text-[#111111] dark:text-white leading-snug group-hover:text-emerald-600 dark:group-hover:text-[#4ade80] transition-colors">
+                        <h4 className="font-montserrat text-sm sm:text-base font-extrabold text-[#111111] dark:text-white leading-snug group-hover:text-emerald-600 dark:group-hover:text-[#4ade80] transition-colors">
                           {job.title}
                         </h4>
 
-                        <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-2 line-clamp-2 sm:line-clamp-3 leading-relaxed">
+                        <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1.5 line-clamp-2 sm:line-clamp-3 leading-relaxed">
                           {job.oneLineSummary}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex lg:flex-col items-center lg:items-end justify-between gap-2 shrink-0 border-t lg:border-t-0 pt-3 lg:pt-0 border-neutral-100 dark:border-[#202532]">
-                      <div className="text-right">
-                        {hasCustomCv ? (
-                          <div className="font-montserrat text-lg font-black text-[#111111] dark:text-[#4ade80] leading-none">
-                            {job.matchScore}% MATCH
-                          </div>
-                        ) : (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              requireAuthAndRun('upload');
-                            }}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-montserrat font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/25 dark:border-[#4ade80]/30 hover:bg-emerald-500/20 transition-all cursor-pointer shadow-xs"
-                            title="Sube tu CV para calcular tu afinidad ATS exacta"
-                          >
-                            <i className="ri-upload-cloud-2-line text-xs" />
-                            <span>Subir CV para Match</span>
-                          </button>
-                        )}
-                        <div className="text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5">
-                          {job.source}
+                    <div className="shrink-0 text-right flex flex-col items-end">
+                      {hasCustomCv ? (
+                        <div className="font-montserrat text-base sm:text-lg font-black text-[#111111] dark:text-[#4ade80] leading-none">
+                          {job.matchScore}% MATCH
                         </div>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            requireAuthAndRun('upload');
+                          }}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] sm:text-[10px] font-montserrat font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/25 dark:border-[#4ade80]/30 hover:bg-emerald-500/20 transition-all cursor-pointer shadow-xs whitespace-nowrap"
+                          title="Sube tu CV para calcular tu afinidad ATS exacta"
+                        >
+                          <i className="ri-upload-cloud-2-line text-xs" />
+                          <span className="hidden sm:inline">Subir CV para Match</span>
+                          <span className="sm:hidden">Match ATS</span>
+                        </button>
+                      )}
+                      <div className="text-[9px] sm:text-[10px] text-neutral-500 dark:text-neutral-400 mt-0.5">
+                        {job.source}
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-[#202532] flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex flex-wrap items-center gap-2">
+                  <div className="mt-3.5 pt-2.5 sm:pt-3 border-t border-neutral-100 dark:border-[#202532] flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                       {/* Botón Ver Propuesta / Oferta Completa */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedJobForDetails(job);
                         }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-neutral-100 hover:bg-neutral-200 dark:bg-[#1a1f2b] dark:hover:bg-[#232938] text-neutral-900 dark:text-white border border-neutral-300 dark:border-[#2b3345] hover:border-neutral-400 dark:hover:border-[#4ade80]/60 transition-all cursor-pointer shadow-xs"
+                        className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-neutral-100 hover:bg-neutral-200 dark:bg-[#1a1f2b] dark:hover:bg-[#232938] text-neutral-900 dark:text-white border border-neutral-300 dark:border-[#2b3345] hover:border-neutral-400 dark:hover:border-[#4ade80]/60 transition-all cursor-pointer shadow-xs"
                         title="Ver detalles completos de esta vacante"
                       >
                         <i className="ri-file-list-3-line text-xs text-emerald-600 dark:text-[#4ade80]" />
                         <span>Ver Oferta</span>
                       </button>
 
+                      {/* Enviar Correo */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedJobForEmail(job);
                         }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-[#111111] text-white dark:bg-[#1c222e] dark:hover:bg-[#252c3c] dark:text-white border border-transparent dark:border-[#32394c] transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-[#111111] text-white dark:bg-[#1c222e] dark:hover:bg-[#252c3c] dark:text-white border border-transparent dark:border-[#32394c] transition-colors cursor-pointer"
+                        title="Enviar correo de postulación ATS"
                       >
                         <i className="fa-solid fa-envelope text-xs text-amber-400 dark:text-[#4ade80]" />
-                        <span>Enviar Correo Optimizado</span>
+                        <span className="hidden sm:inline">Enviar Correo Optimizado</span>
+                        <span className="sm:hidden">Correo</span>
                       </button>
 
+                      {/* WhatsApp */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleWhatsAppContact(job);
                         }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-emerald-600/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-600/25 dark:border-[#4ade80]/30 hover:bg-emerald-600/20 transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-emerald-600/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-600/25 dark:border-[#4ade80]/30 hover:bg-emerald-600/20 transition-colors cursor-pointer"
+                        title="Contactar vía WhatsApp"
                       >
-                        <i className="fa-brands fa-whatsapp text-sm" />
-                        <span>WhatsApp Directo</span>
+                        <i className="fa-brands fa-whatsapp text-xs sm:text-sm" />
+                        <span>WhatsApp</span>
                       </button>
 
+                      {/* Telegram */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleTelegramContact(job);
                         }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/25 dark:border-sky-500/30 hover:bg-sky-500/20 transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/25 dark:border-sky-500/30 hover:bg-sky-500/20 transition-colors cursor-pointer"
+                        title="Contactar vía Telegram"
                       >
-                        <i className="fa-brands fa-telegram text-sm" />
-                        <span>Telegram</span>
+                        <i className="fa-brands fa-telegram text-xs sm:text-sm" />
+                        <span className="hidden sm:inline">Telegram</span>
                       </button>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      {/* Adaptar CV */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleAdaptCvToJob(job);
                         }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#32394c] bg-transparent dark:bg-[#171a23] hover:bg-neutral-100 dark:hover:bg-[#222634] text-neutral-800 dark:text-neutral-200 transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#32394c] bg-transparent dark:bg-[#171a23] hover:bg-neutral-100 dark:hover:bg-[#222634] text-neutral-800 dark:text-neutral-200 transition-colors cursor-pointer"
+                        title="Adaptar CV con IA a este puesto"
                       >
-                        <i className="ri-robot-3-line text-sm text-amber-500 dark:text-[#4ade80]" />
-                        <span>Adaptar mi CV a este puesto</span>
+                        <i className="ri-robot-3-line text-xs sm:text-sm text-amber-500 dark:text-[#4ade80]" />
+                        <span className="hidden sm:inline">Adaptar mi CV a este puesto</span>
+                        <span className="sm:hidden">Adaptar CV</span>
                       </button>
 
+                      {/* Portal Oficial */}
                       <a
                         href={job.applyUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 hover:underline"
+                        className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 hover:underline"
+                        title="Ver en portal oficial"
                       >
-                        <span>Portal Oficial</span>
-                        <i className="ri-external-link-line text-sm" />
+                        <span className="hidden sm:inline">Portal</span>
+                        <i className="ri-external-link-line text-xs" />
                       </a>
                     </div>
                   </div>

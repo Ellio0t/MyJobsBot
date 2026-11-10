@@ -99,6 +99,11 @@ Este inventario audita las herramientas y tecnologías utilizadas en todos los p
 - **Función:** Presentación premium y estandarizada de marcas oficiales (Google Jobs, LinkedIn, Indeed, Get on Board, Remotive) eliminando jerga técnica como "API" en favor de distintivos visuales verificados y banners de indexación en vivo para maximizar la confianza del usuario final.
 - **¿Por qué la IA depende del humano aquí?:** Los desarrolladores y la IA tienden a exponer detalles de implementación técnica (nombres de endpoints, siglas de APIs, payloads crudos). El criterio humano de producto y diseño UX sabe que el consumidor final busca legitimidad, respaldo de marca conocida y confianza, no detalles de infraestructura backend.
 
+### **Mid-Scroll Lead Capture & Conversion Gate Engine**
+- **Proyectos:** `MYJOBSBOT` (`src/components/MidScrollIncentiveModal.tsx`, `src/App.tsx`)
+- **Función:** Mecanismo de conversión y retención de usuarios que limita el feed a un "pupurrí" público de hasta 10 ofertas por área para visitantes no autenticados, y activa de manera reactiva un modal persuasivo al alcanzar el 45-50% del scroll vertical, incentivando el registro con Google/Email y la carga del CV para desbloquear el feed total y el cálculo ATS.
+- **¿Por qué la IA depende del humano aquí?:** El diseño de embudos de conversión (funnels) exige calibrar la fricción psicológica del usuario: un muro de pago o registro inmediato al entrar ahuyenta al 90% de los visitantes (tasa de rebote masiva), mientras que dejar todo abierto sin incentivos no genera registros ni base de usuarios. El equilibrio entre dar valor inicial (10 ofertas por área) y capturar el lead a mitad del recorrido requiere criterio comercial y psicológico humano.
+
 
 
 

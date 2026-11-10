@@ -1,0 +1,39 @@
+name: Sincronización Automática de Empleos (3 Veces al Día)
+
+on:
+  schedule:
+    # 6:00 AM, 12:00 PM y 6:00 PM (Hora Venezuela / UTC-4 -> 10:00, 16:00, 22:00 UTC)
+    - cron: '0 10,16,22 * * *'
+  workflow_dispatch: # Permite dispararlo manualmente desde la pestaña Actions de GitHub
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar Repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Instalar Dependencias
+        run: npm ci
+
+      - name: Ejecutar Rastreo Seguro (Google Jobs, LinkedIn, Remotive, Get on Board)
+        env:
+          VITE_RAPIDAPI_KEY: ${{ secrets.VITE_RAPIDAPI_KEY || 'b6c42d6d33mshebc7c91f7f488b7p1cd1abjsn48c07df650cd' }}
+        run: node scripts/syncJobs.mjs
+
+      - name: Compilar y Desplegar Snapshot
+        run: |
+          npm run build
+
+      - name: Guardar Snapshot en Git
+        run: |
+          git config user.name "JobsBOT Automation Engine"
+          git config user.email "bot@myjobsbot.com"
+          git add src/data/liveJobsSnapshot.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore(sync): automated jobs refresh [6am/12pm/6pm]" && git push)

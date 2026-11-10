@@ -1,4 +1,5 @@
 import { CVProfile, CVVersion, JobOffer } from '../types';
+import SNAPSHOT_JOBS from '../data/liveJobsSnapshot.json';
 
 /**
  * Calcula el porcentaje de compatibilidad ATS entre la versión activa del CV y una oferta laboral
@@ -44,6 +45,11 @@ export function calculateAtsMatch(cv: CVProfile, job: JobOffer): number {
 export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<JobOffer[]> {
   const aggregated: JobOffer[] = [];
   const q = searchQuery.trim();
+
+  // 0. SNAPSHOT INDEXADO POR BACKEND/CRON (Google Jobs, LinkedIn, Indeed, Remotive)
+  if (Array.isArray(SNAPSHOT_JOBS) && SNAPSHOT_JOBS.length > 0) {
+    aggregated.push(...(SNAPSHOT_JOBS as JobOffer[]));
+  }
 
   // 1. GET ON BOARD API (A través del proxy local en dev o directo en prod)
   try {

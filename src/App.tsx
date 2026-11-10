@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   BrandConfig,
   ChatMessage,
@@ -25,10 +25,11 @@ import { JobDetailModal } from './components/JobDetailModal';
 import { CompanyLogo } from './components/CompanyLogo';
 import { PortalBadge } from './components/PortalBadge';
 import { NetworkTrustBanner } from './components/NetworkTrustBanner';
+import { MidScrollIncentiveModal } from './components/MidScrollIncentiveModal';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.1.9';
+  const APP_VERSION = 'v1.2.0';
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
@@ -110,6 +111,34 @@ export function App() {
   const [selectedJobForEmail, setSelectedJobForEmail] = useState<JobOffer | null>(null);
   const [selectedJobForDetails, setSelectedJobForDetails] = useState<JobOffer | null>(null);
   const [showLegalModal, setShowLegalModal] = useState(false);
+  const [showScrollLeadModal, setShowScrollLeadModal] = useState(false);
+  const scrollTriggerFiredRef = useRef(false);
+
+  // Trigger mid-scroll: cuando el visitante no logueado scrollea a la mitad del feed
+  useEffect(() => {
+    if (session.isAuthenticated) return;
+    const dismissed = sessionStorage.getItem('myjobsbot_scroll_lead_dismissed');
+    if (dismissed === 'true') return;
+
+    const handleScroll = () => {
+      if (scrollTriggerFiredRef.current || session.isAuthenticated) return;
+      const scrollPos = window.scrollY + window.innerHeight;
+      const totalHeight = document.documentElement.scrollHeight;
+      // Dispara cuando el usuario ha recorrido el 45% de la página
+      if (totalHeight > 800 && scrollPos / totalHeight >= 0.45) {
+        scrollTriggerFiredRef.current = true;
+        setShowScrollLeadModal(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [session.isAuthenticated]);
+
+  const handleDismissScrollLead = () => {
+    setShowScrollLeadModal(false);
+    sessionStorage.setItem('myjobsbot_scroll_lead_dismissed', 'true');
+  };
 
   // 7. JoBOT — Asistente IA Proactivo
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
@@ -357,29 +386,48 @@ export function App() {
     }
   };
 
-  const processedJobs = jobs
-    .map((job) => ({
-      ...job,
-      matchScore: hasCustomCv ? calculateAtsMatch(activeCv.profile, job) : 0,
-    }))
-    .filter((job) => {
-      if (selectedCategory !== 'all' && job.category !== selectedCategory) return false;
-      if (languageFilter === 'es' && job.languageReq !== 'Español 100%') return false;
-      if (languageFilter === 'written-en' && job.languageReq === 'Inglés Conversacional') return false;
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const matchText = `${job.title} ${job.company} ${job.oneLineSummary} ${job.keywords.join(' ')}`.toLowerCase();
-        return matchText.includes(q);
+  // Procesamiento y filtrado de vacantes:
+  // Si el usuario no está logueado, se muestra un pupurrí de hasta 10 ofertas por categoría
+  // para incentivar el registro y subida de CV para obtener el feed completo y personalizado.
+  const processedJobs = useMemo(() => {
+    let list = jobs
+      .map((job) => ({
+        ...job,
+        matchScore: hasCustomCv ? calculateAtsMatch(activeCv.profile, job) : 0,
+      }))
+      .filter((job) => {
+        if (selectedCategory !== 'all' && job.category !== selectedCategory) return false;
+        if (languageFilter === 'es' && job.languageReq !== 'Español 100%') return false;
+        if (languageFilter === 'written-en' && job.languageReq === 'Inglés Conversacional') return false;
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase();
+          const matchText = `${job.title} ${job.company} ${job.oneLineSummary} ${job.keywords.join(' ')}`.toLowerCase();
+          return matchText.includes(q);
+        }
+        return true;
+      });
+
+    if (hasCustomCv) {
+      list.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+    }
+
+    // Regla de Pupurrí para usuarios no autenticados:
+    // Máximo 10 ofertas por categoría si está en 'all', o hasta 10 ofertas en la categoría seleccionada
+    if (!session.isAuthenticated) {
+      if (selectedCategory === 'all') {
+        const countMap: Record<string, number> = {};
+        list = list.filter((j) => {
+          const cat = j.category || 'tech';
+          countMap[cat] = (countMap[cat] || 0) + 1;
+          return countMap[cat] <= 10;
+        });
+      } else {
+        list = list.slice(0, 10);
       }
-      return true;
-    })
-    .sort((a, b) => {
-      if (hasCustomCv) {
-        // Ordena automáticamente por afinidad con el CV activo del usuario
-        return (b.matchScore || 0) - (a.matchScore || 0);
-      }
-      return 0;
-    });
+    }
+
+    return list;
+  }, [jobs, selectedCategory, languageFilter, searchQuery, hasCustomCv, activeCv, session.isAuthenticated]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F3F4F6] dark:bg-[#070709] text-[#111111] dark:text-[#E2E8F0] transition-colors duration-200">
@@ -604,13 +652,19 @@ export function App() {
             {/* BARRA DE FILTROS (FONDO CARBÓN #12151c) */}
             <div className="bg-white dark:bg-[#12151c] p-4 rounded-xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-4">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-neutral-200 dark:border-[#202532]">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="font-montserrat text-sm font-extrabold uppercase tracking-wider text-neutral-900 dark:text-white">
                     Oportunidades de Empleo Indexadas
                   </h3>
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-[#4ade80] border border-emerald-500/20 dark:border-[#4ade80]/30 font-semibold">
-                    {apiStatusText}
-                  </span>
+                  {!session.isAuthenticated ? (
+                    <span className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/25 font-bold uppercase tracking-wider flex items-center gap-1">
+                      <i className="ri-eye-line text-xs" /> Muestra Pública (Pupurrí 10x)
+                    </span>
+                  ) : (
+                    <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-[#4ade80] border border-emerald-500/20 dark:border-[#4ade80]/30 font-semibold">
+                      {apiStatusText}
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
@@ -680,6 +734,33 @@ export function App() {
                 </div>
               </div>
             </div>
+
+            {/* AVISO DE MUESTRA PÚBLICA PARA USUARIOS NO AUTENTICADOS */}
+            {!session.isAuthenticated && (
+              <div className="p-3.5 sm:p-4 rounded-xl bg-linear-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-xs">
+                <div className="flex items-start sm:items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                    <i className="ri-information-line text-base" />
+                  </div>
+                  <div>
+                    <h5 className="font-montserrat font-bold text-neutral-900 dark:text-white text-xs">
+                      Modo Explorador: Mostrando pupurrí de muestra (hasta 10 empleos por área)
+                    </h5>
+                    <p className="text-neutral-600 dark:text-neutral-400 text-[11px] mt-0.5 leading-relaxed">
+                      Para ver las <strong>89+ vacantes completas</strong> y recibir recomendaciones adaptadas a tu perfil con cálculo de afinidad ATS, <strong>inicia sesión y sube tu CV</strong>.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="px-3.5 py-2 rounded-lg bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-montserrat text-[11px] font-extrabold uppercase tracking-wider hover:opacity-90 transition-opacity shrink-0 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs whitespace-nowrap"
+                >
+                  <i className="ri-user-shared-line text-xs" />
+                  Iniciar Sesión
+                </button>
+              </div>
+            )}
 
             {/* TARJETAS DE EMPLEO OPTIMIZADAS PARA MÓVIL Y DESKTOP */}
             <div className="space-y-3 sm:space-y-3.5">
@@ -837,6 +918,29 @@ export function App() {
                   </div>
                 </article>
               ))}
+
+              {/* BLOQUE INFORMATIVO DE CIERRE DE MUESTRA PARA USUARIOS NO LOGUEADOS */}
+              {!session.isAuthenticated && processedJobs.length > 0 && (
+                <div className="mt-4 p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#12151c] border-2 border-dashed border-neutral-300 dark:border-[#282e3c] text-center space-y-3 shadow-xs">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-[#4ade80] flex items-center justify-center mx-auto text-xl">
+                    <i className="ri-lock-2-line" />
+                  </div>
+                  <h4 className="font-montserrat text-sm sm:text-base font-extrabold text-neutral-900 dark:text-white">
+                    ¿Quieres ver más ofertas y personalizarlas para ti?
+                  </h4>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-md mx-auto leading-relaxed">
+                    Hay más de 89 vacantes indexadas en tiempo real. Inicia sesión gratis y sube tu CV para que JoBOT alinee automáticamente tu perfil con los requisitos del empleador.
+                  </p>
+                  <div className="pt-1 flex flex-wrap items-center justify-center gap-2">
+                    <button
+                      onClick={() => setShowAuthModal(true)}
+                      className="px-5 py-2.5 rounded-xl bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-montserrat text-xs font-black uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer shadow-sm"
+                    >
+                      Iniciar Sesión Gratis
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ) : (
@@ -1121,6 +1225,13 @@ export function App() {
           onTelegram={(job) => handleTelegramContact(job)}
         />
       )}
+
+      {/* MODAL INCENTIVO AL SCROLLEAR A MITAD DE PÁGINA (LEAD CAPTURE) */}
+      <MidScrollIncentiveModal
+        isOpen={showScrollLeadModal}
+        onClose={handleDismissScrollLead}
+        onLoginClick={() => setShowAuthModal(true)}
+      />
     </div>
   );
 }

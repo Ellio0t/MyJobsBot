@@ -219,11 +219,19 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
           const lower = `${item.job_title} ${cleanDesc}`.toLowerCase();
 
           let cat: JobOffer['category'] = 'tech';
-          if (lower.includes('qa') || lower.includes('test') || lower.includes('quality') || lower.includes('tester'))
+          if (lower.includes('medico') || lower.includes('médic') || lower.includes('doctor') || lower.includes('salud') || lower.includes('enfermer') || lower.includes('clínic') || lower.includes('psicol') || lower.includes('terap'))
+            cat = 'health';
+          else if (lower.includes('abogad') || lower.includes('legal') || lower.includes('jurid') || lower.includes('juríd') || lower.includes('derecho') || lower.includes('compliance'))
+            cat = 'legal';
+          else if (lower.includes('contad') || lower.includes('finanz') || lower.includes('accountant') || lower.includes('auditor') || lower.includes('fiscal') || lower.includes('tributar'))
+            cat = 'finance';
+          else if (lower.includes('ventas') || lower.includes('sales') || lower.includes('comercial') || lower.includes('marketing') || lower.includes('growth'))
+            cat = 'sales';
+          else if (lower.includes('qa') || lower.includes('test') || lower.includes('quality') || lower.includes('tester'))
             cat = 'qa';
           else if (lower.includes('data') || lower.includes('datos') || lower.includes('excel') || lower.includes('analytics'))
             cat = 'data';
-          else if (lower.includes('support') || lower.includes('soporte') || lower.includes('customer'))
+          else if (lower.includes('support') || lower.includes('soporte') || lower.includes('customer') || lower.includes('atencion'))
             cat = 'support';
           else if (lower.includes('operations') || lower.includes('operaciones') || lower.includes('admin') || lower.includes('logistica'))
             cat = 'ops';
@@ -234,10 +242,13 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
           }
 
           const applyLink = item.job_apply_link || '';
-          const publisher = (item.job_publisher || '').toLowerCase();
-          let src: JobOffer['source'] = 'Google Jobs';
-          if (publisher.includes('linkedin') || applyLink.includes('linkedin.com')) src = 'LinkedIn';
-          else if (publisher.includes('indeed') || applyLink.includes('indeed.com')) src = 'Indeed';
+          const publisherRaw = (item.job_publisher || '').trim();
+          const pubLower = publisherRaw.toLowerCase();
+          let src: JobOffer['source'] = publisherRaw || 'Google Jobs';
+          if (pubLower.includes('linkedin') || applyLink.includes('linkedin.com')) src = 'LinkedIn';
+          else if (pubLower.includes('indeed') || applyLink.includes('indeed.com')) src = 'Indeed';
+          else if (pubLower.includes('glassdoor') || applyLink.includes('glassdoor.com')) src = 'Glassdoor';
+          else if (pubLower.includes('ziprecruiter') || applyLink.includes('ziprecruiter.com')) src = 'ZipRecruiter';
 
           const emailMatch = cleanDesc.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
 

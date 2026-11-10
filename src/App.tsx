@@ -28,7 +28,7 @@ import { NetworkTrustBanner } from './components/NetworkTrustBanner';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.1.8';
+  const APP_VERSION = 'v1.1.9';
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
@@ -630,11 +630,15 @@ export function App() {
                   {(
                     [
                       { id: 'all', label: 'Todas las Áreas' },
-                      { id: 'qa', label: 'QA & Testing' },
-                      { id: 'data', label: 'Data & Contenido' },
-                      { id: 'ops', label: 'Operaciones' },
-                      { id: 'support', label: 'Soporte' },
                       { id: 'tech', label: 'Tecnología' },
+                      { id: 'health', label: 'Salud & Medicina' },
+                      { id: 'legal', label: 'Legal & Leyes' },
+                      { id: 'finance', label: 'Finanzas & Contab.' },
+                      { id: 'sales', label: 'Ventas & Comercial' },
+                      { id: 'support', label: 'Soporte al Cliente' },
+                      { id: 'ops', label: 'Operaciones' },
+                      { id: 'data', label: 'Datos & IA' },
+                      { id: 'qa', label: 'QA & Calidad' },
                     ] as { id: JobCategory; label: string }[]
                   ).map((cat) => (
                     <button

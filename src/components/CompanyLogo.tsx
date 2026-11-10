@@ -49,6 +49,34 @@ export function getCategoryIconConfig(category?: JobCategory) {
         bgClass: 'bg-violet-500/10 border-violet-500/25 dark:border-violet-500/30',
         label: 'Tecnología & Software',
       };
+    case 'health':
+      return {
+        iconClass: 'fa-solid fa-user-doctor',
+        colorClass: 'text-rose-500 dark:text-rose-400',
+        bgClass: 'bg-rose-500/10 border-rose-500/25 dark:border-rose-500/30',
+        label: 'Salud, Medicina & Clínica',
+      };
+    case 'legal':
+      return {
+        iconClass: 'fa-solid fa-scale-balanced',
+        colorClass: 'text-amber-600 dark:text-amber-400',
+        bgClass: 'bg-amber-600/10 border-amber-600/25 dark:border-amber-600/30',
+        label: 'Legal, Leyes & Jurídico',
+      };
+    case 'finance':
+      return {
+        iconClass: 'fa-solid fa-chart-line',
+        colorClass: 'text-emerald-600 dark:text-emerald-400',
+        bgClass: 'bg-emerald-600/10 border-emerald-600/25 dark:border-emerald-600/30',
+        label: 'Finanzas & Contabilidad',
+      };
+    case 'sales':
+      return {
+        iconClass: 'fa-solid fa-handshake',
+        colorClass: 'text-blue-500 dark:text-blue-400',
+        bgClass: 'bg-blue-500/10 border-blue-500/25 dark:border-blue-500/30',
+        label: 'Ventas & Comercial',
+      };
     default:
       return {
         iconClass: 'fa-solid fa-briefcase',

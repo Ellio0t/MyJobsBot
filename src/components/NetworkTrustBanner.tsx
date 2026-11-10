@@ -42,3 +42,4 @@ export const NetworkTrustBanner: React.FC<NetworkTrustBannerProps> = ({ totalInd
     </div>
   );
 };
+

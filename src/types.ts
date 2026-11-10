@@ -1,4 +1,14 @@
-export type JobCategory = 'all' | 'qa' | 'data' | 'tech' | 'ops' | 'support';
+export type JobCategory =
+  | 'all'
+  | 'tech'
+  | 'health'
+  | 'legal'
+  | 'finance'
+  | 'sales'
+  | 'support'
+  | 'ops'
+  | 'data'
+  | 'qa';
 
 export type ThemeMode = 'auto' | 'light' | 'dark';
 
@@ -75,7 +85,7 @@ export interface JobOffer {
   description: string;
   requirements: string[];
   keywords: string[];
-  source: 'Get on Board' | 'Remotive' | 'RemoteOK' | 'Google Jobs' | 'LinkedIn' | 'Indeed' | 'Glassdoor' | 'ZipRecruiter';
+  source: 'Get on Board' | 'Remotive' | 'RemoteOK' | 'Google Jobs' | 'LinkedIn' | 'Indeed' | 'Glassdoor' | 'ZipRecruiter' | string;
   applyUrl: string;
   contactEmail?: string;
   contactWhatsapp?: string;

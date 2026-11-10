@@ -80,9 +80,7 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
           const phoneMatch = combined.match(/\+?\d{10,14}/);
 
           const companyName = attr.company?.data?.attributes?.name || 'Empresa Get on Board';
-          const logoUrl =
-            attr.company?.data?.attributes?.logo_url ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(companyName)}&background=111111&color=ffffff&bold=true`;
+          const logoUrl = attr.company?.data?.attributes?.logo_url || undefined;
 
           const salaryText =
             attr.min_salary && attr.max_salary
@@ -168,9 +166,7 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
             id: `remotive-${rJob.id}`,
             title: rJob.title,
             company: rJob.company_name || 'Empresa Verificada Remotive',
-            companyLogo:
-              rJob.company_logo ||
-              `https://ui-avatars.com/api/?name=${encodeURIComponent(rJob.company_name || 'R')}&background=0f172a&color=ffffff&bold=true`,
+            companyLogo: rJob.company_logo || undefined,
             category: cat,
             salary: rJob.salary || '$1,500 - $3,000 USD',
             modality: '100% Remoto (Worldwide)',

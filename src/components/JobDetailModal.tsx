@@ -108,6 +108,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
             <CompanyLogo
               logoUrl={job.companyLogo}
               companyName={job.company}
+              category={job.category}
               sizeClass="w-12 h-12"
             />
 

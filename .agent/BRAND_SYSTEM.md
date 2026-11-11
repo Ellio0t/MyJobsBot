@@ -65,3 +65,4 @@ Para satisfacer a ambos actores sin contradicción visual, se implementa la **F�
 1. **Prohibición de Monocromía:** Nunca teñir fondos completos de verde o de ámbar. Los acentos deben permanecer restringidos al 10% del área visual para preservar su impacto dopaminérgico.
 2. **Inmutabilidad del Isotipo:** El logo de JobsBOT siempre utilizará el isotipo oficial `ri-robot-3-line` en `#4ade80` con brillo suave de 8px (`drop-shadow-[0_0_8px_rgba(74,222,128,0.25)]`).
 3. **Compatibilidad ATS (@media print):** En la exportación a PDF para recursos humanos, todos los fondos oscuros se transforman en blanco absoluto (`#ffffff`) y los textos en negro neutro (`#111111`), preservando legibilidad perfecta sin consumo innecesario de tinta.
+

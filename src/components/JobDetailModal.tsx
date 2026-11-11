@@ -28,8 +28,6 @@ interface JobDetailModalProps {
   onClose: () => void;
   onOpenEmailModal: (job: JobOffer) => void;
   onAdaptCv: (job: JobOffer) => void;
-  onWhatsApp: (job: JobOffer) => void;
-  onTelegram: (job: JobOffer) => void;
 }
 
 export const JobDetailModal: React.FC<JobDetailModalProps> = ({
@@ -38,8 +36,6 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   onClose,
   onOpenEmailModal,
   onAdaptCv,
-  onWhatsApp,
-  onTelegram,
 }) => {
   // BLOQUEO ESTRICTO DEL SCROLL DEL BODY (Evita desplazamiento en la página de fondo)
   useEffect(() => {
@@ -298,19 +294,19 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
         </div>
 
         {/* ===================================================================
-            PIE DE ACCIONES TOTALMENTE RESPONSIVO
+            PIE DE ACCIONES FORMALES Y PROFESIONALES (CORREO ATS / ADAPTAR / PORTAL)
             =================================================================== */}
-        <footer className="px-3 sm:px-5 py-2.5 sm:py-3 border-t border-neutral-200 dark:border-[#202532] bg-neutral-50/80 dark:bg-[#141722] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 shrink-0">
-          <div className="flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial">
+        <footer className="px-3 sm:px-5 py-3 border-t border-neutral-200 dark:border-[#202532] bg-neutral-50/80 dark:bg-[#141722] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 flex-1 sm:flex-initial">
             {/* Postular por correo optimizado */}
             <button
               onClick={() => {
                 onClose();
                 onOpenEmailModal(job);
               }}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg text-xs font-montserrat font-black uppercase tracking-wider bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] hover:opacity-90 transition-opacity cursor-pointer shadow-sm whitespace-nowrap"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-montserrat font-black uppercase tracking-wider bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] hover:opacity-90 transition-opacity cursor-pointer shadow-sm whitespace-nowrap"
             >
-              <Mail className="w-3.5 h-3.5 shrink-0" />
+              <Mail className="w-3.5 h-3.5 shrink-0 text-amber-400 dark:text-black" />
               <span>Postular por Correo ATS</span>
             </button>
 
@@ -320,44 +316,24 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
                 onClose();
                 onAdaptCv(job);
               }}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#32394c] bg-white dark:bg-[#1a1e28] hover:bg-neutral-100 dark:hover:bg-[#232836] text-neutral-800 dark:text-neutral-200 transition-colors cursor-pointer whitespace-nowrap"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#32394c] bg-white dark:bg-[#1a1e28] hover:bg-neutral-100 dark:hover:bg-[#232836] text-neutral-800 dark:text-neutral-200 transition-colors cursor-pointer whitespace-nowrap"
             >
               <JobotIcon className="w-3.5 h-3.5 text-emerald-600 dark:text-[#4ade80] shrink-0" />
-              <span>Adaptar CV</span>
+              <span>Adaptar mi CV</span>
             </button>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 justify-end">
-            {/* Contacto WhatsApp */}
-            <button
-              onClick={() => onWhatsApp(job)}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-emerald-600/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-600/25 dark:border-[#4ade80]/30 hover:bg-emerald-600/20 transition-colors cursor-pointer whitespace-nowrap"
-              title="Contactar por WhatsApp"
-            >
-              <i className="fa-brands fa-whatsapp text-sm" />
-              <span>WhatsApp</span>
-            </button>
-
-            {/* Contacto Telegram */}
-            <button
-              onClick={() => onTelegram(job)}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/25 dark:border-sky-500/30 hover:bg-sky-500/20 transition-colors cursor-pointer whitespace-nowrap"
-              title="Contactar por Telegram"
-            >
-              <i className="fa-brands fa-telegram text-sm" />
-              <span>Telegram</span>
-            </button>
-
+          <div className="flex items-center justify-end">
             {/* Ver en portal oficial con tracking de afiliado (Vía A: CPC/CPA) */}
             <a
               href={outboundApplyUrl}
               onClick={() => recordOutboundClick(job)}
               target="_blank"
               rel="noopener noreferrer sponsored"
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-neutral-200 dark:bg-[#202634] text-neutral-800 dark:text-neutral-200 hover:text-neutral-900 dark:hover:text-[#4ade80] transition-colors whitespace-nowrap"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-neutral-200 dark:bg-[#202634] text-neutral-800 dark:text-neutral-200 hover:text-neutral-900 dark:hover:text-[#4ade80] transition-colors whitespace-nowrap"
               title="Ir al enlace oficial de postulación"
             >
-              <span>Portal</span>
+              <span>Ver Portal Oficial</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>

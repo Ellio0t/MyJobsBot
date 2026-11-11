@@ -63,6 +63,14 @@ export const EmailModal: React.FC<EmailModalProps> = ({ job, activeCv, onClose, 
     setSentSuccess(true);
   };
 
+  const handleOpenOutlook = () => {
+    const outlookUrl = `https://outlook.live.com/mail/0/deeplink/compose?to=${encodeURIComponent(
+      recipient
+    )}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(outlookUrl, '_blank');
+    setSentSuccess(true);
+  };
+
   return (
     <div
       onClick={onClose}
@@ -178,17 +186,27 @@ export const EmailModal: React.FC<EmailModalProps> = ({ job, activeCv, onClose, 
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={handleOpenDefaultMail}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#2f3545] hover:bg-neutral-200 dark:hover:bg-[#1c212c] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#2f3545] hover:bg-neutral-200 dark:hover:bg-[#1c212c] transition-colors cursor-pointer"
+              title="Abrir en tu cliente nativo (Outlook, Thunderbird, Mail de Apple/Android)"
             >
               <Send className="w-3.5 h-3.5" />
               App de Correo
             </button>
             <button
+              onClick={handleOpenOutlook}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-400 hover:bg-sky-500/20 transition-colors cursor-pointer"
+              title="Abrir en Outlook Web"
+            >
+              <i className="fa-brands fa-microsoft text-xs" />
+              Outlook
+            </button>
+            <button
               onClick={handleOpenGmail}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-montserrat font-extrabold uppercase tracking-wider bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-montserrat font-extrabold uppercase tracking-wider bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
+              title="Abrir en Gmail Web"
             >
               <ExternalLink className="w-3.5 h-3.5" />
-              Abrir en Gmail
+              Gmail Web
             </button>
           </div>
         </div>

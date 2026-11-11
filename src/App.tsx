@@ -35,7 +35,7 @@ import { JobotIcon } from './components/JobotIcon';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.12';
+  const APP_VERSION = 'v1.2.13';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -894,44 +894,18 @@ export function App() {
                             <span>Ver Oferta</span>
                           </button>
 
-                          {/* Enviar Correo */}
+                          {/* Enviar Correo Optimizado */}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               setSelectedJobForEmail(job);
                             }}
-                            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-[#111111] text-white dark:bg-[#1c222e] dark:hover:bg-[#252c3c] dark:text-white border border-transparent dark:border-[#32394c] transition-colors cursor-pointer"
-                            title="Enviar correo de postulación ATS"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-[#111111] text-white dark:bg-[#1c222e] dark:hover:bg-[#252c3c] dark:text-white border border-transparent dark:border-[#32394c] transition-colors cursor-pointer shadow-xs"
+                            title="Enviar correo de postulación ATS formal"
                           >
                             <i className="fa-solid fa-envelope text-xs text-amber-400 dark:text-[#4ade80]" />
                             <span className="hidden sm:inline">Enviar Correo Optimizado</span>
-                            <span className="sm:hidden">Correo</span>
-                          </button>
-
-                          {/* WhatsApp */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleWhatsAppContact(job);
-                            }}
-                            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-emerald-600/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-600/25 dark:border-[#4ade80]/30 hover:bg-emerald-600/20 transition-colors cursor-pointer"
-                            title="Contactar vía WhatsApp"
-                          >
-                            <i className="fa-brands fa-whatsapp text-xs sm:text-sm" />
-                            <span>WhatsApp</span>
-                          </button>
-
-                          {/* Telegram */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleTelegramContact(job);
-                            }}
-                            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/25 dark:border-sky-500/30 hover:bg-sky-500/20 transition-colors cursor-pointer"
-                            title="Contactar vía Telegram"
-                          >
-                            <i className="fa-brands fa-telegram text-xs sm:text-sm" />
-                            <span className="hidden sm:inline">Telegram</span>
+                            <span className="sm:hidden">Correo ATS</span>
                           </button>
                         </div>
 
@@ -1297,8 +1271,6 @@ export function App() {
             setSelectedJobForDetails(null);
             handleAdaptCvToJob(job);
           }}
-          onWhatsApp={(job) => handleWhatsAppContact(job)}
-          onTelegram={(job) => handleTelegramContact(job)}
         />
       )}
 

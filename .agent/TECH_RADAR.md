@@ -22,6 +22,11 @@ Este inventario audita las herramientas y tecnologías utilizadas en todos los p
 - **Función:** Empaquetar aplicaciones web modernas (React 19 + TypeScript + Vite) en binarios nativos reales (`.aab`/`.apk` para Google Play Store y `.ipa` para Apple App Store) exponiendo APIs nativas del dispositivo (cámara para avatar, sistema de archivos, autenticación OAuth nativa y notificaciones Push).
 - **¿Por qué la IA depende del humano aquí?:** Para pasar la revisión de Google Play y especialmente la **Guideline 4.2 de Apple App Store (Minimum Functionality)**, una app no puede ser un simple sitio web metido en un marco. Requiere criterio de arquitectura humano para integrar capacidades nativas reales, manejar permisos de privacidad (`Info.plist` y `AndroidManifest.xml`), configurar *Deep Links* y cumplir las políticas de eliminación de cuenta obligatorias.
 
+### **@codetrix-studio/capacitor-google-auth (Google Sign-In Nativo para Android & iOS)**
+- **Proyectos:** `JobsBOT` (`src/services/firebaseAuth.ts`, `android/app/src/main/res/values/strings.xml`)
+- **Función:** Invocar el selector de cuentas nativo de Google Play Services (One-Tap / Account Chooser Bottom Sheet) directamente dentro de la app sin abrir navegadores externos ni pestañas de Chrome que rompan el flujo de usuario. Intercambia el OpenID Connect `idToken` de Google Play con Firebase Authentication (`GoogleAuthProvider.credential(idToken)`).
+- **¿Por qué la IA depende del humano aquí?:** La IA casi siempre sugiere `signInWithPopup(auth, provider)` o `signInWithRedirect` de Firebase Web SDK, ignorando por completo que en Android WebView (`https://localhost`) las ventanas emergentes no pueden comunicarse mediante `window.opener.postMessage` entre procesos independientes del sistema operativo, dejando la app congelada para siempre. El arquitecto humano comprende la barrera de procesos de Android y conecta las credenciales SHA-1, el `server_client_id` en `strings.xml` y los plugins AAR nativos de Gradle.
+
 ---
 
 ## ☁️ 2. Cloud Serverless, Bases de Datos & Backend

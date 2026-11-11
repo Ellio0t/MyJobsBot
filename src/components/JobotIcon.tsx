@@ -42,3 +42,4 @@ export const JobotIcon: React.FC<JobotIconProps> = ({
     </svg>
   );
 };
+

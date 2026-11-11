@@ -35,7 +35,7 @@ import { JobotIcon } from './components/JobotIcon';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.8';
+  const APP_VERSION = 'v1.2.9';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -473,21 +473,21 @@ export function App() {
               setActiveTab('jobs');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="flex items-center gap-1.5 sm:gap-2.5 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden shrink-0"
+            className="flex items-center gap-2 sm:gap-3 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden shrink-0"
             title="Ir al Inicio (Radar de Empleos)"
             aria-label="Ir al Inicio de JobsBOT"
           >
-            <JobotIcon className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.25)] group-hover:scale-105 transition-transform" />
-            <div>
-              <div className="flex items-center gap-1 sm:gap-2">
-                <span className="font-montserrat font-extrabold text-xs sm:text-base md:text-lg tracking-[0.5px] sm:tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
+            <JobotIcon className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_12px_rgba(74,222,128,0.35)] group-hover:scale-105 transition-transform" />
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center gap-1.5 sm:gap-2 leading-none">
+                <span className="font-montserrat font-black text-sm sm:text-base md:text-lg tracking-[0.8px] sm:tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
                   {brand.name}
                 </span>
                 <span className="text-[9px] sm:text-[10px] font-mono font-bold px-1 sm:px-1.5 py-0.2 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
                   {APP_VERSION}
                 </span>
               </div>
-              <p className="hidden md:block text-[10px] text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
+              <p className="hidden sm:block text-[10px] md:text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 whitespace-nowrap mt-1 leading-none">
                 Tu Agente Personal de Búsqueda de Empleo
               </p>
             </div>

@@ -28,20 +28,34 @@
   }
 }
 
-/* Custom Executive Scrollbar */
+/* Custom Executive Scrollbar - Visible y elegante con acento de marca */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 10px;
+  height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.06);
+}
+:is(.dark) ::-webkit-scrollbar-track {
+  background: #0d0f15;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(120, 120, 120, 0.3);
-  border-radius: 3px;
+  background: #10b981;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+:is(.dark) ::-webkit-scrollbar-thumb {
+  background: #4ade80;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(120, 120, 120, 0.5);
+  background: #059669;
+}
+:is(.dark) ::-webkit-scrollbar-thumb:hover {
+  background: #22c55e;
 }
 
 /* ==========================================================================

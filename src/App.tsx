@@ -35,7 +35,7 @@ import { JobotIcon } from './components/JobotIcon';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.11';
+  const APP_VERSION = 'v1.2.12';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -1185,13 +1185,13 @@ export function App() {
               className="flex items-center gap-2.5 text-left cursor-pointer group hover:opacity-90 transition-all bg-transparent border-0 p-0 outline-hidden"
               title="Ir al Inicio (Radar de Empleos)"
             >
-              <JobotIcon className="h-9 sm:h-10 w-auto text-emerald-600 dark:text-[#4ade80] group-hover:scale-105 transition-transform shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.25)]" />
+              <JobotIcon className="h-10 sm:h-11 w-auto text-emerald-600 dark:text-[#4ade80] group-hover:scale-105 transition-transform shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.25)]" />
               <div className="flex flex-col justify-center leading-none">
-                <span className="font-montserrat font-extrabold text-[9px] sm:text-[10px] text-neutral-400 dark:text-neutral-500 tracking-[1.5px] uppercase">
-                  My
+                <span className="font-montserrat font-black text-sm sm:text-base text-emerald-600 dark:text-[#4ade80] uppercase tracking-[1px] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
+                  MY
                 </span>
                 <span className="font-montserrat font-black text-sm sm:text-base text-emerald-600 dark:text-[#4ade80] uppercase tracking-[1px] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors mt-0.5">
-                  JobsBOT
+                  JOBSBOT
                 </span>
               </div>
             </button>

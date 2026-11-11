@@ -1,7 +1,10 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
+import { Capacitor } from '@capacitor/core';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import {
   getAuth,
   signInWithPopup,
+  signInWithCredential,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
@@ -64,15 +67,47 @@ async function syncUserToFirestore(user: FirebaseUser) {
 }
 
 /**
- * Autenticación Real con Google
+ * Autenticación con Google (Nativa en Android/iOS y Popup en Navegador Web)
  */
 export async function signInWithGoogleReal(): Promise<UserSession> {
   try {
-    const cred = await signInWithPopup(auth, googleProvider);
-    await syncUserToFirestore(cred.user);
-    return formatUserSession(cred.user);
+    if (Capacitor.isNativePlatform()) {
+      // 1. MODO NATIVO ANDROID / IOS: Selector de cuenta nativo directo (sin salir de la app)
+      try {
+        await GoogleAuth.initialize({
+          clientId: '556644044888-egfrv1scameefjqo6194qcf47eit6hrn.apps.googleusercontent.com',
+          scopes: ['profile', 'email'],
+          grantOfflineAccess: true,
+        });
+      } catch (e) {
+        // Ignorar si ya fue inicializado previamente
+      }
+
+      const googleUser = await GoogleAuth.signIn();
+      const idToken = googleUser?.authentication?.idToken;
+      if (!idToken) {
+        throw new Error('No se recibió el token de autenticación de Google.');
+      }
+      const credential = GoogleAuthProvider.credential(idToken);
+      const userCredential = await signInWithCredential(auth, credential);
+      await syncUserToFirestore(userCredential.user);
+      return formatUserSession(userCredential.user);
+    } else {
+      // 2. MODO WEB ESCRITORIO: Popup estándar de Firebase
+      const cred = await signInWithPopup(auth, googleProvider);
+      await syncUserToFirestore(cred.user);
+      return formatUserSession(cred.user);
+    }
   } catch (error: any) {
     console.error('Error en Google Sign-In:', error);
+    if (
+      error?.message?.includes('popup-closed-by-user') ||
+      error === 12501 ||
+      String(error?.message).includes('12501') ||
+      String(error?.message).toLowerCase().includes('cancel')
+    ) {
+      throw new Error('Inicio de sesión cancelado.');
+    }
     throw new Error(error.message || 'No se pudo iniciar sesión con Google.');
   }
 }

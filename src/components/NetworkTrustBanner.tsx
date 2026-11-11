@@ -26,8 +26,11 @@ export const NetworkTrustBanner: React.FC<NetworkTrustBannerProps> = ({ totalInd
   const loopedNetworks = [...networks, ...networks];
 
   return (
-    <div className="w-full bg-neutral-50/80 dark:bg-[#0c0f16]/90 border-y border-neutral-200/70 dark:border-[#1f2432] py-2.5 px-3 sm:px-6 relative overflow-hidden backdrop-blur-md">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 md:gap-6">
+    <div
+      className="w-full max-w-full bg-neutral-50/80 dark:bg-[#0c0f16]/90 border-y border-neutral-200/70 dark:border-[#1f2432] py-2.5 px-3 sm:px-6 relative overflow-hidden backdrop-blur-md"
+      style={{ maxWidth: '100vw', contain: 'paint layout' }}
+    >
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 md:gap-6 w-full min-w-0 overflow-hidden">
         {/* Etiqueta de confianza y promesa de valor */}
         <div className="flex items-center gap-2.5 shrink-0 select-none">
           <span className="relative flex h-2 w-2">
@@ -46,12 +49,15 @@ export const NetworkTrustBanner: React.FC<NetworkTrustBannerProps> = ({ totalInd
         </div>
 
         {/* Ticker / Carrusel continuo infinito con desvanecimiento en bordes (Estilo Stripe / Linear) */}
-        <div className="relative overflow-hidden w-full flex-1 min-w-0">
+        <div
+          className="relative overflow-hidden w-full flex-1 min-w-0"
+          style={{ maxWidth: '100%', contain: 'paint' }}
+        >
           {/* Máscara de desvanecimiento izquierda */}
-          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:w-16 z-10 bg-linear-to-r from-neutral-50 dark:from-[#0c0f16] to-transparent" />
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:w-16 z-10 bg-gradient-to-r from-neutral-50 dark:from-[#0c0f16] to-transparent" />
 
           {/* Máscara de desvanecimiento derecha */}
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:w-16 z-10 bg-linear-to-l from-neutral-50 dark:from-[#0c0f16] to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:w-16 z-10 bg-gradient-to-l from-neutral-50 dark:from-[#0c0f16] to-transparent" />
 
           {/* Marquee en movimiento suave */}
           <div className="animate-marquee flex items-center gap-2.5 py-0.5 cursor-grab active:cursor-grabbing">

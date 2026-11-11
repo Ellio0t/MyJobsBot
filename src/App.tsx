@@ -34,7 +34,7 @@ import { buildAffiliateApplyUrl, recordOutboundClick } from './services/affiliat
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.5';
+  const APP_VERSION = 'v1.2.6';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -464,22 +464,22 @@ export function App() {
       {/* =====================================================================
           HEADER EJECUTIVO: ADAPTABLE A MÓVILES Y ANDROID
           ===================================================================== */}
-      <header className="app-navbar no-print sticky top-0 z-40 bg-white/95 dark:bg-[#0f1115]/95 backdrop-blur-md border-b border-neutral-200 dark:border-[#20242c] shadow-xs">
-        <div className="max-w-7xl mx-auto px-2.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-4">
+      <header className="app-navbar no-print sticky top-0 z-40 bg-white/95 dark:bg-[#0f1115]/95 backdrop-blur-md border-b border-neutral-200 dark:border-[#20242c] shadow-xs w-full max-w-full overflow-hidden">
+        <div className="max-w-7xl mx-auto px-2 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-1 sm:gap-4 w-full min-w-0">
           {/* LOGO: Ícono de Robot y Título en Verde Claro Neón (#4ade80) */}
           <button
             onClick={() => {
               setActiveTab('jobs');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="flex items-center gap-1.5 sm:gap-2.5 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden shrink-0"
+            className="flex items-center gap-1 sm:gap-2.5 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden shrink-0"
             title="Ir al Inicio (Radar de Empleos)"
-            aria-label="Ir al Inicio de MyJobsBOT"
+            aria-label="Ir al Inicio de JobsBOT"
           >
-            <i className="ri-robot-3-line text-xl sm:text-2xl text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.25)] group-hover:scale-105 transition-transform" />
+            <i className="ri-robot-3-line text-lg sm:text-2xl text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.25)] group-hover:scale-105 transition-transform" />
             <div>
               <div className="flex items-center gap-1 sm:gap-2">
-                <span className="font-montserrat font-extrabold text-xs sm:text-base md:text-lg tracking-[1px] sm:tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
+                <span className="font-montserrat font-extrabold text-xs sm:text-base md:text-lg tracking-[0.5px] sm:tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
                   {brand.name}
                 </span>
                 <span className="text-[9px] sm:text-[10px] font-mono font-bold px-1 sm:px-1.5 py-0.2 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
@@ -493,17 +493,17 @@ export function App() {
           </button>
 
           {/* NAVEGACIÓN CENTRAL: "EMPLEOS" Y "My CV" */}
-          <nav className="flex items-center gap-1 bg-neutral-100 dark:bg-[#15181f] p-0.5 sm:p-1 rounded-lg border border-neutral-200 dark:border-[#232732] shrink-0">
+          <nav className="flex items-center gap-0.5 sm:gap-1 bg-neutral-100 dark:bg-[#15181f] p-0.5 sm:p-1 rounded-lg border border-neutral-200 dark:border-[#232732] shrink-0">
             <button
               onClick={() => setActiveTab('jobs')}
-              className={`px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-md font-montserrat text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
+              className={`px-1.5 sm:px-3.5 py-1 sm:py-1.5 rounded-md font-montserrat text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
                 activeTab === 'jobs'
                   ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
                   : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
               }`}
             >
               <i className="ri-briefcase-4-line text-xs sm:text-sm" />
-              <span>EMPLEOS</span>
+              <span className="hidden sm:inline">EMPLEOS</span>
               <span className={`px-1 sm:px-1.5 py-0.2 rounded-full text-[9px] sm:text-[10px] font-bold ${
                 activeTab === 'jobs' 
                   ? 'bg-black/15 text-white dark:bg-black/20 dark:text-black' 
@@ -515,14 +515,14 @@ export function App() {
 
             <button
               onClick={() => setActiveTab('studio')}
-              className={`px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-md font-montserrat text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
+              className={`px-1.5 sm:px-3.5 py-1 sm:py-1.5 rounded-md font-montserrat text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
                 activeTab === 'studio'
                   ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
                   : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
               }`}
             >
               <i className="ri-file-user-line text-xs sm:text-sm" />
-              <span>My CV</span>
+              <span>CV</span>
               {session.isAuthenticated && (
                 <span className="hidden sm:inline-block px-1.5 py-0.2 rounded-full text-[10px] bg-neutral-500/20">
                   {cvVersions.length} v
@@ -533,12 +533,11 @@ export function App() {
             {/* BOTÓN B2B: PUBLICAR OFERTA DESTACADA */}
             <button
               onClick={() => setShowPostJobModal(true)}
-              className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-md font-montserrat text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
+              className="px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-md font-montserrat text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
               title="Publicar y destacar vacante para empresas (B2B)"
             >
-              <Crown className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-              <span className="hidden sm:inline">Publicar Oferta</span>
-              <span className="sm:hidden">Publicar</span>
+              <Crown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-500 shrink-0" />
+              <span className="hidden sm:inline">Publicar</span>
             </button>
           </nav>
 

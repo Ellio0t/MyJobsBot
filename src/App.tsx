@@ -34,7 +34,7 @@ import { buildAffiliateApplyUrl, recordOutboundClick } from './services/affiliat
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.3';
+  const APP_VERSION = 'v1.2.4';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -684,7 +684,7 @@ export function App() {
                   </h3>
                   {!session.isAuthenticated ? (
                     <span className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/25 font-bold uppercase tracking-wider flex items-center gap-1">
-                      <i className="ri-eye-line text-xs" /> Muestra Pública (Pupurrí 10x)
+                      <i className="ri-eye-line text-xs" /> Muestra Pública (Selección Curada 10x)
                     </span>
                   ) : (
                     <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-[#4ade80] border border-emerald-500/20 dark:border-[#4ade80]/30 font-semibold">
@@ -770,7 +770,7 @@ export function App() {
                   </div>
                   <div>
                     <h5 className="font-montserrat font-bold text-neutral-900 dark:text-white text-xs">
-                      Modo Explorador: Mostrando pupurrí de muestra (hasta 10 empleos por área)
+                      Estás en Modo Visitante: Mostrando selección curada de muestra (hasta 10 empleos por área)
                     </h5>
                     <p className="text-neutral-600 dark:text-neutral-400 text-[11px] mt-0.5 leading-relaxed">
                       Para ver las <strong>89+ vacantes completas</strong> y recibir recomendaciones adaptadas a tu perfil con cálculo de afinidad ATS, <strong>inicia sesión y sube tu CV</strong>.

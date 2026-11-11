@@ -146,6 +146,10 @@ export const CURATED_JOBS: JobOffer[] = [
       'https://www.linkedin.com/jobs/view/conversational-ai-qa-specialist/',
     contactEmail: 'careers@evolutioncollect.com',
     publishedAt: 'Hace 1 día',
+    isFeatured: true,
+    featuredBadge: 'VIP DESTACADA',
+    featuredTier: 'diamond',
+    sponsorCompany: 'Evolution Collect LLC',
   },
   {
     id: 'infuse-general-qa-engineer-remote-contract',

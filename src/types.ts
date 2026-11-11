@@ -92,6 +92,48 @@ export interface JobOffer {
   contactTelegram?: string;
   publishedAt: string;
   matchScore?: number;
+  // Monetización Vía B: B2B Destacadas
+  isFeatured?: boolean;
+  featuredBadge?: string;
+  featuredTier?: 'gold' | 'diamond';
+  sponsorCompany?: string;
+  featuredExpiresAt?: string;
+  // Monetización Vía D: Anuncio Nativo
+  isSponsoredAd?: boolean;
+}
+
+export interface CourseRecommendation {
+  id: string;
+  skillName: string;
+  title: string;
+  provider: 'Coursera' | 'Platzi' | 'Open English' | 'Udemy' | 'Google Cloud Skills';
+  providerLogo?: string;
+  durationHours: number;
+  level: 'Principiante' | 'Intermedio' | 'Avanzado';
+  estimatedAffinityBoost: number; // Por ejemplo +18%
+  url: string;
+  badgeText: string;
+  priceNote?: string;
+}
+
+export interface PostJobFormData {
+  title: string;
+  company: string;
+  companyLogo?: string;
+  category: Exclude<JobCategory, 'all'>;
+  salary: string;
+  modality: string;
+  countryScope: string;
+  languageReq: 'Español 100%' | 'Inglés Escrito / Técnico' | 'Inglés Conversacional';
+  oneLineSummary: string;
+  description: string;
+  requirements: string;
+  keywords: string;
+  applyUrl: string;
+  contactEmail?: string;
+  contactWhatsapp?: string;
+  planId: 'plan-15d' | 'plan-30d';
+  billingEmail: string;
 }
 
 export interface UserSession {

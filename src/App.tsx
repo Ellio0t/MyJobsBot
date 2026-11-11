@@ -22,15 +22,19 @@ import { EmailModal } from './components/EmailModal';
 import { AuthModal } from './components/AuthModal';
 import { LegalComplianceModal } from './components/LegalComplianceModal';
 import { JobDetailModal } from './components/JobDetailModal';
+import { Crown } from 'lucide-react';
 import { CompanyLogo } from './components/CompanyLogo';
 import { PortalBadge } from './components/PortalBadge';
 import { NetworkTrustBanner } from './components/NetworkTrustBanner';
 import { MidScrollIncentiveModal } from './components/MidScrollIncentiveModal';
 import { AppSplashScreen } from './components/AppSplashScreen';
+import { PostJobModal } from './components/PostJobModal';
+import { SponsoredFeedCard } from './components/SponsoredFeedCard';
+import { buildAffiliateApplyUrl, recordOutboundClick } from './services/affiliateEngine';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.1';
+  const APP_VERSION = 'v1.2.2';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -114,6 +118,7 @@ export function App() {
   const [selectedJobForDetails, setSelectedJobForDetails] = useState<JobOffer | null>(null);
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [showScrollLeadModal, setShowScrollLeadModal] = useState(false);
+  const [showPostJobModal, setShowPostJobModal] = useState(false);
   const scrollTriggerFiredRef = useRef(false);
 
   // Trigger mid-scroll: cuando el visitante no logueado scrollea a la mitad del feed
@@ -409,9 +414,17 @@ export function App() {
         return true;
       });
 
-    if (hasCustomCv) {
-      list.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
-    }
+    // Ordenamiento: Las ofertas destacadas B2B (Vía B) se fijan en el TOP absoluto,
+    // seguido del score ATS calculado si el usuario tiene su CV cargado.
+    list.sort((a, b) => {
+      const aFeat = a.isFeatured ? 1 : 0;
+      const bFeat = b.isFeatured ? 1 : 0;
+      if (aFeat !== bFeat) return bFeat - aFeat;
+      if (hasCustomCv) {
+        return (b.matchScore || 0) - (a.matchScore || 0);
+      }
+      return 0;
+    });
 
     // Regla de Pupurrí para usuarios no autenticados:
     // Máximo 10 ofertas por categoría si está en 'all', o hasta 10 ofertas en la categoría seleccionada
@@ -515,6 +528,17 @@ export function App() {
                   {cvVersions.length} v
                 </span>
               )}
+            </button>
+
+            {/* BOTÓN B2B: PUBLICAR OFERTA DESTACADA */}
+            <button
+              onClick={() => setShowPostJobModal(true)}
+              className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-md font-montserrat text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
+              title="Publicar y destacar vacante para empresas (B2B)"
+            >
+              <Crown className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span className="hidden sm:inline">Publicar Oferta</span>
+              <span className="sm:hidden">Publicar</span>
             </button>
           </nav>
 
@@ -766,160 +790,192 @@ export function App() {
 
             {/* TARJETAS DE EMPLEO OPTIMIZADAS PARA MÓVIL Y DESKTOP */}
             <div className="space-y-3 sm:space-y-3.5">
-              {processedJobs.map((job) => (
-                <article
-                  key={job.id}
-                  onClick={() => setSelectedJobForDetails(job)}
-                  className="bg-white dark:bg-[#12151c] rounded-xl border border-neutral-200 dark:border-[#242935] p-3.5 sm:p-5 hover:border-neutral-400 dark:hover:border-[#4ade80]/60 transition-all shadow-sm cursor-pointer group"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-2.5 sm:gap-4 flex-1 min-w-0">
-                      <CompanyLogo
-                        logoUrl={job.companyLogo}
-                        companyName={job.company}
-                        category={job.category}
-                        sizeClass="w-10 h-10 sm:w-12 sm:h-12 shrink-0"
-                      />
+              {processedJobs.map((job, index) => {
+                const isFeatured = !!job.isFeatured;
+                const outboundUrl = buildAffiliateApplyUrl(job);
 
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
-                          <span className="font-montserrat text-xs font-extrabold uppercase tracking-wider text-neutral-600 dark:text-[#4ade80]">
-                            {job.company}
+                return (
+                  <React.Fragment key={job.id}>
+                    <article
+                      onClick={() => setSelectedJobForDetails(job)}
+                      className={`rounded-xl transition-all shadow-sm cursor-pointer group p-3.5 sm:p-5 relative ${
+                        isFeatured
+                          ? 'border-2 border-amber-500/60 dark:border-amber-400/60 bg-gradient-to-r from-amber-500/5 via-white to-amber-500/5 dark:from-amber-950/20 dark:via-[#141722] dark:to-amber-950/10 shadow-md'
+                          : 'bg-white dark:bg-[#12151c] border border-neutral-200 dark:border-[#242935] hover:border-neutral-400 dark:hover:border-[#4ade80]/60'
+                      }`}
+                    >
+                      {/* Distintivo de Oferta Destacada B2B */}
+                      {isFeatured && (
+                        <div className="mb-2.5 flex items-center justify-between">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-montserrat font-black uppercase tracking-wider bg-amber-500 text-black shadow-xs">
+                            <Crown className="w-3 h-3" />
+                            {job.featuredBadge || 'OFERTA DESTACADA'}
                           </span>
-                          <span className="text-neutral-300 dark:text-neutral-600">•</span>
-                          <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-montserrat font-bold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-[#2a3040]">
-                            {job.salary}
-                          </span>
-                          <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-semibold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2a3040]">
-                            {job.languageReq}
-                          </span>
-                          <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/20 dark:border-[#4ade80]/30">
-                            {job.countryScope}
+                          <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                            <i className="ri-verified-badge-fill text-xs" />
+                            Empresa Verificada (Prioridad TOP)
                           </span>
                         </div>
-
-                        <h4 className="font-montserrat text-sm sm:text-base font-extrabold text-[#111111] dark:text-white leading-snug group-hover:text-emerald-600 dark:group-hover:text-[#4ade80] transition-colors">
-                          {job.title}
-                        </h4>
-
-                        <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1.5 line-clamp-2 sm:line-clamp-3 leading-relaxed">
-                          {job.oneLineSummary}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="shrink-0 text-right flex flex-col items-end">
-                      {hasCustomCv ? (
-                        <div className="font-montserrat text-base sm:text-lg font-black text-[#111111] dark:text-[#4ade80] leading-none">
-                          {job.matchScore}% MATCH
-                        </div>
-                      ) : (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            requireAuthAndRun('upload');
-                          }}
-                          className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] sm:text-[10px] font-montserrat font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/25 dark:border-[#4ade80]/30 hover:bg-emerald-500/20 transition-all cursor-pointer shadow-xs whitespace-nowrap"
-                          title="Sube tu CV para calcular tu afinidad ATS exacta"
-                        >
-                          <i className="ri-upload-cloud-2-line text-xs" />
-                          <span className="hidden sm:inline">Subir CV para Match</span>
-                          <span className="sm:hidden">Match ATS</span>
-                        </button>
                       )}
-                      <div className="mt-1">
-                        <PortalBadge source={job.source} size="sm" />
+
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-2.5 sm:gap-4 flex-1 min-w-0">
+                          <CompanyLogo
+                            logoUrl={job.companyLogo}
+                            companyName={job.company}
+                            category={job.category}
+                            sizeClass="w-10 h-10 sm:w-12 sm:h-12 shrink-0"
+                          />
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
+                              <span className="font-montserrat text-xs font-extrabold uppercase tracking-wider text-neutral-600 dark:text-[#4ade80]">
+                                {job.company}
+                              </span>
+                              <span className="text-neutral-300 dark:text-neutral-600">•</span>
+                              <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-montserrat font-bold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-[#2a3040]">
+                                {job.salary}
+                              </span>
+                              <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-semibold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2a3040]">
+                                {job.languageReq}
+                              </span>
+                              <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/20 dark:border-[#4ade80]/30">
+                                {job.countryScope}
+                              </span>
+                            </div>
+
+                            <h4 className="font-montserrat text-sm sm:text-base font-extrabold text-[#111111] dark:text-white leading-snug group-hover:text-emerald-600 dark:group-hover:text-[#4ade80] transition-colors">
+                              {job.title}
+                            </h4>
+
+                            <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1.5 line-clamp-2 sm:line-clamp-3 leading-relaxed">
+                              {job.oneLineSummary}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="shrink-0 text-right flex flex-col items-end">
+                          {hasCustomCv ? (
+                            <div className="font-montserrat text-base sm:text-lg font-black text-[#111111] dark:text-[#4ade80] leading-none">
+                              {job.matchScore}% MATCH
+                            </div>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                requireAuthAndRun('upload');
+                              }}
+                              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] sm:text-[10px] font-montserrat font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/25 dark:border-[#4ade80]/30 hover:bg-emerald-500/20 transition-all cursor-pointer shadow-xs whitespace-nowrap"
+                              title="Sube tu CV para calcular tu afinidad ATS exacta"
+                            >
+                              <i className="ri-upload-cloud-2-line text-xs" />
+                              <span className="hidden sm:inline">Subir CV para Match</span>
+                              <span className="sm:hidden">Match ATS</span>
+                            </button>
+                          )}
+                          <div className="mt-1">
+                            <PortalBadge source={job.source} size="sm" />
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="mt-3.5 pt-2.5 sm:pt-3 border-t border-neutral-100 dark:border-[#202532] flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                      {/* Botón Ver Propuesta / Oferta Completa */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedJobForDetails(job);
-                        }}
-                        className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-neutral-100 hover:bg-neutral-200 dark:bg-[#1a1f2b] dark:hover:bg-[#232938] text-neutral-900 dark:text-white border border-neutral-300 dark:border-[#2b3345] hover:border-neutral-400 dark:hover:border-[#4ade80]/60 transition-all cursor-pointer shadow-xs"
-                        title="Ver detalles completos de esta vacante"
-                      >
-                        <i className="ri-file-list-3-line text-xs text-emerald-600 dark:text-[#4ade80]" />
-                        <span>Ver Oferta</span>
-                      </button>
+                      <div className="mt-3.5 pt-2.5 sm:pt-3 border-t border-neutral-100 dark:border-[#202532] flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                          {/* Botón Ver Propuesta / Oferta Completa */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedJobForDetails(job);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-neutral-100 hover:bg-neutral-200 dark:bg-[#1a1f2b] dark:hover:bg-[#232938] text-neutral-900 dark:text-white border border-neutral-300 dark:border-[#2b3345] hover:border-neutral-400 dark:hover:border-[#4ade80]/60 transition-all cursor-pointer shadow-xs"
+                            title="Ver detalles completos de esta vacante"
+                          >
+                            <i className="ri-file-list-3-line text-xs text-emerald-600 dark:text-[#4ade80]" />
+                            <span>Ver Oferta</span>
+                          </button>
 
-                      {/* Enviar Correo */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedJobForEmail(job);
-                        }}
-                        className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-[#111111] text-white dark:bg-[#1c222e] dark:hover:bg-[#252c3c] dark:text-white border border-transparent dark:border-[#32394c] transition-colors cursor-pointer"
-                        title="Enviar correo de postulación ATS"
-                      >
-                        <i className="fa-solid fa-envelope text-xs text-amber-400 dark:text-[#4ade80]" />
-                        <span className="hidden sm:inline">Enviar Correo Optimizado</span>
-                        <span className="sm:hidden">Correo</span>
-                      </button>
+                          {/* Enviar Correo */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedJobForEmail(job);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-[#111111] text-white dark:bg-[#1c222e] dark:hover:bg-[#252c3c] dark:text-white border border-transparent dark:border-[#32394c] transition-colors cursor-pointer"
+                            title="Enviar correo de postulación ATS"
+                          >
+                            <i className="fa-solid fa-envelope text-xs text-amber-400 dark:text-[#4ade80]" />
+                            <span className="hidden sm:inline">Enviar Correo Optimizado</span>
+                            <span className="sm:hidden">Correo</span>
+                          </button>
 
-                      {/* WhatsApp */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleWhatsAppContact(job);
-                        }}
-                        className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-emerald-600/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-600/25 dark:border-[#4ade80]/30 hover:bg-emerald-600/20 transition-colors cursor-pointer"
-                        title="Contactar vía WhatsApp"
-                      >
-                        <i className="fa-brands fa-whatsapp text-xs sm:text-sm" />
-                        <span>WhatsApp</span>
-                      </button>
+                          {/* WhatsApp */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleWhatsAppContact(job);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-emerald-600/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-600/25 dark:border-[#4ade80]/30 hover:bg-emerald-600/20 transition-colors cursor-pointer"
+                            title="Contactar vía WhatsApp"
+                          >
+                            <i className="fa-brands fa-whatsapp text-xs sm:text-sm" />
+                            <span>WhatsApp</span>
+                          </button>
 
-                      {/* Telegram */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleTelegramContact(job);
-                        }}
-                        className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/25 dark:border-sky-500/30 hover:bg-sky-500/20 transition-colors cursor-pointer"
-                        title="Contactar vía Telegram"
-                      >
-                        <i className="fa-brands fa-telegram text-xs sm:text-sm" />
-                        <span className="hidden sm:inline">Telegram</span>
-                      </button>
-                    </div>
+                          {/* Telegram */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleTelegramContact(job);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/25 dark:border-sky-500/30 hover:bg-sky-500/20 transition-colors cursor-pointer"
+                            title="Contactar vía Telegram"
+                          >
+                            <i className="fa-brands fa-telegram text-xs sm:text-sm" />
+                            <span className="hidden sm:inline">Telegram</span>
+                          </button>
+                        </div>
 
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      {/* Adaptar CV */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAdaptCvToJob(job);
-                        }}
-                        className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#32394c] bg-transparent dark:bg-[#171a23] hover:bg-neutral-100 dark:hover:bg-[#222634] text-neutral-800 dark:text-neutral-200 transition-colors cursor-pointer"
-                        title="Adaptar CV con IA a este puesto"
-                      >
-                        <i className="ri-robot-3-line text-xs sm:text-sm text-amber-500 dark:text-[#4ade80]" />
-                        <span className="hidden sm:inline">Adaptar mi CV a este puesto</span>
-                        <span className="sm:hidden">Adaptar CV</span>
-                      </button>
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                          {/* Adaptar CV */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAdaptCvToJob(job);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#32394c] bg-transparent dark:bg-[#171a23] hover:bg-neutral-100 dark:hover:bg-[#222634] text-neutral-800 dark:text-neutral-200 transition-colors cursor-pointer"
+                            title="Adaptar CV con IA a este puesto"
+                          >
+                            <i className="ri-robot-3-line text-xs sm:text-sm text-amber-500 dark:text-[#4ade80]" />
+                            <span className="hidden sm:inline">Adaptar mi CV a este puesto</span>
+                            <span className="sm:hidden">Adaptar CV</span>
+                          </button>
 
-                      {/* Portal Oficial */}
-                      <a
-                        href={job.applyUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 hover:underline"
-                        title="Ver en portal oficial"
-                      >
-                        <span className="hidden sm:inline">Portal</span>
-                        <i className="ri-external-link-line text-xs" />
-                      </a>
-                    </div>
-                  </div>
-                </article>
-              ))}
+                          {/* Portal Oficial con Afiliación CPC/CPA (Vía A) */}
+                          <a
+                            href={outboundUrl}
+                            target="_blank"
+                            rel="noopener noreferrer sponsored"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              recordOutboundClick(job);
+                            }}
+                            className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-[#4ade80]"
+                            title="Ver en portal oficial"
+                          >
+                            <span className="hidden sm:inline">Portal</span>
+                            <i className="ri-external-link-line text-xs" />
+                          </a>
+                        </div>
+                      </div>
+                    </article>
+
+                    {/* MONETIZACIÓN VÍA D: ANUNCIO NATIVO DISCRETO CADA 8 OFERTAS */}
+                    {(index + 1) % 8 === 0 && (
+                      <SponsoredFeedCard index={index} />
+                    )}
+                  </React.Fragment>
+                );
+              })}
 
               {/* BLOQUE INFORMATIVO DE CIERRE DE MUESTRA PARA USUARIOS NO LOGUEADOS */}
               {!session.isAuthenticated && processedJobs.length > 0 && (
@@ -1225,6 +1281,18 @@ export function App() {
           }}
           onWhatsApp={(job) => handleWhatsAppContact(job)}
           onTelegram={(job) => handleTelegramContact(job)}
+        />
+      )}
+
+      {/* MODAL B2B: PUBLICAR OFERTA DESTACADA */}
+      {showPostJobModal && (
+        <PostJobModal
+          isOpen={showPostJobModal}
+          onClose={() => setShowPostJobModal(false)}
+          onJobPublished={(newJob) => {
+            setJobs((prev) => [newJob, ...prev]);
+            setSelectedJobForDetails(newJob);
+          }}
         />
       )}
 

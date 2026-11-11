@@ -17,6 +17,9 @@ import {
 import { CVVersion, JobOffer } from '../types';
 import { CompanyLogo } from './CompanyLogo';
 import { PortalBadge } from './PortalBadge';
+import { buildAffiliateApplyUrl, recordOutboundClick } from '../services/affiliateEngine';
+import { detectSkillGaps } from '../services/upskillingEngine';
+import { UpskillingCourseCard } from './UpskillingCourseCard';
 
 interface JobDetailModalProps {
   job: JobOffer;
@@ -84,6 +87,10 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
   };
 
   const hasCustomCv = activeCv.id !== 'cv-sample-visitor';
+
+  // Detección de brecha formativa y cursos recomendados (Vía C)
+  const recommendedCourses = detectSkillGaps(hasCustomCv ? activeCv.profile : null, job);
+  const outboundApplyUrl = buildAffiliateApplyUrl(job);
 
   const matchColor =
     (job.matchScore || 0) >= 75
@@ -262,6 +269,31 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
               </div>
             </div>
           )}
+
+          {/* MONETIZACIÓN VÍA C: FORMACIÓN & CERTIFICACIÓN RECOMENDADA (UPSKILLING) */}
+          {recommendedCourses.length > 0 && (
+            <div className="space-y-2.5 pt-2 border-t border-neutral-200 dark:border-[#202532]">
+              <div className="flex items-center justify-between">
+                <h3 className="font-montserrat text-xs font-extrabold uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-500" />
+                  <span>Aumenta tu Afinidad ATS con Certificación Oficial</span>
+                </h3>
+                <span className="text-[10px] text-neutral-500 dark:text-neutral-400">
+                  Brechas formativas detectadas
+                </span>
+              </div>
+
+              <div className="space-y-2.5">
+                {recommendedCourses.map((course) => (
+                  <UpskillingCourseCard
+                    key={course.id}
+                    course={course}
+                    currentMatchScore={job.matchScore ?? 68}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ===================================================================
@@ -315,13 +347,14 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
               <span>Telegram</span>
             </button>
 
-            {/* Ver en portal oficial */}
+            {/* Ver en portal oficial con tracking de afiliado (Vía A: CPC/CPA) */}
             <a
-              href={job.applyUrl}
+              href={outboundApplyUrl}
+              onClick={() => recordOutboundClick(job)}
               target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-[#4ade80] transition-colors shrink-0 whitespace-nowrap"
-              title="Ir al enlace original de postulación"
+              rel="noopener noreferrer sponsored"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-neutral-200 dark:bg-[#202634] text-neutral-800 dark:text-neutral-200 hover:text-neutral-900 dark:hover:text-[#4ade80] transition-colors shrink-0 whitespace-nowrap"
+              title="Ir al enlace oficial de postulación"
             >
               <span>Portal</span>
               <ExternalLink className="w-3.5 h-3.5" />

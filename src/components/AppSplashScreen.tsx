@@ -85,3 +85,4 @@ export const AppSplashScreen: React.FC<AppSplashScreenProps> = ({
     </div>
   );
 };
+

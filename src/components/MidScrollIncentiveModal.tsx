@@ -1,4 +1,5 @@
 import React from 'react';
+import { JobotIcon } from './JobotIcon';
 
 interface MidScrollIncentiveModalProps {
   isOpen: boolean;
@@ -21,8 +22,8 @@ export const MidScrollIncentiveModal: React.FC<MidScrollIncentiveModalProps> = (
       >
         {/* ENCABEZADO CON DEGRADADO & ICONO */}
         <div className="relative px-6 py-5 bg-linear-to-r from-emerald-600 to-[#10b981] text-white overflow-hidden">
-          <div className="absolute right-0 top-0 translate-x-4 -translate-y-4 opacity-15 pointer-events-none">
-            <i className="ri-robot-3-line text-8xl" />
+          <div className="absolute right-0 top-0 translate-x-4 -translate-y-4 opacity-20 pointer-events-none">
+            <JobotIcon className="w-28 h-28 text-white" />
           </div>
           <div className="relative z-10 flex items-center justify-between">
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/20 text-[10px] font-montserrat font-extrabold uppercase tracking-widest backdrop-blur-xs">

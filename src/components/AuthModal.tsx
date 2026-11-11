@@ -6,6 +6,7 @@ import {
   signInWithEmailReal,
   registerWithEmailReal,
 } from '../services/firebaseAuth';
+import { JobotIcon } from './JobotIcon';
 
 interface AuthModalProps {
   brandName: string;
@@ -103,7 +104,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ brandName, onClose, onSucc
         <div className="px-5 sm:px-6 py-4 bg-neutral-950 dark:bg-[#0c0e13] text-white flex items-center justify-between border-b border-neutral-800 dark:border-[#202532] shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-white/10 dark:bg-[#181c26] border border-white/10 dark:border-[#2d3444] flex items-center justify-center shrink-0">
-              <i className="ri-robot-3-line text-xl text-emerald-400 dark:text-[#4ade80]" />
+              <JobotIcon className="w-5 h-5 text-emerald-400 dark:text-[#4ade80]" />
             </div>
             <div>
               <span className="text-[9px] sm:text-[10px] font-montserrat font-bold tracking-[1.5px] uppercase text-neutral-400 block">

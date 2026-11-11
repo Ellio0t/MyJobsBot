@@ -17,6 +17,7 @@ import {
 import { CVVersion, JobOffer } from '../types';
 import { CompanyLogo } from './CompanyLogo';
 import { PortalBadge } from './PortalBadge';
+import { JobotIcon } from './JobotIcon';
 import { buildAffiliateApplyUrl, recordOutboundClick } from '../services/affiliateEngine';
 import { detectSkillGaps } from '../services/upskillingEngine';
 import { UpskillingCourseCard } from './UpskillingCourseCard';
@@ -210,7 +211,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
           {/* RESUMEN EJECUTIVO */}
           <div className="p-4 rounded-xl bg-emerald-500/5 dark:bg-[#4ade80]/5 border border-emerald-500/20 dark:border-[#4ade80]/20 space-y-1.5">
             <div className="flex items-center gap-2 text-xs font-montserrat font-extrabold uppercase tracking-wider text-emerald-700 dark:text-[#4ade80]">
-              <i className="ri-robot-3-line text-sm" />
+              <JobotIcon className="w-4 h-4 text-emerald-600 dark:text-[#4ade80]" />
               <span>Resumen Ejecutivo JoBOT</span>
             </div>
             <p className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed font-medium">
@@ -321,7 +322,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
               }}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#32394c] bg-white dark:bg-[#1a1e28] hover:bg-neutral-100 dark:hover:bg-[#232836] text-neutral-800 dark:text-neutral-200 transition-colors cursor-pointer shrink-0 whitespace-nowrap"
             >
-              <i className="ri-robot-3-line text-sm text-emerald-600 dark:text-[#4ade80] shrink-0" />
+              <JobotIcon className="w-3.5 h-3.5 text-emerald-600 dark:text-[#4ade80] shrink-0" />
               <span>Adaptar mi CV</span>
             </button>
           </div>

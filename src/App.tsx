@@ -31,10 +31,11 @@ import { AppSplashScreen } from './components/AppSplashScreen';
 import { PostJobModal } from './components/PostJobModal';
 import { SponsoredFeedCard } from './components/SponsoredFeedCard';
 import { buildAffiliateApplyUrl, recordOutboundClick } from './services/affiliateEngine';
+import { JobotIcon } from './components/JobotIcon';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.7';
+  const APP_VERSION = 'v1.2.8';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -466,17 +467,17 @@ export function App() {
           ===================================================================== */}
       <header className="app-navbar no-print sticky top-0 z-40 bg-white/95 dark:bg-[#0f1115]/95 backdrop-blur-md border-b border-neutral-200 dark:border-[#20242c] shadow-xs w-full max-w-full overflow-hidden">
         <div className="max-w-7xl mx-auto px-2 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-1 sm:gap-4 w-full min-w-0">
-          {/* LOGO: Ícono de Robot y Título en Verde Claro Neón (#4ade80) */}
+          {/* LOGO: Ícono Oficial de Robot y Título en Verde Claro Neón (#4ade80) */}
           <button
             onClick={() => {
               setActiveTab('jobs');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="flex items-center gap-1 sm:gap-2.5 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden shrink-0"
+            className="flex items-center gap-1.5 sm:gap-2.5 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden shrink-0"
             title="Ir al Inicio (Radar de Empleos)"
             aria-label="Ir al Inicio de JobsBOT"
           >
-            <i className="ri-robot-3-line text-lg sm:text-2xl text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.25)] group-hover:scale-105 transition-transform" />
+            <JobotIcon className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.25)] group-hover:scale-105 transition-transform" />
             <div>
               <div className="flex items-center gap-1 sm:gap-2">
                 <span className="font-montserrat font-extrabold text-xs sm:text-base md:text-lg tracking-[0.5px] sm:tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
@@ -944,7 +945,7 @@ export function App() {
                             className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#32394c] bg-transparent dark:bg-[#171a23] hover:bg-neutral-100 dark:hover:bg-[#222634] text-neutral-800 dark:text-neutral-200 transition-colors cursor-pointer"
                             title="Adaptar CV con IA a este puesto"
                           >
-                            <i className="ri-robot-3-line text-xs sm:text-sm text-amber-500 dark:text-[#4ade80]" />
+                            <JobotIcon className="w-3.5 h-3.5 text-amber-500 dark:text-[#4ade80]" />
                             <span className="hidden sm:inline">Adaptar mi CV a este puesto</span>
                             <span className="sm:hidden">Adaptar CV</span>
                           </button>
@@ -1074,7 +1075,7 @@ export function App() {
               <aside className="ai-chat-panel no-print xl:col-span-4 bg-white dark:bg-[#12151c] rounded-xl border border-neutral-200 dark:border-[#252a36] shadow-xl flex flex-col h-[680px] sticky top-20">
                 <div className="p-4 bg-[#111111] dark:bg-[#161a23] text-white rounded-t-xl border-b border-neutral-800 dark:border-[#242936] flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <i className="ri-robot-3-line text-xl text-emerald-400 dark:text-[#4ade80]" />
+                    <JobotIcon className="w-5 h-5 text-emerald-400 dark:text-[#4ade80]" />
                     <div>
                       <h3 className="font-montserrat text-xs font-extrabold uppercase tracking-wider text-emerald-400 dark:text-[#4ade80]">
                         JoBOT
@@ -1171,7 +1172,7 @@ export function App() {
               className="flex items-center gap-2 text-left cursor-pointer group hover:opacity-90 transition-all bg-transparent border-0 p-0 outline-hidden"
               title="Ir al Inicio (Radar de Empleos)"
             >
-              <i className="ri-robot-3-line text-base text-emerald-600 dark:text-[#4ade80] group-hover:scale-105 transition-transform" />
+              <JobotIcon className="w-5 h-5 text-emerald-600 dark:text-[#4ade80] group-hover:scale-105 transition-transform" />
               <span className="font-montserrat font-extrabold text-emerald-600 dark:text-[#4ade80] uppercase tracking-wider group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
                 {brand.name}
               </span>

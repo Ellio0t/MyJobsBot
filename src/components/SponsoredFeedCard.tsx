@@ -102,3 +102,4 @@ export const SponsoredFeedCard: React.FC<SponsoredFeedCardProps> = ({ index }) =
     </aside>
   );
 };
+

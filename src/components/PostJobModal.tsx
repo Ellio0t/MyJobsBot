@@ -468,3 +468,4 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
     </div>
   );
 };
+

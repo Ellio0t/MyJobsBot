@@ -88,7 +88,7 @@ export const MidScrollIncentiveModal: React.FC<MidScrollIncentiveModalProps> = (
                   Acceso Total al Feed Completo
                 </h4>
                 <p className="text-neutral-500 dark:text-neutral-400 text-[11px] mt-0.5 leading-relaxed">
-                  Desbloquea todas las vacantes sin límites de muestra de Google Jobs, LinkedIn, Indeed y Get on Board.
+                  Desbloquea todas las vacantes sin límites de muestra de LinkedIn, Indeed, ZipRecruiter, Glassdoor, Get on Board y más.
                 </p>
               </div>
             </div>

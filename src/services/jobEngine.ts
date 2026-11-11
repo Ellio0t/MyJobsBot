@@ -244,11 +244,18 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
           const applyLink = item.job_apply_link || '';
           const publisherRaw = (item.job_publisher || '').trim();
           const pubLower = publisherRaw.toLowerCase();
-          let src: JobOffer['source'] = publisherRaw || 'Google Jobs';
+          let src: JobOffer['source'] = publisherRaw || 'ZipRecruiter';
           if (pubLower.includes('linkedin') || applyLink.includes('linkedin.com')) src = 'LinkedIn';
           else if (pubLower.includes('indeed') || applyLink.includes('indeed.com')) src = 'Indeed';
           else if (pubLower.includes('glassdoor') || applyLink.includes('glassdoor.com')) src = 'Glassdoor';
           else if (pubLower.includes('ziprecruiter') || applyLink.includes('ziprecruiter.com')) src = 'ZipRecruiter';
+          else if (pubLower.includes('monster') || applyLink.includes('monster.com')) src = 'Monster';
+          else if (pubLower.includes('flexjobs') || applyLink.includes('flexjobs.com')) src = 'FlexJobs';
+          else if (pubLower.includes('wellfound') || pubLower.includes('angel') || applyLink.includes('wellfound.com')) src = 'Wellfound';
+          else if (pubLower.includes('dice') || applyLink.includes('dice.com')) src = 'Dice';
+          else if (pubLower.includes('talent') || applyLink.includes('talent.com')) src = 'Talent.com';
+          else if (pubLower.includes('jobleads') || applyLink.includes('jobleads.com')) src = 'JobLeads';
+          else if (src.toLowerCase().includes('google')) src = 'ZipRecruiter';
 
           const emailMatch = cleanDesc.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
 
@@ -268,7 +275,7 @@ export async function fetchLiveJobsFromApis(searchQuery = 'remote'): Promise<Job
               : 'Español 100%',
             oneLineSummary: cleanDesc.length > 20 ? cleanDesc.slice(0, 320) + '...' : `Posición en ${item.employer_name}.`,
             description: cleanDesc,
-            requirements: item.job_highlights?.Qualifications || item.job_required_skills || ['Verificado vía Google Jobs / ' + src],
+            requirements: item.job_highlights?.Qualifications || item.job_required_skills || ['Verificado vía ' + src],
             keywords: (item.job_required_skills || []).slice(0, 7),
             source: src,
             applyUrl: applyLink || `https://www.google.com/search?q=${encodeURIComponent(item.job_title + ' ' + item.employer_name + ' jobs')}`,

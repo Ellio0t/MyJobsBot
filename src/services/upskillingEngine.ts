@@ -195,3 +195,4 @@ export function detectSkillGaps(profile?: CVProfile | null, job?: JobOffer): Cou
   // Devolver máximo 2 recomendaciones para no saturar al usuario
   return matchedRecommendations.slice(0, 2);
 }
+

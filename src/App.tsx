@@ -34,7 +34,7 @@ import { buildAffiliateApplyUrl, recordOutboundClick } from './services/affiliat
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.2';
+  const APP_VERSION = 'v1.2.3';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)

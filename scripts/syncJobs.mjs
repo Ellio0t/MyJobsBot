@@ -72,11 +72,18 @@ async function fetchJSearchJobs() {
           const applyLink = item.job_apply_link || '';
           const pub = (item.job_publisher || '').trim();
           const pubLower = pub.toLowerCase();
-          let src = pub || 'Google Jobs';
+          let src = pub || 'ZipRecruiter';
           if (pubLower.includes('linkedin') || applyLink.includes('linkedin.com')) src = 'LinkedIn';
           else if (pubLower.includes('indeed') || applyLink.includes('indeed.com')) src = 'Indeed';
           else if (pubLower.includes('glassdoor') || applyLink.includes('glassdoor.com')) src = 'Glassdoor';
           else if (pubLower.includes('ziprecruiter') || applyLink.includes('ziprecruiter.com')) src = 'ZipRecruiter';
+          else if (pubLower.includes('monster') || applyLink.includes('monster.com')) src = 'Monster';
+          else if (pubLower.includes('flexjobs') || applyLink.includes('flexjobs.com')) src = 'FlexJobs';
+          else if (pubLower.includes('wellfound') || pubLower.includes('angel') || applyLink.includes('wellfound.com')) src = 'Wellfound';
+          else if (pubLower.includes('dice') || applyLink.includes('dice.com')) src = 'Dice';
+          else if (pubLower.includes('talent') || applyLink.includes('talent.com')) src = 'Talent.com';
+          else if (pubLower.includes('jobleads') || applyLink.includes('jobleads.com')) src = 'JobLeads';
+          else if (src.toLowerCase().includes('google')) src = 'ZipRecruiter';
 
           const emailMatch = cleanDesc.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
 

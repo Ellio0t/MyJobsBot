@@ -68,7 +68,7 @@ export const LegalComplianceModal: React.FC<LegalComplianceModalProps> = ({ bran
               1. Aclaratoria de Uso de Redes y Fuentes Públicas de Empleo
             </div>
             <p className="mb-2">
-              <strong>{brandName}</strong> opera como un motor de lectura asistida y optimización curricular para candidatos. Las ofertas provienen de fuentes oficiales abiertas y redes de empleo verificadas (Google Jobs, LinkedIn, Indeed, Get on Board, Remotive y agregadores abiertos).
+              <strong>{brandName}</strong> opera como un motor de lectura asistida y optimización curricular para candidatos. Las ofertas provienen de fuentes oficiales abiertas y redes de empleo verificadas (LinkedIn, Indeed, ZipRecruiter, Glassdoor, Monster, FlexJobs, Get on Board, Remotive y agregadores internacionales).
             </p>
             <ul className="list-disc pl-5 space-y-1">
               <li>Logotipos y nombres pertenecen a sus respectivos empleadores y plataformas de origen.</li>

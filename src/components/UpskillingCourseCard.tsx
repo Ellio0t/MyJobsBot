@@ -116,3 +116,4 @@ export const UpskillingCourseCard: React.FC<UpskillingCourseCardProps> = ({
     </div>
   );
 };
+

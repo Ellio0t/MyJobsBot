@@ -23,7 +23,7 @@ export const JobotIcon: React.FC<JobotIconProps> = ({
 
   return (
     <svg
-      viewBox="0 0 1024 1024"
+      viewBox="160 50 705 940"
       className={className}
       style={inlineStyle}
       fill={color || 'currentColor'}

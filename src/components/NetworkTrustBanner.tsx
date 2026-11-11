@@ -28,7 +28,7 @@ export const NetworkTrustBanner: React.FC<NetworkTrustBannerProps> = ({ totalInd
   return (
     <div
       className="w-full max-w-full bg-neutral-50/80 dark:bg-[#0c0f16]/90 border-y border-neutral-200/70 dark:border-[#1f2432] py-2.5 px-3 sm:px-6 relative overflow-hidden backdrop-blur-md"
-      style={{ maxWidth: '100vw', contain: 'paint layout' }}
+      style={{ maxWidth: '100%', contain: 'paint layout' }}
     >
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 md:gap-6 w-full min-w-0 overflow-hidden">
         {/* Etiqueta de confianza y promesa de valor */}

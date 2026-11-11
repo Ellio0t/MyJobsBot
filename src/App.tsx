@@ -35,7 +35,7 @@ import { JobotIcon } from './components/JobotIcon';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.9';
+  const APP_VERSION = 'v1.2.10';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -473,12 +473,12 @@ export function App() {
               setActiveTab('jobs');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="flex items-center gap-2 sm:gap-3 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden shrink-0"
+            className="flex items-center gap-2 sm:gap-2.5 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden shrink-0"
             title="Ir al Inicio (Radar de Empleos)"
             aria-label="Ir al Inicio de JobsBOT"
           >
-            <JobotIcon className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_12px_rgba(74,222,128,0.35)] group-hover:scale-105 transition-transform" />
-            <div className="flex flex-col justify-center">
+            <JobotIcon className="h-10 sm:h-11 md:h-12 w-auto text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_12px_rgba(74,222,128,0.35)] group-hover:scale-105 transition-transform" />
+            <div className="flex flex-col justify-center leading-none">
               <div className="flex items-center gap-1.5 sm:gap-2 leading-none">
                 <span className="font-montserrat font-black text-sm sm:text-base md:text-lg tracking-[0.8px] sm:tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
                   {brand.name}
@@ -487,7 +487,7 @@ export function App() {
                   {APP_VERSION}
                 </span>
               </div>
-              <p className="hidden sm:block text-[10px] md:text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 whitespace-nowrap mt-1 leading-none">
+              <p className="text-[9px] sm:text-[10px] md:text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 whitespace-nowrap mt-1 leading-none">
                 Tu Agente Personal de Búsqueda de Empleo
               </p>
             </div>
@@ -1074,8 +1074,12 @@ export function App() {
               {/* ASISTENTE JoBOT (MODO CARBÓN #12151c) */}
               <aside className="ai-chat-panel no-print xl:col-span-4 bg-white dark:bg-[#12151c] rounded-xl border border-neutral-200 dark:border-[#252a36] shadow-xl flex flex-col h-[680px] sticky top-20">
                 <div className="p-4 bg-[#111111] dark:bg-[#161a23] text-white rounded-t-xl border-b border-neutral-800 dark:border-[#242936] flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <JobotIcon className="w-5 h-5 text-emerald-400 dark:text-[#4ade80]" />
+                  <div className="flex items-center gap-2.5">
+                    <img
+                      src="/favicon.svg"
+                      alt="JoBOT"
+                      className="w-7 h-7 shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.35)]"
+                    />
                     <div>
                       <h3 className="font-montserrat text-xs font-extrabold uppercase tracking-wider text-emerald-400 dark:text-[#4ade80]">
                         JoBOT
@@ -1163,19 +1167,24 @@ export function App() {
           ===================================================================== */}
       <footer className="app-footer no-print mt-12 border-t border-neutral-200 dark:border-[#20242c] bg-white dark:bg-[#0c0d11] py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-neutral-500 dark:text-neutral-400">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => {
                 setActiveTab('jobs');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="flex items-center gap-2 text-left cursor-pointer group hover:opacity-90 transition-all bg-transparent border-0 p-0 outline-hidden"
+              className="flex items-center gap-2.5 text-left cursor-pointer group hover:opacity-90 transition-all bg-transparent border-0 p-0 outline-hidden"
               title="Ir al Inicio (Radar de Empleos)"
             >
-              <JobotIcon className="w-5 h-5 text-emerald-600 dark:text-[#4ade80] group-hover:scale-105 transition-transform" />
-              <span className="font-montserrat font-extrabold text-emerald-600 dark:text-[#4ade80] uppercase tracking-wider group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
-                {brand.name}
-              </span>
+              <JobotIcon className="h-9 sm:h-10 w-auto text-emerald-600 dark:text-[#4ade80] group-hover:scale-105 transition-transform shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.25)]" />
+              <div className="flex flex-col justify-center leading-none">
+                <span className="font-montserrat font-extrabold text-[9px] sm:text-[10px] text-neutral-400 dark:text-neutral-500 tracking-[1.5px] uppercase">
+                  My
+                </span>
+                <span className="font-montserrat font-black text-sm sm:text-base text-emerald-600 dark:text-[#4ade80] uppercase tracking-[1px] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors mt-0.5">
+                  JobsBOT
+                </span>
+              </div>
             </button>
             <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
               {APP_VERSION}

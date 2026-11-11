@@ -26,10 +26,12 @@ import { CompanyLogo } from './components/CompanyLogo';
 import { PortalBadge } from './components/PortalBadge';
 import { NetworkTrustBanner } from './components/NetworkTrustBanner';
 import { MidScrollIncentiveModal } from './components/MidScrollIncentiveModal';
+import { AppSplashScreen } from './components/AppSplashScreen';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.0';
+  const APP_VERSION = 'v1.2.1';
+  const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
@@ -1232,6 +1234,14 @@ export function App() {
         onClose={handleDismissScrollLead}
         onLoginClick={() => setShowAuthModal(true)}
       />
+
+      {/* PANTALLA DE ESPERA / SPLASH SCREEN INICIAL (My JobsBOT) */}
+      {showSplash && (
+        <AppSplashScreen
+          onFinish={() => setShowSplash(false)}
+          minDurationMs={1700}
+        />
+      )}
     </div>
   );
 }

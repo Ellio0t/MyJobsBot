@@ -37,17 +37,17 @@ export const MidScrollIncentiveModal: React.FC<MidScrollIncentiveModalProps> = (
             </button>
           </div>
           <h3 className="relative z-10 font-montserrat text-lg sm:text-xl font-black mt-2 leading-tight">
-            ¿Quieres ofertas 100% compatibles con tu perfil?
+            Personaliza tu Búsqueda de Empleo
           </h3>
           <p className="relative z-10 text-xs text-emerald-50 mt-1 leading-relaxed">
-            Actualmente estás viendo un pupurrí de muestra pública.
+            Sube tu CV, créalo o complétalo directamente en la plataforma.
           </p>
         </div>
 
         {/* CONTENIDO Y VENTAJAS */}
         <div className="p-6 space-y-4 text-xs">
           <p className="text-neutral-600 dark:text-neutral-300 leading-relaxed font-medium">
-            Al <strong>iniciar sesión y subir tu CV</strong>, JoBOT desbloquea el potencial completo de la plataforma:
+            Al sincronizar tu perfil, obtendrás <strong>vacantes completamente optimizadas para tu CV</strong> y calcularás tu afinidad ATS antes de postular:
           </p>
 
           <div className="space-y-3">
@@ -103,15 +103,16 @@ export const MidScrollIncentiveModal: React.FC<MidScrollIncentiveModalProps> = (
               }}
               className="w-full py-3 px-4 rounded-xl bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-montserrat text-xs font-black uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center justify-center gap-2 cursor-pointer shadow-md"
             >
-              <i className="ri-user-shared-line text-sm" />
-              Iniciar Sesión o Crear Cuenta Gratis
+              <i className="ri-upload-cloud-2-line text-sm" />
+              Subir o Crear mi CV (Acceso Completo)
             </button>
 
             <button
               onClick={onClose}
-              className="w-full py-2 px-4 rounded-xl text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white text-[11px] font-montserrat font-semibold transition-colors cursor-pointer text-center"
+              className="w-full py-2 px-4 rounded-xl text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white text-[11px] font-montserrat font-semibold transition-colors cursor-pointer flex items-center justify-center gap-1.5"
             >
-              Continuar viendo la muestra de empleos
+              <i className="ri-arrow-down-s-line text-sm" />
+              Minimizar y continuar explorando
             </button>
           </div>
         </div>
@@ -119,3 +120,4 @@ export const MidScrollIncentiveModal: React.FC<MidScrollIncentiveModalProps> = (
     </div>
   );
 };
+

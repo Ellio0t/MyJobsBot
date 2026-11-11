@@ -104,6 +104,31 @@ Este inventario audita las herramientas y tecnologías utilizadas en todos los p
 - **Función:** Mecanismo de conversión y retención de usuarios que limita el feed a un "pupurrí" público de hasta 10 ofertas por área para visitantes no autenticados, y activa de manera reactiva un modal persuasivo al alcanzar el 45-50% del scroll vertical, incentivando el registro con Google/Email y la carga del CV para desbloquear el feed total y el cálculo ATS.
 - **¿Por qué la IA depende del humano aquí?:** El diseño de embudos de conversión (funnels) exige calibrar la fricción psicológica del usuario: un muro de pago o registro inmediato al entrar ahuyenta al 90% de los visitantes (tasa de rebote masiva), mientras que dejar todo abierto sin incentivos no genera registros ni base de usuarios. El equilibrio entre dar valor inicial (10 ofertas por área) y capturar el lead a mitad del recorrido requiere criterio comercial y psicológico humano.
 
+---
+
+## 💰 5. Arquitectura de Monetización Ética & Motores de Conversión
+
+### **Outbound Job Affiliate Tracking Engine (Vía A: CPC / CPA)**
+- **Proyectos:** `MYJOBSBOT` (`src/services/affiliateEngine.ts`)
+- **Función:** Interceptación e inyección transparente de parámetros de afiliados (Publisher IDs, SubIDs, etiquetas UTM de campaña) en todas las URLs de postulación salientes hacia Indeed, ZipRecruiter, Jooble, Talent.com y agregadores asociados, contabilizando eventos de clic para estimar ingresos CPC ($0.10 - $0.80) y CPA ($3 - $12).
+- **¿Por qué la IA depende del humano aquí?:** Cada red de empleo tiene contratos y requerimientos de tracking distintos (parámetros `pub`, `rgid`, `partner_id`, `subid`). Además, las políticas de Google y buscadores exigen atributos `rel="noopener noreferrer sponsored"` para no penalizar el SEO ni violar términos de servicio, requiriendo rigor legal y técnico humano.
+
+### **B2B Employer Self-Service & Paid Placement Engine (Vía B)**
+- **Proyectos:** `MYJOBSBOT` (`src/components/PostJobModal.tsx`, `src/types.ts`)
+- **Función:** Portal de autoservicio para empresas y reclutadores que permite publicar y fijar ofertas en el TOP del listado de JoBOT con distintivo dorado "VIP / Destacada" y mayor prioridad en cálculo ATS por $19 a $39 USD por 15 o 30 días.
+- **¿Por qué la IA depende del humano aquí?:** La estructuración de planes de precios (pricing strategy) y la validación de la autenticidad de las empresas para evitar estafas laborales (*job scams*) exige moderación, políticas de reembolso y supervisión humana que la IA no puede delegar automáticamente.
+
+### **Skill-Gap Upskilling & EdTech Affiliate Engine (Vía C)**
+- **Proyectos:** `MYJOBSBOT` (`src/services/upskillingEngine.ts`, `src/components/UpskillingCourseCard.tsx`)
+- **Función:** Detección algorítmica de brechas formativas entre el CV del candidato y las exigencias de la oferta (ej. Inglés conversacional, Postman, AWS, Power BI, Scrum), sugiriendo cursos oficiales de Coursera, Platzi, Open English con enlaces de afiliado (comisiones de 20% a 50%) y cálculo de incremento de afinidad ATS (+15% a +22%).
+- **¿Por qué la IA depende del humano aquí?:** No basta con emparejar strings; se debe recomendar programas con alta reputación y utilidad real de mercado. Una IA desatendida recomendaría cursos obsoletos o de baja calidad, destruyendo la reputación de JoBOT ante los postulantes.
+
+### **Native Non-Intrusive In-Feed Advertising Engine (Vía D)**
+- **Proyectos:** `MYJOBSBOT` (`src/components/SponsoredFeedCard.tsx`, Android AdMob bridge)
+- **Función:** Inserción modular cada 8 tarjetas en el feed de ofertas de un anuncio patrocinado con estética 100% idéntica al diseño del feed, publicitando herramientas de alto valor para trabajadores remotos (bancos en USD sin comisiones, VPNs seguras, simuladores de entrevistas con IA) sin romper la experiencia del usuario.
+- **¿Por qué la IA depende del humano aquí?:** La saturación publicitaria es la causa número uno de abandono de aplicaciones. El arquitecto humano debe regular la cadencia (ratio 1:8), la relevancia del anunciante y el respeto a la navegación móvil para maximizar el RPM (*Revenue Per Mille*) sin degradar la retención.
+
+
 
 
 

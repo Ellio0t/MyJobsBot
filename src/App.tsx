@@ -34,7 +34,7 @@ import { buildAffiliateApplyUrl, recordOutboundClick } from './services/affiliat
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.4';
+  const APP_VERSION = 'v1.2.5';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -645,7 +645,7 @@ export function App() {
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
                 <div className="space-y-1.5 max-w-2xl">
                   <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-emerald-500/10 dark:bg-[#4ade80]/15 text-[10px] font-montserrat font-bold uppercase tracking-widest text-emerald-600 dark:text-[#4ade80] border border-emerald-500/20 dark:border-[#4ade80]/30">
-                    <i className="ri-robot-3-line text-xs" /> MYJOBSBOT • Radar Inteligente
+                    <i className="ri-sparkling-fill text-xs text-emerald-500 dark:text-[#4ade80]" /> Búsqueda Inteligente
                   </div>
                   <h2 className="font-montserrat text-lg sm:text-xl font-extrabold uppercase tracking-wide leading-snug">
                     Optimiza tu búsqueda subiendo tu CV

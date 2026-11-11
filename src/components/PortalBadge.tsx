@@ -5,12 +5,14 @@ interface PortalBadgeProps {
   source: JobOffer['source'];
   size?: 'sm' | 'md';
   showLabel?: boolean;
+  variant?: 'colorful' | 'glass';
 }
 
 export const PortalBadge: React.FC<PortalBadgeProps> = ({
   source,
   size = 'sm',
   showLabel = true,
+  variant = 'colorful',
 }) => {
   let normalized = (source || 'ZipRecruiter').trim();
   // Eliminar referencias a Google Jobs: mostrar la bolsa de trabajo agregada real
@@ -118,11 +120,16 @@ export const PortalBadge: React.FC<PortalBadgeProps> = ({
 
   const portal = renderIconAndLabel();
 
+  const containerClass =
+    variant === 'glass'
+      ? 'bg-white/80 dark:bg-[#141824]/90 border border-neutral-200/90 dark:border-[#272e3d] text-neutral-800 dark:text-neutral-200 hover:border-emerald-500/50 hover:bg-white dark:hover:bg-[#1a2130] shadow-2xs transition-all'
+      : portal.bgClass;
+
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border font-montserrat font-bold tracking-tight select-none shrink-0 ${
-        portal.bgClass
-      } ${size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-xs'}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border font-montserrat font-bold tracking-tight select-none shrink-0 ${containerClass} ${
+        size === 'sm' ? 'px-2.5 py-1 text-[11px]' : 'px-3 py-1.5 text-xs'
+      }`}
       title={`Oferta laboral provista y verificada por ${portal.label}`}
     >
       {portal.icon}

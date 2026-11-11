@@ -6,7 +6,7 @@ interface NetworkTrustBannerProps {
 }
 
 export const NetworkTrustBanner: React.FC<NetworkTrustBannerProps> = ({ totalIndexed = 89 }) => {
-  // Las bolsas de empleo internacionales líderes que JoBOT agrega y conecta
+  // Las bolsas de empleo internacionales líderes conectadas
   const networks = [
     'LinkedIn',
     'Indeed',
@@ -22,35 +22,48 @@ export const NetworkTrustBanner: React.FC<NetworkTrustBannerProps> = ({ totalInd
     'JobLeads',
   ];
 
+  // Duplicamos el listado para lograr un loop infinito continuo y fluido
+  const loopedNetworks = [...networks, ...networks];
+
   return (
-    <div className="w-full bg-linear-to-r from-neutral-50 via-white to-neutral-50 dark:from-[#0c0f16] dark:via-[#131722] dark:to-[#0c0f16] border-y border-neutral-200/80 dark:border-[#222736] py-3 px-3 sm:px-6 shadow-2xs">
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-3">
+    <div className="w-full bg-neutral-50/80 dark:bg-[#0c0f16]/90 border-y border-neutral-200/70 dark:border-[#1f2432] py-2.5 px-3 sm:px-6 relative overflow-hidden backdrop-blur-md">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 md:gap-6">
         {/* Etiqueta de confianza y promesa de valor */}
-        <div className="flex items-center gap-2.5 shrink-0 text-center lg:text-left">
-          <span className="relative flex h-2.5 w-2.5">
+        <div className="flex items-center gap-2.5 shrink-0 select-none">
+          <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-montserrat text-xs font-black uppercase tracking-wider text-neutral-900 dark:text-white">
-                Lo mejor de +12 Bolsas de Trabajo en un solo lugar
-              </span>
-              <span className="hidden sm:inline-block px-1.5 py-0.2 rounded-full text-[9px] font-extrabold uppercase bg-emerald-500/15 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/30">
-                Red Unificada
-              </span>
-            </div>
-            <p className="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium">
-              Agregamos y sincronizamos vacantes reales de las principales bolsas mundiales
-            </p>
+          <div className="flex items-center gap-2">
+            <span className="font-montserrat text-xs font-black uppercase tracking-wider text-neutral-900 dark:text-white whitespace-nowrap">
+              Red de +12 Bolsas Conectadas
+            </span>
+            <span className="hidden xl:inline text-neutral-300 dark:text-neutral-700">•</span>
+            <span className="hidden xl:inline text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 whitespace-nowrap">
+              Lo mejor de las bolsas mundiales en un solo lugar
+            </span>
           </div>
         </div>
 
-        {/* Badges de las plataformas oficiales (Sin Google Jobs, solo bolsas de trabajo reales) */}
-        <div className="flex flex-wrap items-center justify-center lg:justify-end gap-1.5 sm:gap-2 max-w-2xl">
-          {networks.map((net) => (
-            <PortalBadge key={net} source={net} size="sm" />
-          ))}
+        {/* Ticker / Carrusel continuo infinito con desvanecimiento en bordes (Estilo Stripe / Linear) */}
+        <div className="relative overflow-hidden w-full flex-1 min-w-0">
+          {/* Máscara de desvanecimiento izquierda */}
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:w-16 z-10 bg-linear-to-r from-neutral-50 dark:from-[#0c0f16] to-transparent" />
+
+          {/* Máscara de desvanecimiento derecha */}
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:w-16 z-10 bg-linear-to-l from-neutral-50 dark:from-[#0c0f16] to-transparent" />
+
+          {/* Marquee en movimiento suave */}
+          <div className="animate-marquee flex items-center gap-2.5 py-0.5 cursor-grab active:cursor-grabbing">
+            {loopedNetworks.map((net, idx) => (
+              <PortalBadge
+                key={`${net}-${idx}`}
+                source={net}
+                size="sm"
+                variant="glass"
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>

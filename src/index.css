@@ -34,6 +34,29 @@
 }
 
 /* ==========================================================================
+   TICKER / MARQUEE SUAVE PARA PLATAFORMAS CONECTADAS (ESTILO STRIPE / LINEAR)
+   ========================================================================== */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 38s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* ==========================================================================
    REGLAS ESTRICTAS DE IMPRESIÓN ATS (CERO BOTONES / CERO BANNERS EN EL PDF)
    ========================================================================== */
 @media print {

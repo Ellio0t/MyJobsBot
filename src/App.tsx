@@ -35,7 +35,7 @@ import { JobotIcon } from './components/JobotIcon';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.10';
+  const APP_VERSION = 'v1.2.11';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -1078,7 +1078,7 @@ export function App() {
                     <img
                       src="/favicon.svg"
                       alt="JoBOT"
-                      className="w-7 h-7 shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.35)]"
+                      className="w-8 h-8 shrink-0 drop-shadow-[0_0_10px_rgba(74,222,128,0.4)]"
                     />
                     <div>
                       <h3 className="font-montserrat text-xs font-extrabold uppercase tracking-wider text-emerald-400 dark:text-[#4ade80]">
@@ -1115,23 +1115,32 @@ export function App() {
                         msg.sender === 'user' ? 'items-end' : 'items-start'
                       }`}
                     >
-                      <div
-                        className={`max-w-[90%] rounded-xl p-3 text-xs leading-relaxed ${
-                          msg.sender === 'user'
-                            ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-medium shadow-xs'
-                            : 'bg-neutral-100 dark:bg-[#181c25] text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-[#262c3b]'
-                        }`}
-                      >
-                        {msg.text}
-                        {msg.createdVersionId && (
-                          <button
-                            onClick={() => setActiveCvId(msg.createdVersionId!)}
-                            className="mt-2 w-full py-1.5 px-2.5 rounded bg-emerald-500/15 dark:bg-[#4ade80]/15 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/25 dark:border-[#4ade80]/30 font-montserrat font-bold text-[10px] uppercase tracking-wider flex items-center justify-between cursor-pointer"
-                          >
-                            <span>Ver versión</span>
-                            <i className="ri-arrow-right-s-line text-sm" />
-                          </button>
+                      <div className="flex items-start gap-2 max-w-[95%]">
+                        {msg.sender === 'bot' && (
+                          <img
+                            src="/favicon.svg"
+                            alt="JoBOT"
+                            className="w-5 h-5 shrink-0 mt-0.5 drop-shadow-[0_0_6px_rgba(74,222,128,0.3)]"
+                          />
                         )}
+                        <div
+                          className={`rounded-xl p-3 text-xs leading-relaxed ${
+                            msg.sender === 'user'
+                              ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-medium shadow-xs'
+                              : 'bg-neutral-100 dark:bg-[#181c25] text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-[#262c3b]'
+                          }`}
+                        >
+                          {msg.text}
+                          {msg.createdVersionId && (
+                            <button
+                              onClick={() => setActiveCvId(msg.createdVersionId!)}
+                              className="mt-2 w-full py-1.5 px-2.5 rounded bg-emerald-500/15 dark:bg-[#4ade80]/15 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/25 dark:border-[#4ade80]/30 font-montserrat font-bold text-[10px] uppercase tracking-wider flex items-center justify-between cursor-pointer"
+                            >
+                              <span>Ver versión</span>
+                              <i className="ri-arrow-right-s-line text-sm" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                       <span className="text-[9px] text-neutral-400 mt-1 px-1">{msg.timestamp}</span>
                     </div>

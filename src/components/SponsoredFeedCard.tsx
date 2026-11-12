@@ -70,7 +70,7 @@ export const SponsoredFeedCard: React.FC<SponsoredFeedCardProps> = ({ index }) =
         {/* Contenido */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
-            <h4 className="font-montserrat font-extrabold text-sm sm:text-base text-neutral-900 dark:text-white leading-snug">
+            <h4 className="font-montserrat font-extrabold text-sm sm:text-base text-sky-700 dark:text-sky-300 leading-snug">
               {ad.title}
             </h4>
           </div>
@@ -83,9 +83,9 @@ export const SponsoredFeedCard: React.FC<SponsoredFeedCardProps> = ({ index }) =
         </div>
       </div>
 
-      {/* Footer del Anuncio con botón de acción */}
-      <div className="mt-3 pt-2.5 border-t border-neutral-200/60 dark:border-white/5 flex items-center justify-between">
-        <span className="text-[10px] text-neutral-400 dark:text-neutral-500">
+      {/* Footer del Anuncio con botón de acción responsivo */}
+      <div className="mt-3 pt-2.5 border-t border-neutral-200/60 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <span className="text-[10px] text-neutral-400 dark:text-neutral-500 leading-tight text-center sm:text-left">
           Al usar estos servicios apoyas el mantenimiento 100% gratuito de JoBOT
         </span>
 
@@ -93,7 +93,7 @@ export const SponsoredFeedCard: React.FC<SponsoredFeedCardProps> = ({ index }) =
           href={ad.url}
           target="_blank"
           rel="noopener noreferrer sponsored"
-          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-neutral-900 dark:bg-[#202534] text-white dark:text-[#4ade80] hover:opacity-90 transition-opacity shrink-0 cursor-pointer"
+          className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 sm:py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-neutral-900 dark:bg-[#202534] text-white dark:text-[#4ade80] hover:opacity-90 transition-opacity w-full sm:w-auto shrink-0 cursor-pointer shadow-xs"
         >
           <span>{ad.ctaText}</span>
           <ExternalLink className="w-3.5 h-3.5" />

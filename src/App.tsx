@@ -33,9 +33,53 @@ import { SponsoredFeedCard } from './components/SponsoredFeedCard';
 import { buildAffiliateApplyUrl, recordOutboundClick } from './services/affiliateEngine';
 import { JobotIcon } from './components/JobotIcon';
 
+// Utilidades ergonómicas para visualización limpia en tarjetas de empleo
+function formatCompactSalary(raw: string): string {
+  if (!raw) return 'A convenir';
+  const s = raw.replace(/\s*\([^)]*\)/g, '').trim();
+  const rangeMatch = s.match(/(?:\$|USD\s*)?([\d,.]+)\s*(?:-|a|\/)\s*(?:\$|USD\s*)?([\d,.]+)\s*(USD|EUR|\$)?(?:\s*\/\s*(mes|hora|año|mo|hr|h))?/i);
+  if (rangeMatch) {
+    const min = rangeMatch[1].replace(/^\$/, '');
+    const max = rangeMatch[2].replace(/^\$/, '');
+    const curr = (rangeMatch[3] && rangeMatch[3] !== '$') ? rangeMatch[3].toUpperCase() : 'USD';
+    const period = rangeMatch[4] ? (rangeMatch[4].toLowerCase().startsWith('h') ? '/h' : '') : '';
+    return `${min} - ${max} ${curr}${period}`;
+  }
+  const singleMatch = s.match(/(?:\$|USD\s*)?([\d,.]+)\s*(USD|EUR|\$)?(?:\s*\/\s*(mes|hora|año|mo|hr|h))?/i);
+  if (singleMatch) {
+    const amt = singleMatch[1].replace(/^\$/, '');
+    const curr = (singleMatch[2] && singleMatch[2] !== '$') ? singleMatch[2].toUpperCase() : 'USD';
+    const period = singleMatch[3] ? (singleMatch[3].toLowerCase().startsWith('h') ? '/h' : '') : '';
+    return `${amt} ${curr}${period}`;
+  }
+  return s.length > 22 ? s.slice(0, 22) + '…' : s;
+}
+
+function formatCompactCountry(scope: string): string {
+  if (!scope) return 'Remoto';
+  if (scope.toUpperCase().includes('LATAM')) return 'LATAM Remoto';
+  if (scope.toLowerCase().includes('global')) return 'Global Remoto';
+  if (scope.toLowerCase().includes('hispano')) return 'Hispanoamérica';
+  const clean = scope.replace(/\s*\([^)]*\)/g, '').trim();
+  return clean.length > 18 ? clean.slice(0, 18) + '…' : clean;
+}
+
+const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
+  { id: 'all', label: 'Todas las Áreas', icon: 'ri-apps-2-line' },
+  { id: 'tech', label: 'Tecnología', icon: 'ri-code-s-slash-line' },
+  { id: 'data', label: 'Datos & IA', icon: 'ri-database-2-line' },
+  { id: 'qa', label: 'QA & Calidad', icon: 'ri-checkbox-circle-line' },
+  { id: 'support', label: 'Soporte', icon: 'ri-customer-service-2-line' },
+  { id: 'sales', label: 'Ventas', icon: 'ri-funds-line' },
+  { id: 'finance', label: 'Finanzas', icon: 'ri-money-dollar-circle-line' },
+  { id: 'health', label: 'Salud', icon: 'ri-heart-pulse-line' },
+  { id: 'legal', label: 'Legal', icon: 'ri-scales-3-line' },
+  { id: 'ops', label: 'Operaciones', icon: 'ri-settings-4-line' },
+];
+
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.21';
+  const APP_VERSION = 'v1.2.22';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -508,12 +552,12 @@ export function App() {
                 setActiveTab('jobs');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="flex items-center gap-2 sm:gap-2.5 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden shrink-0 min-w-0"
+              className="flex items-center gap-2 sm:gap-2.5 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden flex-1 min-w-0 pr-1"
               title="Ir al Inicio (Radar de Empleos)"
               aria-label="Ir al Inicio de JobsBOT"
             >
-              <JobotIcon className="h-10 sm:h-11 md:h-12 w-auto text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_12px_rgba(74,222,128,0.35)] group-hover:scale-105 transition-transform" />
-              <div className="flex flex-col justify-center min-w-0">
+              <JobotIcon className="h-9 sm:h-11 md:h-12 w-auto text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_12px_rgba(74,222,128,0.35)] group-hover:scale-105 transition-transform" />
+              <div className="flex flex-col justify-center min-w-0 overflow-hidden">
                 <div className="flex items-center gap-1.5 sm:gap-2 leading-none">
                   <span className="font-montserrat font-black text-sm sm:text-base md:text-lg tracking-[0.8px] sm:tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors truncate">
                     {brand.name}
@@ -633,7 +677,7 @@ export function App() {
                   </span>
                   <button
                     onClick={() => setShowAuthModal(true)}
-                    className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-montserrat text-[10px] sm:text-xs font-extrabold uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center gap-1 sm:gap-1.5 cursor-pointer shadow-xs whitespace-nowrap"
+                    className="px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-lg bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-montserrat text-[10px] sm:text-xs font-extrabold uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center gap-1 sm:gap-1.5 cursor-pointer shadow-xs whitespace-nowrap shrink-0"
                   >
                     <i className="ri-user-shared-line text-xs" />
                     <span className="hidden sm:inline">Iniciar Sesión</span>
@@ -759,16 +803,21 @@ export function App() {
               </div>
             </div>
 
-            {/* BARRA DE FILTROS (FONDO CARBÓN #12151c) */}
-            <div className="bg-white dark:bg-[#12151c] p-4 rounded-xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-4">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-neutral-200 dark:border-[#202532]">
+            {/* =====================================================================
+                ZONA DE CONTROL NATIVA: TÍTULO, BARRA DE BÚSQUEDA Y CARRUSEL DE ÁREAS
+                (Diseño nativo ligero tipo app, sin encerrar en una tarjeta pesada)
+                ===================================================================== */}
+            <div className="space-y-3 pt-1">
+              {/* ENCABEZADO: TÍTULO "OPORTUNIDADES DE EMPLEO" + ESTADO + BOTÓN ACTUALIZAR */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-montserrat text-sm font-extrabold uppercase tracking-wider text-neutral-900 dark:text-white">
-                    Oportunidades de Empleo Indexadas
+                  <h3 className="font-montserrat text-sm sm:text-base font-extrabold uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    Oportunidades de Empleo
                   </h3>
                   {!session.isAuthenticated ? (
                     <span className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/25 font-bold uppercase tracking-wider flex items-center gap-1">
-                      <i className="ri-eye-line text-xs" /> Muestra Pública (Selección Curada 10x)
+                      <i className="ri-eye-line text-xs" /> Muestra Pública (10x)
                     </span>
                   ) : (
                     <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-[#4ade80] border border-emerald-500/20 dark:border-[#4ade80]/30 font-semibold">
@@ -777,70 +826,71 @@ export function App() {
                   )}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    onClick={() => handleSyncLiveJobs()}
-                    disabled={isSyncingApi}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#2f3545] bg-neutral-50 dark:bg-[#181c25] hover:bg-neutral-100 dark:hover:bg-[#202633] text-neutral-800 dark:text-neutral-200 cursor-pointer transition-colors"
-                  >
-                    <i className={`ri-refresh-line text-sm ${isSyncingApi ? 'animate-spin' : ''}`} />
-                    Actualizar
-                  </button>
-                </div>
+                <button
+                  onClick={() => handleSyncLiveJobs()}
+                  disabled={isSyncingApi}
+                  className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#2f3545] bg-white dark:bg-[#181c25] hover:bg-neutral-100 dark:hover:bg-[#202633] text-neutral-800 dark:text-neutral-200 cursor-pointer transition-colors shadow-2xs"
+                >
+                  <i className={`ri-refresh-line text-sm ${isSyncingApi ? 'animate-spin' : ''}`} />
+                  <span>Actualizar</span>
+                </button>
               </div>
 
-              <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
-                <div className="flex flex-wrap items-center gap-1.5">
-                  {(
-                    [
-                      { id: 'all', label: 'Todas las Áreas' },
-                      { id: 'tech', label: 'Tecnología' },
-                      { id: 'health', label: 'Salud & Medicina' },
-                      { id: 'legal', label: 'Legal & Leyes' },
-                      { id: 'finance', label: 'Finanzas & Contab.' },
-                      { id: 'sales', label: 'Ventas & Comercial' },
-                      { id: 'support', label: 'Soporte al Cliente' },
-                      { id: 'ops', label: 'Operaciones' },
-                      { id: 'data', label: 'Datos & IA' },
-                      { id: 'qa', label: 'QA & Calidad' },
-                    ] as { id: JobCategory; label: string }[]
-                  ).map((cat) => (
+              {/* BARRA UNIFICADA DE BÚSQUEDA Y FILTRO DE IDIOMA */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-neutral-200/50 dark:bg-[#131720] p-1.5 rounded-xl border border-neutral-300/80 dark:border-[#222736]">
+                <div className="relative flex-1">
+                  <i className="ri-search-2-line text-sm text-neutral-400 absolute left-3 top-2.5" />
+                  <input
+                    type="text"
+                    placeholder="Buscar puesto, empresa, rubro (ej: QA, Data, React)..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSyncLiveJobs(searchQuery)}
+                    className="w-full pl-9 pr-8 py-2 rounded-lg text-xs bg-white dark:bg-[#0c0f14] border border-neutral-300 dark:border-[#262c3b] text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80] transition-colors"
+                  />
+                  {searchQuery && (
                     <button
-                      key={cat.id}
-                      onClick={() => setSelectedCategory(cat.id)}
-                      className={`px-3 py-1.5 rounded-lg font-montserrat text-[11px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
-                        selectedCategory === cat.id
-                          ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
-                          : 'bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#222734] border border-transparent dark:border-[#252a36]'
-                      }`}
+                      onClick={() => {
+                        setSearchQuery('');
+                        handleSyncLiveJobs('');
+                      }}
+                      className="absolute right-2.5 top-2.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-white text-xs cursor-pointer"
                     >
-                      {cat.label}
+                      <i className="ri-close-circle-fill" />
                     </button>
-                  ))}
+                  )}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="sm:w-52 shrink-0">
                   <select
                     value={languageFilter}
                     onChange={(e) => setLanguageFilter(e.target.value as any)}
-                    className="px-3 py-1.5 rounded-lg text-xs bg-neutral-100 dark:bg-[#181c25] border border-neutral-300 dark:border-[#2f3545] text-neutral-900 dark:text-neutral-200"
+                    className="w-full px-3 py-2 rounded-lg text-xs font-semibold bg-white dark:bg-[#0c0f14] border border-neutral-300 dark:border-[#262c3b] text-neutral-900 dark:text-neutral-200 focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80] cursor-pointer"
                   >
-                    <option value="all">Idioma: Todos</option>
-                    <option value="es">Solo 100% Español</option>
-                    <option value="written-en">Sin Inglés Hablado</option>
+                    <option value="all">🌐 Idioma: Todos</option>
+                    <option value="es">🇪🇸 Solo 100% Español</option>
+                    <option value="written-en">✍️ Sin Inglés Hablado</option>
                   </select>
+                </div>
+              </div>
 
-                  <div className="relative flex-1 sm:w-60">
-                    <i className="ri-search-2-line text-sm text-neutral-400 absolute left-3 top-2" />
-                    <input
-                      type="text"
-                      placeholder="Buscar puesto, empresa, rubro..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleSyncLiveJobs(searchQuery)}
-                      className="w-full pl-8 pr-3 py-1.5 rounded-lg text-xs bg-neutral-100 dark:bg-[#181c25] border border-neutral-300 dark:border-[#2f3545] text-neutral-900 dark:text-neutral-200 focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80]"
-                    />
-                  </div>
+              {/* CARRUSEL HORIZONTAL NATIVO DE CATEGORÍAS CON ÍCONOS */}
+              <div className="relative">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 pt-0.5 no-scrollbar scroll-smooth">
+                  {CATEGORY_ITEMS.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setSelectedCategory(cat.id)}
+                      className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+                        selectedCategory === cat.id
+                          ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs scale-102 ring-2 ring-emerald-500/30'
+                          : 'bg-white dark:bg-[#151922] text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white border border-neutral-300/80 dark:border-[#252b3a] hover:border-neutral-400'
+                      }`}
+                    >
+                      <i className={`${cat.icon} text-xs`} />
+                      <span>{cat.label}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -902,66 +952,74 @@ export function App() {
                         </div>
                       )}
 
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-2.5 sm:gap-4 flex-1 min-w-0">
+                      {/* FILA SUPERIOR: Empresa a la izquierda + Portal y Match ATS a la derecha */}
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
                           <CompanyLogo
                             logoUrl={job.companyLogo}
                             companyName={job.company}
                             category={job.category}
-                            sizeClass="w-10 h-10 sm:w-12 sm:h-12 shrink-0"
+                            sizeClass="w-8 h-8 sm:w-9 sm:h-9 shrink-0"
                           />
-
-                          <div className="flex-1 min-w-0">
-                            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
-                              <span className="font-montserrat text-xs font-extrabold uppercase tracking-wider text-neutral-600 dark:text-[#4ade80]">
-                                {job.company}
-                              </span>
-                              <span className="text-neutral-300 dark:text-neutral-600">•</span>
-                              <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-montserrat font-bold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-[#2a3040]">
-                                {job.salary}
-                              </span>
-                              <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-semibold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2a3040]">
-                                {job.languageReq}
-                              </span>
-                              <span className="px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/20 dark:border-[#4ade80]/30">
-                                {job.countryScope}
-                              </span>
-                            </div>
-
-                            <h4 className="font-montserrat text-sm sm:text-base font-extrabold text-[#111111] dark:text-white leading-snug group-hover:text-emerald-600 dark:group-hover:text-[#4ade80] transition-colors">
-                              {job.title}
-                            </h4>
-
-                            <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1.5 line-clamp-2 sm:line-clamp-3 leading-relaxed">
-                              {job.oneLineSummary}
-                            </p>
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span className="font-montserrat text-xs sm:text-sm font-extrabold uppercase tracking-wider text-neutral-800 dark:text-neutral-200 truncate">
+                              {job.company}
+                            </span>
                           </div>
                         </div>
 
-                        <div className="shrink-0 text-right flex flex-col items-end">
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <PortalBadge source={job.source} size="sm" />
                           {hasCustomCv ? (
-                            <div className="font-montserrat text-base sm:text-lg font-black text-[#111111] dark:text-[#4ade80] leading-none">
+                            <span className="font-montserrat text-xs sm:text-sm font-black text-emerald-600 dark:text-[#4ade80] px-2 py-0.5 rounded bg-emerald-500/10 dark:bg-[#4ade80]/15 border border-emerald-500/20 dark:border-[#4ade80]/30 whitespace-nowrap">
                               {job.matchScore}% MATCH
-                            </div>
+                            </span>
                           ) : (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 requireAuthAndRun('upload');
                               }}
-                              className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[9px] sm:text-[10px] font-montserrat font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/25 dark:border-[#4ade80]/30 hover:bg-emerald-500/20 transition-all cursor-pointer shadow-xs whitespace-nowrap"
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-montserrat font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/25 dark:border-[#4ade80]/30 hover:bg-emerald-500/20 transition-all cursor-pointer whitespace-nowrap"
                               title="Sube tu CV para calcular tu afinidad ATS exacta"
                             >
                               <i className="ri-upload-cloud-2-line text-xs" />
-                              <span className="hidden sm:inline">Subir CV para Match</span>
+                              <span className="hidden sm:inline">Subir CV</span>
                               <span className="sm:hidden">Match ATS</span>
                             </button>
                           )}
-                          <div className="mt-1">
-                            <PortalBadge source={job.source} size="sm" />
-                          </div>
                         </div>
                       </div>
+
+                      {/* TÍTULO DE LA VACANTE: En Azul Cielo / Sky Blue (ni amarillo, ni verde, ni morado) */}
+                      <h4 className="font-montserrat text-sm sm:text-base font-extrabold text-sky-700 dark:text-sky-300 leading-snug group-hover:text-sky-600 dark:group-hover:text-sky-200 transition-colors">
+                        {job.title}
+                      </h4>
+
+                      {/* SUELDO DESTACADO INMEDIATAMENTE DEBAJO DEL TÍTULO + ETIQUETAS COMPACTAS */}
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2">
+                        {/* Sueldo destacado: solo números/montos limpios */}
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-montserrat font-black bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/50 shadow-2xs">
+                          <i className="ri-money-dollar-circle-line text-xs" />
+                          <span>{formatCompactSalary(job.salary)}</span>
+                        </span>
+
+                        {/* Alcance geográfico compacto */}
+                        <span className="px-2 py-1 rounded-md text-[10px] sm:text-[11px] font-semibold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-[#2a3040] truncate max-w-[170px] sm:max-w-none">
+                          <i className="ri-map-pin-2-line text-xs mr-1 text-neutral-400" />
+                          {formatCompactCountry(job.countryScope)}
+                        </span>
+
+                        {/* Idioma compacto */}
+                        <span className="px-2 py-1 rounded-md text-[10px] sm:text-[11px] font-semibold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-[#2a3040]">
+                          {job.languageReq}
+                        </span>
+                      </div>
+
+                      {/* RESUMEN DE LA OFERTA: Ancho completo y máxima legibilidad */}
+                      <p className="text-xs text-neutral-600 dark:text-neutral-300 mt-2.5 line-clamp-2 sm:line-clamp-3 leading-relaxed">
+                        {job.oneLineSummary}
+                      </p>
 
                       <div className="mt-3.5 pt-2.5 sm:pt-3 border-t border-neutral-100 dark:border-[#202532] flex flex-wrap items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">

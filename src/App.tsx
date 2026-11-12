@@ -32,6 +32,7 @@ import { PostJobModal } from './components/PostJobModal';
 import { SponsoredFeedCard } from './components/SponsoredFeedCard';
 import { buildAffiliateApplyUrl, recordOutboundClick } from './services/affiliateEngine';
 import { JobotIcon } from './components/JobotIcon';
+import { ProfileView } from './components/ProfileView';
 
 // Utilidades ergonómicas para visualización limpia en tarjetas de empleo
 function formatCompactSalary(raw: string): string {
@@ -79,7 +80,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.24';
+  const APP_VERSION = 'v1.2.25';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -138,8 +139,8 @@ export function App() {
     null
   );
 
-  // 3. Pestaña Principal ('jobs' = EMPLEOS | 'studio' = My CV)
-  const [activeTab, setActiveTab] = useState<'jobs' | 'studio'>('jobs');
+  // 3. Pestaña Principal ('jobs' = EMPLEOS | 'studio' = My CV | 'profile' = Mi Perfil)
+  const [activeTab, setActiveTab] = useState<'jobs' | 'studio' | 'profile'>('jobs');
 
   // 4. CVs: El visitante NUNCA ve el CV personal del dueño, solo una plantilla base de ejemplo
   const [cvVersions, setCvVersions] = useState<CVVersion[]>([VISITOR_SAMPLE_CV]);
@@ -610,6 +611,26 @@ export function App() {
                 )}
               </button>
 
+              {/* PESTAÑA PERFIL COMPLETO & RED PROFESIONAL */}
+              <button
+                onClick={() => {
+                  if (!session.isAuthenticated) {
+                    setShowAuthModal(true);
+                  } else {
+                    setActiveTab('profile');
+                  }
+                }}
+                className={`px-3.5 py-1.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+                  activeTab === 'profile'
+                    ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                }`}
+                title="Ver perfil completo y red profesional"
+              >
+                <i className="ri-user-3-line text-sm" />
+                <span>PERFIL</span>
+              </button>
+
               {/* BOTÓN B2B: PUBLICAR OFERTA DESTACADA */}
               <button
                 onClick={() => setShowPostJobModal(true)}
@@ -687,9 +708,13 @@ export function App() {
               ) : (
                 <div className="flex items-center gap-1.5 sm:gap-2.5 pl-1.5 sm:pl-2 border-l border-neutral-200 dark:border-[#20242c]">
                   <div
-                    onClick={() => avatarInputRef.current?.click()}
-                    title="Cambiar foto de perfil"
-                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden border border-neutral-300 dark:border-[#4ade80]/50 cursor-pointer relative group shrink-0"
+                    onClick={() => setActiveTab('profile')}
+                    title="Ver mi perfil completo y red profesional"
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden border cursor-pointer relative group shrink-0 transition-all ${
+                      activeTab === 'profile'
+                        ? 'border-[#4ade80] ring-2 ring-[#4ade80]/40'
+                        : 'border-neutral-300 dark:border-[#4ade80]/50 hover:border-[#4ade80]'
+                    }`}
                   >
                     <img
                       src={session.photoURL || 'https://ui-avatars.com/api/?name=User&background=111&color=4ade80'}
@@ -709,11 +734,11 @@ export function App() {
             </div>
           </div>
 
-          {/* FILA 2 MÓVIL: ACCIONES EXCLUSIVAS POR DEBAJO DEL LOGO (EMPLEOS, CV, PUBLICAR) */}
+          {/* FILA 2 MÓVIL: ACCIONES EXCLUSIVAS POR DEBAJO DEL LOGO (EMPLEOS, CV, PERFIL, PUBLICAR) */}
           <div className="sm:hidden flex items-center gap-1.5 pb-2 pt-1 border-t border-neutral-100 dark:border-[#1a1e27] w-full">
             <button
               onClick={() => setActiveTab('jobs')}
-              className={`flex-1 py-1.5 px-2 rounded-lg font-montserrat text-[11px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`flex-1 py-1.5 px-1.5 rounded-lg font-montserrat text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1 cursor-pointer ${
                 activeTab === 'jobs'
                   ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
                   : 'bg-neutral-100 dark:bg-[#15181f] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#232732]'
@@ -721,7 +746,7 @@ export function App() {
             >
               <i className="ri-briefcase-4-line text-xs" />
               <span>Empleos</span>
-              <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-extrabold ${
+              <span className={`px-1 py-0.2 rounded-full text-[9px] font-extrabold ${
                 activeTab === 'jobs'
                   ? 'bg-white/20 text-white dark:bg-black/20 dark:text-black'
                   : 'bg-emerald-500/20 text-emerald-600 dark:text-[#4ade80]'
@@ -732,24 +757,42 @@ export function App() {
 
             <button
               onClick={() => setActiveTab('studio')}
-              className={`flex-1 py-1.5 px-2 rounded-lg font-montserrat text-[11px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`flex-1 py-1.5 px-1.5 rounded-lg font-montserrat text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1 cursor-pointer ${
                 activeTab === 'studio'
                   ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
                   : 'bg-neutral-100 dark:bg-[#15181f] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#232732]'
               }`}
             >
               <i className="ri-file-user-line text-xs" />
-              <span>Mi CV</span>
+              <span>CV</span>
               {session.isAuthenticated && (
-                <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-neutral-500/20">
+                <span className="px-1 py-0.2 rounded-full text-[9px] bg-neutral-500/20">
                   {cvVersions.length}v
                 </span>
               )}
             </button>
 
             <button
+              onClick={() => {
+                if (!session.isAuthenticated) {
+                  setShowAuthModal(true);
+                } else {
+                  setActiveTab('profile');
+                }
+              }}
+              className={`flex-1 py-1.5 px-1.5 rounded-lg font-montserrat text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1 cursor-pointer ${
+                activeTab === 'profile'
+                  ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
+                  : 'bg-neutral-100 dark:bg-[#15181f] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#232732]'
+              }`}
+            >
+              <i className="ri-user-3-line text-xs" />
+              <span>Perfil</span>
+            </button>
+
+            <button
               onClick={() => setShowPostJobModal(true)}
-              className="flex-1 py-1.5 px-2 rounded-lg font-montserrat text-[11px] font-bold uppercase tracking-wider bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-400 border border-amber-500/35 transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
+              className="flex-1 py-1.5 px-1.5 rounded-lg font-montserrat text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-400 border border-amber-500/35 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap shadow-xs"
               title="Publicar oferta de empleo"
             >
               <PlusCircle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
@@ -766,7 +809,27 @@ export function App() {
           CONTENIDO: MODO DARK CARBONE (#121419 / #191c24 CON CONTRASTE ELEVADO)
           ===================================================================== */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
-        {activeTab === 'jobs' ? (
+        {activeTab === 'profile' ? (
+          <ProfileView
+            session={session}
+            activeCv={activeCv}
+            cvVersions={cvVersions}
+            setCvVersions={setCvVersions}
+            setActiveCvId={setActiveCvId}
+            onNavigateToStudio={() => {
+              setActiveTab('studio');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onNavigateToJobs={() => {
+              setActiveTab('jobs');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onTriggerAvatarUpload={() => avatarInputRef.current?.click()}
+            onTriggerCvUpload={() => cvFileInputRef.current?.click()}
+            onLogout={handleLogout}
+            totalJobsIndexed={jobs.length}
+          />
+        ) : activeTab === 'jobs' ? (
           <div className="jobs-feed-section space-y-6">
             {/* BANNER DE OPTIMIZACIÓN (FONDO CARBÓN ELEVADO #12151c CON BORDE CONTRASTADO) */}
             <div className="visitor-banner relative overflow-hidden rounded-xl bg-white dark:bg-[#12151c] text-neutral-900 dark:text-white p-5 sm:p-6 border border-neutral-200 dark:border-[#252a36] shadow-md">

@@ -133,6 +133,26 @@ Este inventario audita las herramientas y tecnologías utilizadas en todos los p
 - **Función:** Inserción modular cada 8 tarjetas en el feed de ofertas de un anuncio patrocinado con estética 100% idéntica al diseño del feed, publicitando herramientas de alto valor para trabajadores remotos (bancos en USD sin comisiones, VPNs seguras, simuladores de entrevistas con IA) sin romper la experiencia del usuario.
 - **¿Por qué la IA depende del humano aquí?:** La saturación publicitaria es la causa número uno de abandono de aplicaciones. El arquitecto humano debe regular la cadencia (ratio 1:8), la relevancia del anunciante y el respeto a la navegación móvil para maximizar el RPM (*Revenue Per Mille*) sin degradar la retención.
 
+---
+
+## 🎨 4. Frontend & Document Architecture (CV Studio & WYSIWYG)
+
+### **Mathematical A4 Canvas Scaler & Proportional Viewport (WYSIWYG)**
+- **Proyectos:** `JobsBOT` (`src/components/CvA4Canvas.tsx`)
+- **Función:** Renderizar la hoja física A4 estándar (210mm x 297mm) en pantalla mediante escalado matemático exacto (`scale: 0.68, 0.85, 1.0`) acoplándose a la altura fija del panel de chat/editor (760px). Elimina cualquier distorsión visual o desajuste de fuentes/márgenes, garantizando que lo que ve el usuario en pantalla coincida pixel por pixel con el documento impreso o exportado a PDF mediante `@media print`.
+- **¿Por qué la IA depende del humano aquí?:** La mayoría de las soluciones generadas por IA usan CSS relativo desordenado (`vw`, `vh`, `flex`) que cambia de apariencia según el tamaño del monitor del usuario o colapsa al imprimir. Se requiere rigor matemático de frontend para calcular anchos milimétricos, transformaciones `scale()` con `transformOrigin: 'top center'` y reglas de anulación `@media print { transform: none !important; }`.
+
+### **Harvard ATS Single-Column & Executive Multi-Template Engine**
+- **Proyectos:** `JobsBOT` (`src/components/CvA4Canvas.tsx`, `src/types.ts`)
+- **Función:** Motor de renderizado curricular con intercambio dinámico entre el formato **Harvard Standard ATS** (1 columna, jerarquía cronológica estricta, métricas cuantificadas XYZ, 100% de parseabilidad en Workday, Taleo y Greenhouse) y el formato **Ejecutivo Moderno** (2 columnas con panel lateral de skills).
+- **¿Por qué la IA depende del humano aquí?:** La IA tiende a priorizar diseños vistosos con barras de progreso, iconos y cajas de texto flotantes que son ilegibles para los analizadores ATS corporativos (eliminando al candidato antes de que una persona lo lea). Se requiere conocimiento de contratación internacional para diseñar tipografías (Georgia/Montserrat), espaciados y encabezados limpios.
+
+### **Live In-Place CV Quick Editor Panel**
+- **Proyectos:** `JobsBOT` (`src/components/CvQuickEditorPanel.tsx`)
+- **Función:** Panel de herramientas interactivo que permite al candidato intervenir y editar directamente en tiempo real cualquier campo de su currículum (contacto, titular, resumen profesional, catálogo de habilidades, historial laboral y formación académica) mientras visualiza los cambios reflejados al instante en la hoja A4 sin recargar.
+- **¿Por qué la IA depende del humano aquí?:** Las herramientas 100% autónomas de IA cometen alucinaciones sobre fechas o tecnologías. La interfaz debe permitir la intervención humana fluida para corregir datos reales mientras se mantiene sincronizado el estado reactivo con el asistente conversacional JoBOT.
+
+
 
 
 

@@ -12,6 +12,8 @@ ui-debug.log*
 
 # Documentos personales y CVs privados con datos sensibles
 curriculum/
+private_business_vault/
+monetization_vault/
 *.pdf
 *.doc
 *.docx

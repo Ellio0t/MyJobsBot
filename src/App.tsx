@@ -35,7 +35,7 @@ import { JobotIcon } from './components/JobotIcon';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.17';
+  const APP_VERSION = 'v1.2.18';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -513,7 +513,7 @@ export function App() {
               aria-label="Ir al Inicio de JobsBOT"
             >
               <JobotIcon className="h-10 sm:h-11 md:h-12 w-auto text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_12px_rgba(74,222,128,0.35)] group-hover:scale-105 transition-transform" />
-              <div className="flex flex-col justify-center leading-none min-w-0">
+              <div className="flex flex-col justify-center min-w-0">
                 <div className="flex items-center gap-1.5 sm:gap-2 leading-none">
                   <span className="font-montserrat font-black text-sm sm:text-base md:text-lg tracking-[0.8px] sm:tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors truncate">
                     {brand.name}
@@ -522,7 +522,7 @@ export function App() {
                     {APP_VERSION}
                   </span>
                 </div>
-                <p className="text-[9px] sm:text-[10px] md:text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 truncate mt-1 leading-none">
+                <p className="text-[9px] sm:text-[10px] md:text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 truncate mt-0.5 leading-normal pb-0.5">
                   Tu Agente Personal de Búsqueda de Empleo
                 </p>
               </div>
@@ -1134,7 +1134,7 @@ export function App() {
                 <div className="p-4 bg-[#111111] dark:bg-[#161a23] text-white rounded-t-xl border-b border-neutral-800 dark:border-[#242936] flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <img
-                      src="/favicon.svg?v=1.2.17"
+                      src="/favicon.svg?v=1.2.18"
                       alt="JoBOT"
                       className="w-8 h-8 shrink-0 drop-shadow-[0_0_10px_rgba(74,222,128,0.4)]"
                     />
@@ -1175,7 +1175,7 @@ export function App() {
                       <div className="flex items-start gap-2 max-w-[95%]">
                         {msg.sender === 'bot' && (
                           <img
-                            src="/favicon.svg?v=1.2.17"
+                            src="/favicon.svg?v=1.2.18"
                             alt="JoBOT"
                             className="w-5 h-5 shrink-0 mt-0.5 drop-shadow-[0_0_6px_rgba(74,222,128,0.3)]"
                           />

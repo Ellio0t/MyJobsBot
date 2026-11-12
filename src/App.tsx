@@ -35,6 +35,11 @@ import { SponsoredFeedCard } from './components/SponsoredFeedCard';
 import { buildAffiliateApplyUrl, recordOutboundClick } from './services/affiliateEngine';
 import { JobotIcon } from './components/JobotIcon';
 import { ProfileView } from './components/ProfileView';
+import {
+  saveVaultLocally,
+  loadVaultLocally,
+  exportVaultBackupFile
+} from './services/sovereigntyStorage';
 
 // Utilidades ergonómicas para visualización limpia en tarjetas de empleo
 function formatCompactSalary(raw: string): string {
@@ -82,7 +87,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.26';
+  const APP_VERSION = 'v1.2.27';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -164,6 +169,22 @@ export function App() {
       )
     );
   };
+
+  // SOBERANÍA LOCAL-FIRST: Cargar bóveda persistente al iniciar o cambiar de sesión
+  useEffect(() => {
+    const saved = loadVaultLocally(session.uid);
+    if (saved && saved.length > 0) {
+      setCvVersions(saved);
+      setActiveCvId(saved[0].id);
+    }
+  }, [session.uid]);
+
+  // SINCRONIZACIÓN INMEDIATA: Cada cambio en variantes se sella localmente sin servidores intermediarios
+  useEffect(() => {
+    if (cvVersions.length > 0 && (hasCustomCv || cvVersions.length > 1)) {
+      saveVaultLocally(cvVersions, session.uid);
+    }
+  }, [cvVersions, session.uid, hasCustomCv]);
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const cvFileInputRef = useRef<HTMLInputElement>(null);
@@ -1311,6 +1332,15 @@ export function App() {
                       <i className="ri-eye-line text-sm text-[#4ade80]" /> Mostrar Foto
                     </>
                   )}
+                </button>
+
+                <button
+                  onClick={() => exportVaultBackupFile(cvVersions, session.email || 'mi-boveda')}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-emerald-500/10 dark:bg-[#4ade80]/10 text-emerald-700 dark:text-[#4ade80] hover:bg-emerald-500/20 border border-emerald-500/25 dark:border-[#4ade80]/30 transition-colors cursor-pointer"
+                  title="Descargar copia de seguridad soberana en JSON (todas tus variantes de CV)"
+                >
+                  <i className="ri-shield-check-line text-sm" />
+                  <span className="hidden sm:inline">Bóveda JSON</span>
                 </button>
 
                 <button

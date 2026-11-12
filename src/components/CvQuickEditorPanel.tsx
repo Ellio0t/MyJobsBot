@@ -445,3 +445,4 @@ export const CvQuickEditorPanel: React.FC<CvQuickEditorPanelProps> = ({
     </div>
   );
 };
+

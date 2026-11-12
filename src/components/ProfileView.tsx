@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { CVVersion, UserSession } from '../types';
 import { JobotIcon } from './JobotIcon';
+import { SovereigntyVaultPanel } from './SovereigntyVaultPanel';
 
 interface ProfileViewProps {
   session: UserSession;
@@ -43,7 +44,7 @@ interface ProfileViewProps {
   totalJobsIndexed: number;
 }
 
-type ProfileTab = 'identity' | 'vault' | 'network' | 'metrics';
+type ProfileTab = 'identity' | 'vault' | 'network' | 'metrics' | 'sovereignty';
 
 interface CommunityPost {
   id: string;
@@ -388,6 +389,21 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         >
           <Sparkles className="w-3.5 h-3.5" />
           <span>Métricas de Empleabilidad</span>
+        </button>
+
+        <button
+          onClick={() => setCurrentTab('sovereignty')}
+          className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-montserrat text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
+            currentTab === 'sovereignty'
+              ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-sm'
+              : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+          }`}
+        >
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 dark:text-[#4ade80]" />
+          <span>Soberanía & Portabilidad</span>
+          <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-700 dark:text-[#4ade80] text-[9px] font-bold">
+            100% TUYO
+          </span>
         </button>
       </div>
 
@@ -891,6 +907,28 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             <p className="text-[11px] text-neutral-500">Protocolos abiertos sin muro de pago</p>
           </div>
         </div>
+      )}
+
+      {/* =====================================================================
+          CONTENIDO 5: BÓVEDA DE SOBERANÍA Y PORTABILIDAD (100% CONTROL USUARIO)
+          ===================================================================== */}
+      {currentTab === 'sovereignty' && (
+        <SovereigntyVaultPanel
+          cvVersions={cvVersions}
+          activeCv={activeCv}
+          userId={session.uid}
+          userEmail={session.email}
+          onRestoreVersions={(restored) => {
+            setCvVersions(restored);
+            if (restored.length > 0) setActiveCvId(restored[0].id);
+            setSaveSuccessMessage(`Bóveda restaurada: ${restored.length} variantes disponibles.`);
+            setTimeout(() => setSaveSuccessMessage(null), 3000);
+          }}
+          onPurgeComplete={() => {
+            onLogout();
+            onNavigateToJobs();
+          }}
+        />
       )}
     </div>
   );

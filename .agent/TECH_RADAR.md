@@ -152,6 +152,26 @@ Este inventario audita las herramientas y tecnologías utilizadas en todos los p
 - **Función:** Panel de herramientas interactivo que permite al candidato intervenir y editar directamente en tiempo real cualquier campo de su currículum (contacto, titular, resumen profesional, catálogo de habilidades, historial laboral y formación académica) mientras visualiza los cambios reflejados al instante en la hoja A4 sin recargar.
 - **¿Por qué la IA depende del humano aquí?:** Las herramientas 100% autónomas de IA cometen alucinaciones sobre fechas o tecnologías. La interfaz debe permitir la intervención humana fluida para corregir datos reales mientras se mantiene sincronizado el estado reactivo con el asistente conversacional JoBOT.
 
+---
+
+## 🛡️ 5. Soberanía de Datos, Cripto-Privacidad & Portabilidad Abierta
+
+### **Sovereign Vault & Local-First Immediate Persistence Engine**
+- **Proyectos:** `JobsBOT` (`src/services/sovereigntyStorage.ts`, `src/components/SovereigntyVaultPanel.tsx`)
+- **Función:** Almacenamiento descentralizado y soberano en el dispositivo del usuario (`localStorage` aislado por UID o visitante), garantizando que cada edición, variante de CV o nota generada por JoBOT se guarde inmediatamente sin depender de un backend centralizado ni arriesgar filtraciones. Provee diagnósticos en tiempo real de bytes usados y variantes selladas.
+- **¿Por qué la IA depende del humano aquí?:** Las IAs comerciales suelen enviar todo el texto en claro a APIs externas o bases de datos compartidas. El arquitecto humano diseña el patrón *Local-First*, asegurando que los datos sensibles del candidato nunca salgan de su dispositivo a menos que él ejecute explícitamente una acción de postulación.
+
+### **Universal Open Portability & JSON Resume Engine**
+- **Proyectos:** `JobsBOT` (`src/services/sovereigntyStorage.ts`)
+- **Función:** Exportación bidireccional en formato JSON abierto: (1) Respaldo completo de la bóveda con todas las variantes (`myjobsbot-boveda-soberana.json`) con capacidad de restauración/migración en 1 clic en cualquier navegador, y (2) Exportador al estándar internacional de la Linux Foundation / `jsonresume.org`.
+- **¿Por qué la IA depende del humano aquí?:** Los SaaS cerrados (LinkedIn, Indeed) aplican "vendor lock-in", impidiendo que el usuario exporte sus datos limpios para mantenerlo cautivo. La decisión de soberanía abierta es una ventaja competitiva radical que solo un estratega humano puede defender para ganar la confianza total del usuario.
+
+### **Right-to-be-Forgotten & Storage Purge Engine (GDPR / CCPA)**
+- **Proyectos:** `JobsBOT` (`src/services/sovereigntyStorage.ts`, `src/components/SovereigntyVaultPanel.tsx`)
+- **Función:** Mecanismo de autodestrucción y borrado atómico con modal de confirmación en dos pasos que purga de inmediato y sin dejar rastros residuales todas las variantes, historiales, cachés y tokens de sesión.
+- **¿Por qué la IA depende del humano aquí?:** El cumplimiento normativo de privacidad internacional no es una sugerencia algorítmica; requiere botones accesibles y garantías técnicas reales que resistan auditorías de ciberseguridad y protección al consumidor.
+
+
 
 
 

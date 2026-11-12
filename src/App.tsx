@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   BrandConfig,
   ChatMessage,
+  CVProfile,
   CVVersion,
   JobCategory,
   JobOffer,
@@ -17,7 +18,8 @@ import {
 } from './services/jobEngine';
 import { parseUploadedCvFile } from './services/cvParser';
 import { onAuthStatusChanged, logoutUserReal } from './services/firebaseAuth';
-import { CvA4Canvas, openStandaloneBrowserCv } from './components/CvA4Canvas';
+import { CvA4Canvas, openStandaloneBrowserCv, CvTemplateId } from './components/CvA4Canvas';
+import { CvQuickEditorPanel } from './components/CvQuickEditorPanel';
 import { EmailModal } from './components/EmailModal';
 import { AuthModal } from './components/AuthModal';
 import { LegalComplianceModal } from './components/LegalComplianceModal';
@@ -80,7 +82,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.25';
+  const APP_VERSION = 'v1.2.26';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -147,6 +149,21 @@ export function App() {
   const [activeCvId, setActiveCvId] = useState<string>(VISITOR_SAMPLE_CV.id);
   const activeCv = cvVersions.find((v) => v.id === activeCvId) || cvVersions[0];
   const hasCustomCv = activeCv.id !== 'cv-sample-visitor';
+
+  // Configuración de visualización y edición en CV Studio
+  const [cvScale, setCvScale] = useState<number>(0.68); // Proporción exacta para emparejar con el alto de pantalla del asistente
+  const [cvTemplate, setCvTemplate] = useState<CvTemplateId>('harvard'); // Harvard ATS por defecto (1 columna de máxima tracción)
+  const [studioRightMode, setStudioRightMode] = useState<'chat' | 'editor'>('chat'); // Alternar entre IA JoBOT y Editor Manual
+
+  const updateActiveCvProfile = (partial: Partial<CVProfile>) => {
+    setCvVersions((prev) =>
+      prev.map((v) =>
+        v.id === activeCv.id
+          ? { ...v, profile: { ...v.profile, ...partial } }
+          : v
+      )
+    );
+  };
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const cvFileInputRef = useRef<HTMLInputElement>(null);
@@ -1185,13 +1202,17 @@ export function App() {
              PESTAÑA My CV + JoBOT
              =================================================================== */
           <div className="space-y-6">
-            <div className="cv-toolbar-controls no-print bg-white dark:bg-[#12151c] p-4 rounded-xl border border-neutral-200 dark:border-[#252a36] shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="cv-toolbar-controls no-print bg-white dark:bg-[#12151c] p-4 rounded-xl border border-neutral-200 dark:border-[#252a36] shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+              {/* VERSIONES DE CV */}
               <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400 mr-1 flex items-center gap-1">
+                  <i className="ri-folder-user-line text-xs" /> Versiones:
+                </span>
                 {cvVersions.map((ver) => (
                   <button
                     key={ver.id}
                     onClick={() => setActiveCvId(ver.id)}
-                    className={`px-3.5 py-1.5 rounded-lg font-montserrat text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-lg font-montserrat text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
                       activeCv.id === ver.id
                         ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
                         : 'bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#222734] border border-transparent dark:border-[#2a2f3e]'
@@ -1202,24 +1223,92 @@ export function App() {
                 ))}
                 <button
                   onClick={() => requireAuthAndRun('upload')}
-                  className="px-3 py-1.5 rounded-lg border border-dashed border-neutral-400 dark:border-[#384054] font-montserrat text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:bg-neutral-100 dark:hover:bg-[#1b1f2a] cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-lg border border-dashed border-neutral-400 dark:border-[#384054] font-montserrat text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 hover:bg-neutral-100 dark:hover:bg-[#1b1f2a] cursor-pointer text-neutral-700 dark:text-neutral-300"
                 >
-                  <i className="ri-add-line text-sm text-emerald-500 dark:text-[#4ade80]" /> Importar CV
+                  <i className="ri-add-line text-sm text-emerald-500 dark:text-[#4ade80]" /> Importar
                 </button>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
+              {/* SELECTORES DE FORMATO Y ESCALA PROPORCIONAL */}
+              <div className="flex flex-wrap items-center gap-2.5">
+                {/* SELECTOR DE PLANTILLA DE ALTA TRACCIÓN */}
+                <div className="flex items-center bg-neutral-100 dark:bg-[#161a23] p-1 rounded-lg border border-neutral-200 dark:border-[#2a2f3e]">
+                  <button
+                    onClick={() => setCvTemplate('harvard')}
+                    className={`px-2.5 py-1 rounded text-[11px] font-montserrat font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1 ${
+                      cvTemplate === 'harvard'
+                        ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
+                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                    }`}
+                    title="Formato de 1 columna estándar internacional preferido por algoritmos ATS y reclutadores de Fortune 500"
+                  >
+                    <i className="ri-award-line text-xs" /> Harvard ATS
+                  </button>
+                  <button
+                    onClick={() => setCvTemplate('executive')}
+                    className={`px-2.5 py-1 rounded text-[11px] font-montserrat font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1 ${
+                      cvTemplate === 'executive'
+                        ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
+                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                    }`}
+                    title="Diseño moderno de 2 columnas con panel lateral estilizado para perfiles ejecutivos"
+                  >
+                    <i className="ri-layout-2-line text-xs" /> Ejecutivo
+                  </button>
+                </div>
+
+                {/* SELECTOR DE ESCALA / PROPORCIÓN WYSIWYG */}
+                <div className="flex items-center bg-neutral-100 dark:bg-[#161a23] p-1 rounded-lg border border-neutral-200 dark:border-[#2a2f3e]">
+                  <span className="text-[10px] font-montserrat font-bold text-neutral-400 px-1.5 hidden sm:inline">
+                    Vista:
+                  </span>
+                  <button
+                    onClick={() => setCvScale(0.68)}
+                    className={`px-2 py-1 rounded text-[10px] font-montserrat font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                      cvScale === 0.68
+                        ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709]'
+                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                    }`}
+                    title="Ajuste matemático proporcional a la par del panel derecho"
+                  >
+                    68% (Par)
+                  </button>
+                  <button
+                    onClick={() => setCvScale(0.85)}
+                    className={`px-2 py-1 rounded text-[10px] font-montserrat font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                      cvScale === 0.85
+                        ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709]'
+                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                    }`}
+                    title="Zoom medio para lectura cómoda"
+                  >
+                    85%
+                  </button>
+                  <button
+                    onClick={() => setCvScale(1)}
+                    className={`px-2 py-1 rounded text-[10px] font-montserrat font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                      cvScale === 1
+                        ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709]'
+                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                    }`}
+                    title="Tamaño real 100% de la hoja A4"
+                  >
+                    100%
+                  </button>
+                </div>
+
+                {/* ACCIONES DEL DOCUMENTO */}
                 <button
                   onClick={togglePhotoInActiveCv}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider bg-neutral-800 dark:bg-[#1c222e] text-white hover:bg-neutral-700 dark:hover:bg-[#252c3c] border border-transparent dark:border-[#32394c] cursor-pointer"
                 >
                   {activeCv.profile.showPhotoInCV ? (
                     <>
-                      <i className="ri-eye-off-line text-sm" /> Ocultar Foto (Modo ATS)
+                      <i className="ri-eye-off-line text-sm" /> Ocultar Foto
                     </>
                   ) : (
                     <>
-                      <i className="ri-eye-line text-sm text-[#4ade80]" /> Mostrar Foto en CV
+                      <i className="ri-eye-line text-sm text-[#4ade80]" /> Mostrar Foto
                     </>
                   )}
                 </button>
@@ -1229,120 +1318,147 @@ export function App() {
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#32394c] bg-transparent dark:bg-[#171a23] hover:bg-neutral-100 dark:hover:bg-[#202532] cursor-pointer"
                 >
                   <i className="ri-window-line text-sm" />
-                  <span>Ver en Pestaña Limpia</span>
+                  <span className="hidden sm:inline">Pestaña Limpia</span>
                 </button>
 
                 <button
                   onClick={() => window.print()}
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-montserrat font-extrabold uppercase tracking-wider bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] hover:opacity-90 cursor-pointer shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-montserrat font-extrabold uppercase tracking-wider bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] hover:opacity-90 cursor-pointer shadow-sm"
                 >
                   <i className="ri-printer-line text-sm" />
-                  <span>Imprimir / Guardar PDF</span>
+                  <span>Imprimir PDF</span>
                 </button>
               </div>
             </div>
 
+            {/* CONTENEDOR EN PROPORCIÓN: HOJA A4 EXACTA A LA IZQUIERDA Y ASISTENTE/EDITOR A LA DERECHA */}
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-              <div className="print-only-wrapper xl:col-span-8 overflow-x-auto">
+              {/* LIENZO A4 PROPORCIONAL Y EXACTO A LA IMPRESIÓN */}
+              <div className="print-only-wrapper xl:col-span-7 flex flex-col items-center bg-neutral-100 dark:bg-[#0c0e14] p-3 sm:p-5 rounded-xl border border-neutral-200 dark:border-[#252a36] shadow-inner h-[760px] overflow-y-auto overflow-x-auto scrollbar-thin">
                 <CvA4Canvas
                   profile={activeCv.profile}
                   onAvatarClick={() => avatarInputRef.current?.click()}
+                  template={cvTemplate}
+                  scale={cvScale}
                 />
               </div>
 
-              {/* ASISTENTE JoBOT (MODO CARBÓN #12151c) */}
-              <aside className="ai-chat-panel no-print xl:col-span-4 bg-white dark:bg-[#12151c] rounded-xl border border-neutral-200 dark:border-[#252a36] shadow-xl flex flex-col h-[680px] sticky top-20">
-                <div className="p-4 bg-[#111111] dark:bg-[#161a23] text-white rounded-t-xl border-b border-neutral-800 dark:border-[#242936] flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <img
-                      src="/favicon.svg?v=1.2.21"
-                      alt="JoBOT"
-                      className="w-8 h-8 shrink-0 drop-shadow-[0_0_10px_rgba(74,222,128,0.4)]"
-                    />
-                    <div>
-                      <h3 className="font-montserrat text-xs font-extrabold uppercase tracking-wider text-emerald-400 dark:text-[#4ade80]">
-                        JoBOT
-                      </h3>
-                      <p className="text-[10px] text-neutral-400">
-                        Asistente de Adaptación Curricular
-                      </p>
-                    </div>
+              {/* PANEL DERECHO CONMUTABLE: ASISTENTE JOBOT O HERRAMIENTAS DE EDICIÓN DIRECTA */}
+              <aside className="no-print xl:col-span-5 bg-white dark:bg-[#12151c] rounded-xl border border-neutral-200 dark:border-[#252a36] shadow-xl flex flex-col h-[760px] sticky top-20 overflow-hidden">
+                {/* SELECTOR DE PESTAÑAS: ASISTENTE IA VS HERRAMIENTAS DE EDICIÓN MANUAL */}
+                <div className="p-2.5 bg-[#111111] dark:bg-[#161a23] text-white border-b border-neutral-800 dark:border-[#242936] flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1 bg-black/40 p-1 rounded-lg w-full">
+                    <button
+                      onClick={() => setStudioRightMode('chat')}
+                      className={`flex-1 py-1.5 px-3 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                        studioRightMode === 'chat'
+                          ? 'bg-[#4ade80] text-[#070709] shadow-sm'
+                          : 'text-neutral-400 hover:text-white'
+                      }`}
+                    >
+                      <i className="ri-robot-2-line text-sm" />
+                      <span>Asistente JoBOT</span>
+                    </button>
+                    <button
+                      onClick={() => setStudioRightMode('editor')}
+                      className={`flex-1 py-1.5 px-3 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                        studioRightMode === 'editor'
+                          ? 'bg-[#4ade80] text-[#070709] shadow-sm'
+                          : 'text-neutral-400 hover:text-white'
+                      }`}
+                    >
+                      <i className="ri-edit-line text-sm" />
+                      <span>Modificar CV a Mano</span>
+                    </button>
                   </div>
                 </div>
 
-                <div className="p-3 bg-neutral-50 dark:bg-[#151821] border-b border-neutral-200 dark:border-[#242936] flex flex-wrap gap-1.5">
-                  <span className="w-full text-[9px] font-montserrat font-bold uppercase tracking-wider text-emerald-600 dark:text-[#4ade80] mb-0.5 flex items-center gap-1">
-                    <i className="ri-sparkling-fill text-xs" /> Opciones Personalizadas según tu CV:
-                  </span>
-                  {dynamicQuickPrompts.map((quick, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setChatInput(quick)}
-                      className="text-[10px] px-2.5 py-1 rounded-md bg-white dark:bg-[#1c212c] border border-neutral-200 dark:border-[#2d3444] text-neutral-800 dark:text-neutral-200 hover:border-neutral-900 dark:hover:border-[#4ade80] transition-colors cursor-pointer"
-                    >
-                      + {quick}
-                    </button>
-                  ))}
-                </div>
+                {/* VISTA 1: EDITOR MANUAL DIRECTO EN TIEMPO REAL */}
+                {studioRightMode === 'editor' ? (
+                  <div className="flex-1 overflow-hidden">
+                    <CvQuickEditorPanel
+                      profile={activeCv.profile}
+                      onUpdateProfile={updateActiveCvProfile}
+                    />
+                  </div>
+                ) : (
+                  /* VISTA 2: ASISTENTE DE IA JOBOT */
+                  <div className="flex-1 flex flex-col overflow-hidden">
+                    <div className="p-3 bg-neutral-50 dark:bg-[#151821] border-b border-neutral-200 dark:border-[#242936] flex flex-wrap gap-1.5">
+                      <span className="w-full text-[9px] font-montserrat font-bold uppercase tracking-wider text-emerald-600 dark:text-[#4ade80] mb-0.5 flex items-center gap-1">
+                        <i className="ri-sparkling-fill text-xs" /> Sugerencias JoBOT según tu CV:
+                      </span>
+                      {dynamicQuickPrompts.map((quick, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setChatInput(quick)}
+                          className="text-[10px] px-2.5 py-1 rounded-md bg-white dark:bg-[#1c212c] border border-neutral-200 dark:border-[#2d3444] text-neutral-800 dark:text-neutral-200 hover:border-neutral-900 dark:hover:border-[#4ade80] transition-colors cursor-pointer"
+                        >
+                          + {quick}
+                        </button>
+                      ))}
+                    </div>
 
-                <div className="flex-1 p-4 overflow-y-auto space-y-3">
-                  {chatMessages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`flex flex-col ${
-                        msg.sender === 'user' ? 'items-end' : 'items-start'
-                      }`}
-                    >
-                      <div className="flex items-start gap-2 max-w-[95%]">
-                        {msg.sender === 'bot' && (
-                          <img
-                            src="/favicon.svg?v=1.2.24"
-                            alt="JoBOT"
-                            className="w-5 h-5 shrink-0 mt-0.5 drop-shadow-[0_0_6px_rgba(74,222,128,0.3)]"
-                          />
-                        )}
+                    <div className="flex-1 p-4 overflow-y-auto space-y-3">
+                      {chatMessages.map((msg) => (
                         <div
-                          className={`rounded-xl p-3 text-xs leading-relaxed ${
-                            msg.sender === 'user'
-                              ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-medium shadow-xs'
-                              : 'bg-neutral-100 dark:bg-[#181c25] text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-[#262c3b]'
+                          key={msg.id}
+                          className={`flex flex-col ${
+                            msg.sender === 'user' ? 'items-end' : 'items-start'
                           }`}
                         >
-                          {msg.text}
-                          {msg.createdVersionId && (
-                            <button
-                              onClick={() => setActiveCvId(msg.createdVersionId!)}
-                              className="mt-2 w-full py-1.5 px-2.5 rounded bg-emerald-500/15 dark:bg-[#4ade80]/15 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/25 dark:border-[#4ade80]/30 font-montserrat font-bold text-[10px] uppercase tracking-wider flex items-center justify-between cursor-pointer"
+                          <div className="flex items-start gap-2 max-w-[95%]">
+                            {msg.sender === 'bot' && (
+                              <img
+                                src="/favicon.svg?v=1.2.26"
+                                alt="JoBOT"
+                                className="w-5 h-5 shrink-0 mt-0.5 drop-shadow-[0_0_6px_rgba(74,222,128,0.3)]"
+                              />
+                            )}
+                            <div
+                              className={`rounded-xl p-3 text-xs leading-relaxed ${
+                                msg.sender === 'user'
+                                  ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-medium shadow-xs'
+                                  : 'bg-neutral-100 dark:bg-[#181c25] text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-[#262c3b]'
+                              }`}
                             >
-                              <span>Ver versión</span>
-                              <i className="ri-arrow-right-s-line text-sm" />
-                            </button>
-                          )}
+                              {msg.text}
+                              {msg.createdVersionId && (
+                                <button
+                                  onClick={() => setActiveCvId(msg.createdVersionId!)}
+                                  className="mt-2 w-full py-1.5 px-2.5 rounded bg-emerald-500/15 dark:bg-[#4ade80]/15 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/25 dark:border-[#4ade80]/30 font-montserrat font-bold text-[10px] uppercase tracking-wider flex items-center justify-between cursor-pointer"
+                                >
+                                  <span>Ver versión</span>
+                                  <i className="ri-arrow-right-s-line text-sm" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          <span className="text-[9px] text-neutral-400 mt-1 px-1">{msg.timestamp}</span>
                         </div>
-                      </div>
-                      <span className="text-[9px] text-neutral-400 mt-1 px-1">{msg.timestamp}</span>
+                      ))}
                     </div>
-                  ))}
-                </div>
 
-                <form
-                  onSubmit={handleSendChatPrompt}
-                  className="p-3 border-t border-neutral-200 dark:border-[#242936] bg-neutral-50 dark:bg-[#151821] rounded-b-xl flex gap-2"
-                >
-                  <input
-                    type="text"
-                    placeholder="Escribe cómo quieres adaptar tu CV..."
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    className="flex-1 px-3 py-2 rounded-lg text-xs bg-white dark:bg-[#191d27] border border-neutral-300 dark:border-[#2f3545] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80]"
-                  />
-                  <button
-                    type="submit"
-                    className="px-3.5 py-2 rounded-lg bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-montserrat text-xs font-bold uppercase tracking-wider hover:opacity-90 cursor-pointer shrink-0"
-                  >
-                    Enviar
-                  </button>
-                </form>
+                    <form
+                      onSubmit={handleSendChatPrompt}
+                      className="p-3 border-t border-neutral-200 dark:border-[#242936] bg-neutral-50 dark:bg-[#151821] flex gap-2"
+                    >
+                      <input
+                        type="text"
+                        placeholder="Pídele a JoBOT que afine un texto o añada logros..."
+                        value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        className="flex-1 px-3 py-2 rounded-lg text-xs bg-white dark:bg-[#191d27] border border-neutral-300 dark:border-[#2f3545] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80]"
+                      />
+                      <button
+                        type="submit"
+                        className="px-3.5 py-2 rounded-lg bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-montserrat text-xs font-bold uppercase tracking-wider hover:opacity-90 cursor-pointer shrink-0"
+                      >
+                        Enviar
+                      </button>
+                    </form>
+                  </div>
+                )}
               </aside>
             </div>
           </div>

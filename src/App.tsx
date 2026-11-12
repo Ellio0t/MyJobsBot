@@ -35,7 +35,7 @@ import { JobotIcon } from './components/JobotIcon';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.14';
+  const APP_VERSION = 'v1.2.15';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -444,6 +444,39 @@ export function App() {
 
     return list;
   }, [jobs, selectedCategory, languageFilter, searchQuery, hasCustomCv, activeCv, session.isAuthenticated]);
+
+  // SUGERENCIAS DINÁMICAS DE JoBOT: Personalizadas 100% según el CV del usuario y vacantes en vivo
+  const dynamicQuickPrompts = useMemo(() => {
+    const prompts: string[] = [];
+    const skills = activeCv.profile.skills || [];
+    const topSkill = skills[0]?.name?.split('(')[0]?.trim();
+    const secondSkill = skills[1]?.name?.split('(')[0]?.trim();
+
+    if (topSkill && secondSkill) {
+      prompts.push(`Enfocar en ${topSkill} y ${secondSkill}`);
+    } else if (topSkill) {
+      prompts.push(`Enfocar en ${topSkill}`);
+    } else {
+      prompts.push('Enfocar en Habilidades Clave');
+    }
+
+    // Vacante con mayor afinidad ATS
+    const bestMatch = processedJobs.find((j) => (j.matchScore ?? 0) > 0) || processedJobs[0];
+    if (bestMatch) {
+      prompts.push(`Adaptar para ${bestMatch.title.slice(0, 24)}`);
+    } else {
+      prompts.push('Adaptar para Puesto Objetivo');
+    }
+
+    // Regla de cumplimiento normativo ATS
+    prompts.push(
+      activeCv.profile.showPhotoInCV
+        ? 'Modo ATS sin foto'
+        : 'Restablecer foto profesional'
+    );
+
+    return prompts;
+  }, [activeCv, processedJobs]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F3F4F6] dark:bg-[#070709] text-[#111111] dark:text-[#E2E8F0] transition-colors duration-200">
@@ -1050,7 +1083,7 @@ export function App() {
                 <div className="p-4 bg-[#111111] dark:bg-[#161a23] text-white rounded-t-xl border-b border-neutral-800 dark:border-[#242936] flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <img
-                      src="/favicon.svg"
+                      src="/favicon.svg?v=1.2.15"
                       alt="JoBOT"
                       className="w-8 h-8 shrink-0 drop-shadow-[0_0_10px_rgba(74,222,128,0.4)]"
                     />
@@ -1066,11 +1099,10 @@ export function App() {
                 </div>
 
                 <div className="p-3 bg-neutral-50 dark:bg-[#151821] border-b border-neutral-200 dark:border-[#242936] flex flex-wrap gap-1.5">
-                  {[
-                    'Enfocar en Data Entry y Excel',
-                    'Adaptar para Analista QA Web',
-                    'Modo ATS sin foto',
-                  ].map((quick, idx) => (
+                  <span className="w-full text-[9px] font-montserrat font-bold uppercase tracking-wider text-emerald-600 dark:text-[#4ade80] mb-0.5 flex items-center gap-1">
+                    <i className="ri-sparkling-fill text-xs" /> Opciones Personalizadas según tu CV:
+                  </span>
+                  {dynamicQuickPrompts.map((quick, idx) => (
                     <button
                       key={idx}
                       onClick={() => setChatInput(quick)}
@@ -1092,7 +1124,7 @@ export function App() {
                       <div className="flex items-start gap-2 max-w-[95%]">
                         {msg.sender === 'bot' && (
                           <img
-                            src="/favicon.svg"
+                            src="/favicon.svg?v=1.2.15"
                             alt="JoBOT"
                             className="w-5 h-5 shrink-0 mt-0.5 drop-shadow-[0_0_6px_rgba(74,222,128,0.3)]"
                           />

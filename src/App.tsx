@@ -22,7 +22,7 @@ import { EmailModal } from './components/EmailModal';
 import { AuthModal } from './components/AuthModal';
 import { LegalComplianceModal } from './components/LegalComplianceModal';
 import { JobDetailModal } from './components/JobDetailModal';
-import { Crown } from 'lucide-react';
+import { PlusCircle, Sparkles } from 'lucide-react';
 import { CompanyLogo } from './components/CompanyLogo';
 import { PortalBadge } from './components/PortalBadge';
 import { NetworkTrustBanner } from './components/NetworkTrustBanner';
@@ -35,7 +35,7 @@ import { JobotIcon } from './components/JobotIcon';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.16';
+  const APP_VERSION = 'v1.2.17';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -498,49 +498,188 @@ export function App() {
       {/* =====================================================================
           HEADER EJECUTIVO: ADAPTABLE A MÓVILES Y ANDROID
           ===================================================================== */}
-      <header className="app-navbar no-print sticky top-0 z-40 bg-white/95 dark:bg-[#0f1115]/95 backdrop-blur-md border-b border-neutral-200 dark:border-[#20242c] shadow-xs w-full max-w-full overflow-hidden">
-        <div className="max-w-7xl mx-auto px-2 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-1 sm:gap-4 w-full min-w-0">
-          {/* LOGO: Ícono Oficial de Robot y Título en Verde Claro Neón (#4ade80) */}
-          <button
-            onClick={() => {
-              setActiveTab('jobs');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="flex items-center gap-2 sm:gap-2.5 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden shrink-0"
-            title="Ir al Inicio (Radar de Empleos)"
-            aria-label="Ir al Inicio de JobsBOT"
-          >
-            <JobotIcon className="h-10 sm:h-11 md:h-12 w-auto text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_12px_rgba(74,222,128,0.35)] group-hover:scale-105 transition-transform" />
-            <div className="flex flex-col justify-center leading-none">
-              <div className="flex items-center gap-1.5 sm:gap-2 leading-none">
-                <span className="font-montserrat font-black text-sm sm:text-base md:text-lg tracking-[0.8px] sm:tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
-                  {brand.name}
-                </span>
-                <span className="text-[9px] sm:text-[10px] font-mono font-bold px-1 sm:px-1.5 py-0.2 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
-                  {APP_VERSION}
-                </span>
+      <header className="app-navbar no-print sticky top-0 z-40 bg-white/95 dark:bg-[#0f1115]/95 backdrop-blur-md border-b border-neutral-200 dark:border-[#20242c] shadow-xs w-full max-w-full">
+        <div className="max-w-7xl mx-auto px-2.5 sm:px-6 w-full">
+          {/* FILA PRINCIPAL: LOGO A LA IZQUIERDA Y CONTROLES A LA DERECHA */}
+          <div className="h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4 w-full min-w-0">
+            {/* LOGO: Ícono Oficial de Robot y Título en Verde Claro Neón (#4ade80) */}
+            <button
+              onClick={() => {
+                setActiveTab('jobs');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="flex items-center gap-2 sm:gap-2.5 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden shrink-0 min-w-0"
+              title="Ir al Inicio (Radar de Empleos)"
+              aria-label="Ir al Inicio de JobsBOT"
+            >
+              <JobotIcon className="h-10 sm:h-11 md:h-12 w-auto text-emerald-600 dark:text-[#4ade80] shrink-0 drop-shadow-[0_0_12px_rgba(74,222,128,0.35)] group-hover:scale-105 transition-transform" />
+              <div className="flex flex-col justify-center leading-none min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2 leading-none">
+                  <span className="font-montserrat font-black text-sm sm:text-base md:text-lg tracking-[0.8px] sm:tracking-[1.8px] uppercase text-emerald-600 dark:text-[#4ade80] group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors truncate">
+                    {brand.name}
+                  </span>
+                  <span className="text-[9px] sm:text-[10px] font-mono font-bold px-1 sm:px-1.5 py-0.2 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040] shrink-0">
+                    {APP_VERSION}
+                  </span>
+                </div>
+                <p className="text-[9px] sm:text-[10px] md:text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 truncate mt-1 leading-none">
+                  Tu Agente Personal de Búsqueda de Empleo
+                </p>
               </div>
-              <p className="text-[9px] sm:text-[10px] md:text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 whitespace-nowrap mt-1 leading-none">
-                Tu Agente Personal de Búsqueda de Empleo
-              </p>
-            </div>
-          </button>
+            </button>
 
-          {/* NAVEGACIÓN CENTRAL: "EMPLEOS" Y "My CV" */}
-          <nav className="flex items-center gap-0.5 sm:gap-1 bg-neutral-100 dark:bg-[#15181f] p-0.5 sm:p-1 rounded-lg border border-neutral-200 dark:border-[#232732] shrink-0">
+            {/* NAVEGACIÓN DESKTOP: "EMPLEOS", "CV" Y "PUBLICAR" (Visible en pantallas sm: en adelante) */}
+            <nav className="hidden sm:flex items-center gap-1 bg-neutral-100 dark:bg-[#15181f] p-1 rounded-lg border border-neutral-200 dark:border-[#232732] shrink-0">
+              <button
+                onClick={() => setActiveTab('jobs')}
+                className={`px-3.5 py-1.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+                  activeTab === 'jobs'
+                    ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                }`}
+              >
+                <i className="ri-briefcase-4-line text-sm" />
+                <span>EMPLEOS</span>
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                  activeTab === 'jobs' 
+                    ? 'bg-black/15 text-white dark:bg-black/20 dark:text-black' 
+                    : 'bg-emerald-500/20 text-emerald-600 dark:text-[#4ade80]'
+                }`}>
+                  {processedJobs.length}
+                </span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('studio')}
+                className={`px-3.5 py-1.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
+                  activeTab === 'studio'
+                    ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                }`}
+              >
+                <i className="ri-file-user-line text-sm" />
+                <span>CV</span>
+                {session.isAuthenticated && (
+                  <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-neutral-500/20">
+                    {cvVersions.length} v
+                  </span>
+                )}
+              </button>
+
+              {/* BOTÓN B2B: PUBLICAR OFERTA DESTACADA */}
+              <button
+                onClick={() => setShowPostJobModal(true)}
+                className="px-3 py-1.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
+                title="Publicar oferta de empleo para empresas"
+              >
+                <PlusCircle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <span>Publicar</span>
+              </button>
+            </nav>
+
+            {/* CONTROLES: SELECTOR DE TEMA + VISITANTE / LOGIN */}
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              {/* Versión móvil del botón de tema (un solo botón alternador) */}
+              <button
+                onClick={() => setThemeMode(themeMode === 'dark' ? 'light' : 'dark')}
+                title="Cambiar tema de color"
+                className="sm:hidden p-1.5 rounded-lg border border-neutral-200 dark:border-[#232732] bg-neutral-100 dark:bg-[#15181f] text-neutral-700 dark:text-[#4ade80] text-xs cursor-pointer"
+              >
+                {themeMode === 'dark' ? <i className="ri-sun-line text-amber-400" /> : <i className="ri-moon-clear-line text-emerald-600" />}
+              </button>
+
+              {/* Versión desktop del selector de tema (3 botones) */}
+              <div className="hidden sm:flex items-center bg-neutral-100 dark:bg-[#15181f] p-1 rounded-lg border border-neutral-200 dark:border-[#232732]">
+                <button
+                  onClick={() => setThemeMode('auto')}
+                  title="Modo Automático según tu sistema"
+                  className={`px-2 py-1 rounded text-xs cursor-pointer transition-colors ${
+                    themeMode === 'auto'
+                      ? 'bg-white dark:bg-[#202530] shadow-xs text-neutral-900 dark:text-white'
+                      : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
+                  }`}
+                >
+                  <i className="ri-computer-line" />
+                </button>
+                <button
+                  onClick={() => setThemeMode('light')}
+                  title="Modo Claro"
+                  className={`px-2 py-1 rounded text-xs cursor-pointer transition-colors ${
+                    themeMode === 'light'
+                      ? 'bg-white dark:bg-[#202530] shadow-xs text-amber-500 font-bold'
+                      : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
+                  }`}
+                >
+                  <i className="ri-sun-line" />
+                </button>
+                <button
+                  onClick={() => setThemeMode('dark')}
+                  title="Modo Oscuro Carbone"
+                  className={`px-2 py-1 rounded text-xs cursor-pointer transition-colors ${
+                    themeMode === 'dark'
+                      ? 'bg-white dark:bg-[#202530] shadow-xs text-[#4ade80] font-bold'
+                      : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
+                  }`}
+                >
+                  <i className="ri-moon-clear-line" />
+                </button>
+              </div>
+
+              {!session.isAuthenticated ? (
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <span className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-montserrat font-bold uppercase tracking-wider bg-neutral-200/80 dark:bg-[#1a1e27] text-neutral-600 dark:text-neutral-300 border border-transparent dark:border-[#2a2f3d]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#4ade80] animate-pulse" />
+                    VISITANTE
+                  </span>
+                  <button
+                    onClick={() => setShowAuthModal(true)}
+                    className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-montserrat text-[10px] sm:text-xs font-extrabold uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center gap-1 sm:gap-1.5 cursor-pointer shadow-xs whitespace-nowrap"
+                  >
+                    <i className="ri-user-shared-line text-xs" />
+                    <span className="hidden sm:inline">Iniciar Sesión</span>
+                    <span className="sm:hidden">Entrar</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 sm:gap-2.5 pl-1.5 sm:pl-2 border-l border-neutral-200 dark:border-[#20242c]">
+                  <div
+                    onClick={() => avatarInputRef.current?.click()}
+                    title="Cambiar foto de perfil"
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden border border-neutral-300 dark:border-[#4ade80]/50 cursor-pointer relative group shrink-0"
+                  >
+                    <img
+                      src={session.photoURL || 'https://ui-avatars.com/api/?name=User&background=111&color=4ade80'}
+                      alt="Perfil"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    title="Cerrar sesión"
+                    className="p-1 rounded text-neutral-400 hover:text-red-500 transition-colors cursor-pointer"
+                  >
+                    <i className="ri-logout-box-r-line text-sm sm:text-base" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* FILA 2 MÓVIL: ACCIONES EXCLUSIVAS POR DEBAJO DEL LOGO (EMPLEOS, CV, PUBLICAR) */}
+          <div className="sm:hidden flex items-center gap-1.5 pb-2 pt-1 border-t border-neutral-100 dark:border-[#1a1e27] w-full">
             <button
               onClick={() => setActiveTab('jobs')}
-              className={`px-1.5 sm:px-3.5 py-1 sm:py-1.5 rounded-md font-montserrat text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
+              className={`flex-1 py-1.5 px-2 rounded-lg font-montserrat text-[11px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === 'jobs'
                   ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                  : 'bg-neutral-100 dark:bg-[#15181f] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#232732]'
               }`}
             >
-              <i className="ri-briefcase-4-line text-xs sm:text-sm" />
-              <span className="hidden sm:inline">EMPLEOS</span>
-              <span className={`px-1 sm:px-1.5 py-0.2 rounded-full text-[9px] sm:text-[10px] font-bold ${
-                activeTab === 'jobs' 
-                  ? 'bg-black/15 text-white dark:bg-black/20 dark:text-black' 
+              <i className="ri-briefcase-4-line text-xs" />
+              <span>Empleos</span>
+              <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-extrabold ${
+                activeTab === 'jobs'
+                  ? 'bg-white/20 text-white dark:bg-black/20 dark:text-black'
                   : 'bg-emerald-500/20 text-emerald-600 dark:text-[#4ade80]'
               }`}>
                 {processedJobs.length}
@@ -549,117 +688,29 @@ export function App() {
 
             <button
               onClick={() => setActiveTab('studio')}
-              className={`px-1.5 sm:px-3.5 py-1 sm:py-1.5 rounded-md font-montserrat text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
+              className={`flex-1 py-1.5 px-2 rounded-lg font-montserrat text-[11px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 activeTab === 'studio'
                   ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                  : 'bg-neutral-100 dark:bg-[#15181f] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#232732]'
               }`}
             >
-              <i className="ri-file-user-line text-xs sm:text-sm" />
-              <span>CV</span>
+              <i className="ri-file-user-line text-xs" />
+              <span>Mi CV</span>
               {session.isAuthenticated && (
-                <span className="hidden sm:inline-block px-1.5 py-0.2 rounded-full text-[10px] bg-neutral-500/20">
-                  {cvVersions.length} v
+                <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-neutral-500/20">
+                  {cvVersions.length}v
                 </span>
               )}
             </button>
 
-            {/* BOTÓN B2B: PUBLICAR OFERTA DESTACADA */}
             <button
               onClick={() => setShowPostJobModal(true)}
-              className="px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-md font-montserrat text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
-              title="Publicar y destacar vacante para empresas (B2B)"
+              className="flex-1 py-1.5 px-2 rounded-lg font-montserrat text-[11px] font-bold uppercase tracking-wider bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-400 border border-amber-500/35 transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
+              title="Publicar oferta de empleo"
             >
-              <Crown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-500 shrink-0" />
-              <span className="hidden sm:inline">Publicar</span>
+              <PlusCircle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span>Publicar</span>
             </button>
-          </nav>
-
-          {/* CONTROLES: SELECTOR DE TEMA + VISITANTE / LOGIN */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-            {/* Versión móvil del botón de tema (un solo botón alternador) */}
-            <button
-              onClick={() => setThemeMode(themeMode === 'dark' ? 'light' : 'dark')}
-              title="Cambiar tema de color"
-              className="sm:hidden p-1.5 rounded-lg border border-neutral-200 dark:border-[#232732] bg-neutral-100 dark:bg-[#15181f] text-neutral-700 dark:text-[#4ade80] text-xs cursor-pointer"
-            >
-              {themeMode === 'dark' ? <i className="ri-sun-line text-amber-400" /> : <i className="ri-moon-clear-line text-emerald-600" />}
-            </button>
-
-            {/* Versión desktop del selector de tema (3 botones) */}
-            <div className="hidden sm:flex items-center bg-neutral-100 dark:bg-[#15181f] p-1 rounded-lg border border-neutral-200 dark:border-[#232732]">
-              <button
-                onClick={() => setThemeMode('auto')}
-                title="Modo Automático según tu sistema"
-                className={`px-2 py-1 rounded text-xs cursor-pointer transition-colors ${
-                  themeMode === 'auto'
-                    ? 'bg-white dark:bg-[#202530] shadow-xs text-neutral-900 dark:text-white'
-                    : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
-                }`}
-              >
-                <i className="ri-computer-line" />
-              </button>
-              <button
-                onClick={() => setThemeMode('light')}
-                title="Modo Claro"
-                className={`px-2 py-1 rounded text-xs cursor-pointer transition-colors ${
-                  themeMode === 'light'
-                    ? 'bg-white dark:bg-[#202530] shadow-xs text-amber-500 font-bold'
-                    : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
-                }`}
-              >
-                <i className="ri-sun-line" />
-              </button>
-              <button
-                onClick={() => setThemeMode('dark')}
-                title="Modo Oscuro Carbone"
-                className={`px-2 py-1 rounded text-xs cursor-pointer transition-colors ${
-                  themeMode === 'dark'
-                    ? 'bg-white dark:bg-[#202530] shadow-xs text-[#4ade80] font-bold'
-                    : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
-                }`}
-              >
-                <i className="ri-moon-clear-line" />
-              </button>
-            </div>
-
-            {!session.isAuthenticated ? (
-              <div className="flex items-center gap-1 sm:gap-2">
-                <span className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-montserrat font-bold uppercase tracking-wider bg-neutral-200/80 dark:bg-[#1a1e27] text-neutral-600 dark:text-neutral-300 border border-transparent dark:border-[#2a2f3d]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-[#4ade80] animate-pulse" />
-                  VISITANTE
-                </span>
-                <button
-                  onClick={() => setShowAuthModal(true)}
-                  className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-montserrat text-[10px] sm:text-xs font-extrabold uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center gap-1 sm:gap-1.5 cursor-pointer shadow-xs whitespace-nowrap"
-                >
-                  <i className="ri-user-shared-line text-xs" />
-                  <span className="hidden sm:inline">Iniciar Sesión</span>
-                  <span className="sm:hidden">Entrar</span>
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-1.5 sm:gap-2.5 pl-1.5 sm:pl-2 border-l border-neutral-200 dark:border-[#20242c]">
-                <div
-                  onClick={() => avatarInputRef.current?.click()}
-                  title="Cambiar foto de perfil"
-                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden border border-neutral-300 dark:border-[#4ade80]/50 cursor-pointer relative group shrink-0"
-                >
-                  <img
-                    src={session.photoURL || 'https://ui-avatars.com/api/?name=User&background=111&color=4ade80'}
-                    alt="Perfil"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <button
-                  onClick={handleLogout}
-                  title="Cerrar sesión"
-                  className="p-1 rounded text-neutral-400 hover:text-red-500 transition-colors cursor-pointer"
-                >
-                  <i className="ri-logout-box-r-line text-sm sm:text-base" />
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </header>
@@ -841,8 +892,8 @@ export function App() {
                       {isFeatured && (
                         <div className="mb-2.5 flex items-center justify-between">
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-montserrat font-black uppercase tracking-wider bg-amber-500 text-black shadow-xs">
-                            <Crown className="w-3 h-3" />
-                            {job.featuredBadge || 'OFERTA DESTACADA'}
+                            <Sparkles className="w-3 h-3" />
+                            DESTACADA
                           </span>
                           <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
                             <i className="ri-verified-badge-fill text-xs" />
@@ -1083,7 +1134,7 @@ export function App() {
                 <div className="p-4 bg-[#111111] dark:bg-[#161a23] text-white rounded-t-xl border-b border-neutral-800 dark:border-[#242936] flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <img
-                      src="/favicon.svg?v=1.2.16"
+                      src="/favicon.svg?v=1.2.17"
                       alt="JoBOT"
                       className="w-8 h-8 shrink-0 drop-shadow-[0_0_10px_rgba(74,222,128,0.4)]"
                     />
@@ -1124,7 +1175,7 @@ export function App() {
                       <div className="flex items-start gap-2 max-w-[95%]">
                         {msg.sender === 'bot' && (
                           <img
-                            src="/favicon.svg?v=1.2.16"
+                            src="/favicon.svg?v=1.2.17"
                             alt="JoBOT"
                             className="w-5 h-5 shrink-0 mt-0.5 drop-shadow-[0_0_6px_rgba(74,222,128,0.3)]"
                           />

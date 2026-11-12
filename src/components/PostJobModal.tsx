@@ -9,7 +9,7 @@ import {
   Sparkles,
   CheckCircle2,
   CreditCard,
-  Crown,
+  PlusCircle,
   Eye,
   Rocket,
   ShieldCheck,
@@ -94,7 +94,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
         contactWhatsapp: formData.contactWhatsapp,
         publishedAt: 'Hoy (Destacada)',
         isFeatured: true,
-        featuredBadge: formData.planId === 'plan-30d' ? 'VIP DIAMOND' : 'PATROCINADA',
+        featuredBadge: 'DESTACADA',
         featuredTier: formData.planId === 'plan-30d' ? 'diamond' : 'gold',
         sponsorCompany: formData.company,
       };
@@ -118,7 +118,7 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
         <header className="px-5 py-4 border-b border-neutral-200 dark:border-[#222736] flex items-center justify-between bg-neutral-50/70 dark:bg-[#151924]">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20">
-              <Crown className="w-5 h-5" />
+              <PlusCircle className="w-5 h-5" />
             </div>
             <div>
               <h3 className="font-montserrat font-black text-sm sm:text-base text-neutral-900 dark:text-white flex items-center gap-2">
@@ -204,8 +204,8 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-montserrat font-black uppercase tracking-wider bg-amber-500 text-black shadow-xs">
-                      <Crown className="w-3 h-3" />
-                      {formData.planId === 'plan-30d' ? 'VIP DIAMOND' : 'PATROCINADA'}
+                      <Sparkles className="w-3 h-3" />
+                      DESTACADA
                     </span>
                     <span className="text-[11px] font-semibold text-amber-700 dark:text-amber-400 flex items-center gap-1">
                       <ShieldCheck className="w-3.5 h-3.5" />
@@ -304,15 +304,15 @@ export const PostJobModal: React.FC<PostJobModalProps> = ({
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-montserrat font-black text-sm text-neutral-900 dark:text-white flex items-center gap-1.5">
-                        <Crown className="w-4 h-4 text-amber-500" />
-                        VIP 30 Días
+                        <Sparkles className="w-4 h-4 text-amber-500" />
+                        Destacada 30 Días
                       </span>
                       <span className="text-base font-extrabold text-amber-600 dark:text-amber-400">
                         $39 USD
                       </span>
                     </div>
                     <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
-                      Prioridad #1 absoluta, mención directa en alertas automáticas de WhatsApp y correo.
+                      Prioridad #1 absoluta, mención directa en alertas automáticas de correo.
                     </p>
                   </div>
                 </div>

@@ -147,7 +147,7 @@ export const CURATED_JOBS: JobOffer[] = [
     contactEmail: 'careers@evolutioncollect.com',
     publishedAt: 'Hace 1 día',
     isFeatured: true,
-    featuredBadge: 'VIP DESTACADA',
+    featuredBadge: 'DESTACADA',
     featuredTier: 'diamond',
     sponsorCompany: 'Evolution Collect LLC',
   },

@@ -35,7 +35,7 @@ import { JobotIcon } from './components/JobotIcon';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.18';
+  const APP_VERSION = 'v1.2.19';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -1134,7 +1134,7 @@ export function App() {
                 <div className="p-4 bg-[#111111] dark:bg-[#161a23] text-white rounded-t-xl border-b border-neutral-800 dark:border-[#242936] flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <img
-                      src="/favicon.svg?v=1.2.18"
+                      src="/favicon.svg?v=1.2.19"
                       alt="JoBOT"
                       className="w-8 h-8 shrink-0 drop-shadow-[0_0_10px_rgba(74,222,128,0.4)]"
                     />
@@ -1175,7 +1175,7 @@ export function App() {
                       <div className="flex items-start gap-2 max-w-[95%]">
                         {msg.sender === 'bot' && (
                           <img
-                            src="/favicon.svg?v=1.2.18"
+                            src="/favicon.svg?v=1.2.19"
                             alt="JoBOT"
                             className="w-5 h-5 shrink-0 mt-0.5 drop-shadow-[0_0_6px_rgba(74,222,128,0.3)]"
                           />
@@ -1243,18 +1243,20 @@ export function App() {
               title="Ir al Inicio (Radar de Empleos)"
             >
               <JobotIcon className="h-8 sm:h-9 w-auto text-emerald-600 dark:text-[#4ade80] group-hover:scale-105 transition-transform shrink-0 drop-shadow-[0_0_8px_rgba(74,222,128,0.25)]" />
-              <div className="flex flex-col justify-center leading-none -space-y-1 sm:-space-y-1">
-                <span className="font-montserrat font-black text-sm sm:text-base text-emerald-600 dark:text-[#4ade80] uppercase tracking-[1px] leading-tight group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
-                  MY
-                </span>
+              <div className="flex flex-col justify-center leading-none -space-y-0.5 sm:-space-y-0.5">
+                <div className="flex items-center gap-1.5 leading-none">
+                  <span className="font-montserrat font-black text-sm sm:text-base text-emerald-600 dark:text-[#4ade80] uppercase tracking-[1px] leading-tight group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
+                    MY
+                  </span>
+                  <span className="text-[9px] sm:text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040] shrink-0">
+                    {APP_VERSION}
+                  </span>
+                </div>
                 <span className="font-montserrat font-black text-sm sm:text-base text-emerald-600 dark:text-[#4ade80] uppercase tracking-[1px] leading-tight group-hover:text-emerald-500 dark:group-hover:text-[#6ee7b7] transition-colors">
                   JOBSBOT
                 </span>
               </div>
             </button>
-            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-[#181c25] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#2b3040]">
-              {APP_VERSION}
-            </span>
             <span>•</span>
             {/* Indicador de Punto Verde animado (En Vivo) */}
             <span className="inline-flex items-center gap-1.5 text-[11px] text-neutral-600 dark:text-neutral-300">

@@ -35,7 +35,7 @@ import { JobotIcon } from './components/JobotIcon';
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.15';
+  const APP_VERSION = 'v1.2.16';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -1083,7 +1083,7 @@ export function App() {
                 <div className="p-4 bg-[#111111] dark:bg-[#161a23] text-white rounded-t-xl border-b border-neutral-800 dark:border-[#242936] flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <img
-                      src="/favicon.svg?v=1.2.15"
+                      src="/favicon.svg?v=1.2.16"
                       alt="JoBOT"
                       className="w-8 h-8 shrink-0 drop-shadow-[0_0_10px_rgba(74,222,128,0.4)]"
                     />
@@ -1124,7 +1124,7 @@ export function App() {
                       <div className="flex items-start gap-2 max-w-[95%]">
                         {msg.sender === 'bot' && (
                           <img
-                            src="/favicon.svg?v=1.2.15"
+                            src="/favicon.svg?v=1.2.16"
                             alt="JoBOT"
                             className="w-5 h-5 shrink-0 mt-0.5 drop-shadow-[0_0_6px_rgba(74,222,128,0.3)]"
                           />

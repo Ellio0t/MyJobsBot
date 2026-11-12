@@ -79,7 +79,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.23';
+  const APP_VERSION = 'v1.2.24';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -1233,7 +1233,7 @@ export function App() {
                       <div className="flex items-start gap-2 max-w-[95%]">
                         {msg.sender === 'bot' && (
                           <img
-                            src="/favicon.svg?v=1.2.23"
+                            src="/favicon.svg?v=1.2.24"
                             alt="JoBOT"
                             className="w-5 h-5 shrink-0 mt-0.5 drop-shadow-[0_0_6px_rgba(74,222,128,0.3)]"
                           />
@@ -1291,8 +1291,8 @@ export function App() {
           ===================================================================== */}
       <footer className="app-footer no-print mt-12 border-t border-neutral-200 dark:border-[#20242c] bg-white dark:bg-[#0c0d11] py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-3.5 text-xs text-neutral-500 dark:text-neutral-400">
-          {/* BLOQUE IZQUIERDO: LOGO MYJOBSBOT + INDICADOR EN VIVO INTEGRADO A LA IZQUIERDA */}
-          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3.5">
+          {/* BLOQUE IZQUIERDO: EXCLUSIVAMENTE LOGO MYJOBSBOT */}
+          <div className="flex items-center">
             <button
               onClick={() => {
                 setActiveTab('jobs');
@@ -1316,18 +1316,18 @@ export function App() {
                 </span>
               </div>
             </button>
+          </div>
 
-            {/* Indicador de Estado En Vivo: Tumbado hacia la izquierda en formato píldora limpia (sin punto separador huérfano) */}
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-semibold bg-emerald-500/10 dark:bg-[#4ade80]/15 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/20 dark:border-[#4ade80]/30 shadow-2xs">
+          {/* BLOQUE DERECHO: INDICADOR EN VIVO TUMBADO A LA DERECHA JUNTO A LOS DEMÁS ANEXOS */}
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+            {/* Indicador de Estado En Vivo: Tumbado a la derecha junto a los demás anexos del footer */}
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-semibold bg-emerald-500/10 dark:bg-[#4ade80]/15 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/20 dark:border-[#4ade80]/30 shadow-2xs">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4ade80] opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#4ade80]"></span>
               </span>
               <span>{apiStatusText}</span>
             </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5">
             {/* Botón Adaptado de Descarga en Google Play (Android) */}
             <button
               onClick={() => alert('Compilación para Android disponible mediante CapacitorJS (npx cap open android)')}

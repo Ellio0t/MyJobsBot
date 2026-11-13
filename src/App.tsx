@@ -87,7 +87,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.28';
+  const APP_VERSION = 'v1.2.29';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -229,6 +229,31 @@ export function App() {
   const handleDismissScrollLead = () => {
     setShowScrollLeadModal(false);
     sessionStorage.setItem('myjobsbot_scroll_lead_dismissed', 'true');
+  };
+
+  // 6.1 NAVEGACIÓN RÁPIDA CON FLECHAS FLOTANTES (SUBIR / BAJAR)
+  const [showScrollNav, setShowScrollNav] = useState(false);
+
+  useEffect(() => {
+    const handleScrollNav = () => {
+      // Muestra las flechas flotantes cuando el usuario se desplaza más de 200px
+      if (window.scrollY > 200) {
+        setShowScrollNav(true);
+      } else {
+        setShowScrollNav(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScrollNav, { passive: true });
+    return () => window.removeEventListener('scroll', handleScrollNav);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const scrollToBottom = () => {
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
   };
 
   // 7. JoBOT — Asistente IA Proactivo
@@ -905,10 +930,11 @@ export function App() {
             </div>
 
             {/* =====================================================================
-                ZONA DE CONTROL NATIVA: TÍTULO, BARRA DE BÚSQUEDA Y CARRUSEL DE ÁREAS
-                (Diseño nativo ligero tipo app, sin encerrar en una tarjeta pesada)
+                ZONA DE CONTROL NATIVA PERSISTENTE (STICKY HEADER):
+                TÍTULO, ESTADO, BARRA DE BÚSQUEDA Y CARRUSEL DE ÁREAS
+                (Permanece fija al hacer scroll para búsqueda y filtrado inmediato)
                 ===================================================================== */}
-            <div className="space-y-3 pt-1">
+            <div className="sticky top-14 sm:top-16 z-30 bg-[#F3F4F6]/95 dark:bg-[#070709]/95 backdrop-blur-md pt-2 pb-2.5 space-y-2.5 border-b border-neutral-300/70 dark:border-[#1a1e29]/90 shadow-xs -mx-4 px-4 sm:-mx-6 sm:px-6 transition-all">
               {/* ENCABEZADO: TÍTULO "OPORTUNIDADES DE EMPLEO" + ESTADO + BOTÓN ACTUALIZAR */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -1580,6 +1606,30 @@ export function App() {
           </div>
         </div>
       </footer>
+
+      {/* BOTONES FLOTANTES DE NAVEGACIÓN RÁPIDA (SUBIR / BAJAR) */}
+      <div
+        className={`fixed bottom-6 right-4 sm:bottom-8 sm:right-7 z-40 flex flex-col gap-1.5 transition-all duration-300 ${
+          showScrollNav ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'
+        }`}
+      >
+        <button
+          onClick={scrollToTop}
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 dark:bg-[#151922]/95 backdrop-blur-md border border-neutral-300 dark:border-[#2a3040] shadow-lg flex items-center justify-center text-neutral-700 dark:text-neutral-200 hover:bg-[#111111] hover:text-white dark:hover:bg-[#4ade80] dark:hover:text-[#070709] transition-all cursor-pointer group"
+          title="Subir al inicio (Búsqueda y Filtros)"
+          aria-label="Subir al inicio"
+        >
+          <i className="ri-arrow-up-line text-sm sm:text-base group-hover:-translate-y-0.5 transition-transform" />
+        </button>
+        <button
+          onClick={scrollToBottom}
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 dark:bg-[#151922]/95 backdrop-blur-md border border-neutral-300 dark:border-[#2a3040] shadow-lg flex items-center justify-center text-neutral-700 dark:text-neutral-200 hover:bg-[#111111] hover:text-white dark:hover:bg-[#4ade80] dark:hover:text-[#070709] transition-all cursor-pointer group"
+          title="Bajar al final"
+          aria-label="Bajar al final"
+        >
+          <i className="ri-arrow-down-line text-sm sm:text-base group-hover:translate-y-0.5 transition-transform" />
+        </button>
+      </div>
 
       {selectedJobForEmail && (
         <EmailModal

@@ -152,6 +152,17 @@ Este inventario audita las herramientas y tecnologías utilizadas en todos los p
 - **Función:** Panel de herramientas interactivo que permite al candidato intervenir y editar directamente en tiempo real cualquier campo de su currículum (contacto, titular, resumen profesional, catálogo de habilidades, historial laboral y formación académica) mientras visualiza los cambios reflejados al instante en la hoja A4 sin recargar.
 - **¿Por qué la IA depende del humano aquí?:** Las herramientas 100% autónomas de IA cometen alucinaciones sobre fechas o tecnologías. La interfaz debe permitir la intervención humana fluida para corregir datos reales mientras se mantiene sincronizado el estado reactivo con el asistente conversacional JoBOT.
 
+### **Sticky On-Scroll Control Dock & Filter Persistence**
+- **Proyectos:** `JobsBOT` (`src/App.tsx`)
+- **Función:** Anclaje sticky (`sticky top-14 sm:top-16 z-30`) con efecto de desenfoque translúcido (`backdrop-blur-md bg-[#F3F4F6]/95 dark:bg-[#070709]/95`) para toda la barra de búsqueda en tiempo real, filtro de idiomas y carrusel deslizable de categorías. Permite al usuario filtrar entre más de 100 vacantes desde cualquier punto del scroll sin tener que regresar al inicio de la página.
+- **¿Por qué la IA depende del humano aquí?:** Las IAs suelen descuidar los márgenes negativos responsivos (`-mx-4 sm:-mx-6`) y el cálculo de apilamiento Z (`z-index`) con encabezados multinivel, provocando que las tarjetas de empleo sangren o tapen los menús desplegables.
+
+### **Dual-Action Floating Quick-Scroll Navigator (Up / Down FAB)**
+- **Proyectos:** `JobsBOT` (`src/App.tsx`)
+- **Función:** Botonera flotante minimalista de navegación vertical rápida en la esquina inferior derecha (`fixed bottom-6 right-4 sm:bottom-8 sm:right-7 z-40`). Aparece automáticamente con animación suave cuando el usuario se desplaza más de 200px, permitiendo subir al inicio (`window.scrollTo(0)`) para enfocar la búsqueda o bajar al fondo del listado con un solo toque.
+- **¿Por qué la IA depende del humano aquí?:** En feeds extensos con scroll infinito o paginación larga en móviles, la ausencia de atajos de salto vertical agota el pulgar del usuario y causa rebote prematuro.
+
+
 ---
 
 ## 🛡️ 5. Soberanía de Datos, Cripto-Privacidad & Portabilidad Abierta

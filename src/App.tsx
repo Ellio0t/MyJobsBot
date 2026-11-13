@@ -87,7 +87,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.36';
+  const APP_VERSION = 'v1.2.37';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -968,13 +968,14 @@ export function App() {
             <div className="sticky top-[92px] sm:top-16 z-30 bg-[#F3F4F6]/98 dark:bg-[#070709]/98 backdrop-blur-md py-2 space-y-2 border-b border-neutral-300/80 dark:border-[#1a1e29] shadow-sm -mx-4 px-4 sm:-mx-6 sm:px-6 transition-all">
               {/* LÍNEA 1: TÍTULO "OFERTAS DE EMPLEO" + STATUS DEBAJO | BUSCADOR QUE COMPLETA EL ESPACIO | IDIOMA CUSTOM | ACTUALIZAR (EN LA MISMA LÍNEA) */}
               <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2.5 w-full">
-                {/* Título más grande "OFERTAS DE EMPLEO" y vacantes activas debajo, sin puntos verdes redundantes */}
+                {/* Título más grande "OFERTAS DE EMPLEO" y vacantes activas debajo con indicador de rastreo en vivo minimalista */}
                 <div className="flex flex-row md:flex-col items-center md:items-start justify-between md:justify-center shrink-0 pr-1">
                   <h3 className="font-montserrat text-sm sm:text-base md:text-lg font-black uppercase tracking-wider text-neutral-900 dark:text-white leading-tight">
                     OFERTAS DE EMPLEO
                   </h3>
-                  <div className="text-[10px] sm:text-[11px] text-neutral-500 dark:text-neutral-400 font-medium leading-tight tracking-tight mt-0.5">
-                    {apiStatusText.replace('•', '').replace('En vivo', '').trim() || `${jobs.length} vacantes activas`}
+                  <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-neutral-500 dark:text-neutral-400 font-medium leading-tight tracking-tight mt-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                    <span>{apiStatusText.replace('•', '').replace('En vivo', '').trim() || `${jobs.length} vacantes activas`}</span>
                   </div>
                 </div>
 

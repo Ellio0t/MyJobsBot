@@ -152,10 +152,15 @@ Este inventario audita las herramientas y tecnologías utilizadas en todos los p
 - **Función:** Panel de herramientas interactivo que permite al candidato intervenir y editar directamente en tiempo real cualquier campo de su currículum (contacto, titular, resumen profesional, catálogo de habilidades, historial laboral y formación académica) mientras visualiza los cambios reflejados al instante en la hoja A4 sin recargar.
 - **¿Por qué la IA depende del humano aquí?:** Las herramientas 100% autónomas de IA cometen alucinaciones sobre fechas o tecnologías. La interfaz debe permitir la intervención humana fluida para corregir datos reales mientras se mantiene sincronizado el estado reactivo con el asistente conversacional JoBOT.
 
-### **Sticky On-Scroll Control Dock & Filter Persistence**
+### **Ultra-Compact Sticky Control Dock & Single-Row Unification**
 - **Proyectos:** `JobsBOT` (`src/App.tsx`)
-- **Función:** Anclaje sticky (`sticky top-14 sm:top-16 z-30`) con efecto de desenfoque translúcido (`backdrop-blur-md bg-[#F3F4F6]/95 dark:bg-[#070709]/95`) para toda la barra de búsqueda en tiempo real, filtro de idiomas y carrusel deslizable de categorías. Permite al usuario filtrar entre más de 100 vacantes desde cualquier punto del scroll sin tener que regresar al inicio de la página.
-- **¿Por qué la IA depende del humano aquí?:** Las IAs suelen descuidar los márgenes negativos responsivos (`-mx-4 sm:-mx-6`) y el cálculo de apilamiento Z (`z-index`) con encabezados multinivel, provocando que las tarjetas de empleo sangren o tapen los menús desplegables.
+- **Función:** Anclaje sticky de perfil bajo (`sticky top-[92px] sm:top-16 z-30`) que consolida en una sola línea horizontal: (1) Título conciso "EMPLEOS" con etiqueta adaptada de vacantes activas debajo, (2) Barra de búsqueda central en tiempo real, (3) Selector de idioma temático con branding del proyecto y (4) Botón de actualización. La segunda fila integra el carrusel de categorías optimizado con la píldora "Todas" sin recortes laterales.
+- **¿Por qué la IA depende del humano aquí?:** La IA tiende a apilar componentes verticalmente en múltiples filas que consumen más del 30% del viewport vertical de una pantalla móvil o laptop. El arquitecto humano compacta la jerarquía visual mediante flexbox denso y tipografía adaptada para devolverle el protagonismo al feed de empleo.
+
+### **Zero-Scroll Profile Navigation & Paginated Sub-Screens**
+- **Proyectos:** `JobsBOT` (`src/components/ProfileView.tsx`)
+- **Función:** Sistema de navegación en cuadrícula responsiva (2x2 en móvil / 1x4 en escritorio) que erradica el scroll horizontal en las opciones de perfil: `Datos de Perfil`, `CVs`, `Social Jobs` y `Métricas y Portabilidad`. Implementa un motor estandarizado de paginación multipantalla para Social Jobs (posts paginados) y para la alternancia entre Métricas de Empleabilidad (Pág 1) y Bóveda Soberana / Portabilidad JSON (Pág 2).
+- **¿Por qué la IA depende del humano aquí?:** Las IAs abusan de contenedores con `overflow-x-auto` para safarse del diseño responsivo cuando hay más de 3 pestañas. El criterio humano sintetiza la arquitectura de información, unifica secciones complementarias y aplica paginación estructurada para garantizar máxima ergonomía táctil.
 
 ### **Dual-Action Floating Quick-Scroll Navigator (Up / Down FAB)**
 - **Proyectos:** `JobsBOT` (`src/App.tsx`)

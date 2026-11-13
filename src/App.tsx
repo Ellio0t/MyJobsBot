@@ -73,7 +73,7 @@ function formatCompactCountry(scope: string): string {
 }
 
 const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
-  { id: 'all', label: 'Todas las Áreas', icon: 'ri-apps-2-line' },
+  { id: 'all', label: 'Todas', icon: 'ri-apps-2-line' },
   { id: 'tech', label: 'Tecnología', icon: 'ri-code-s-slash-line' },
   { id: 'data', label: 'Datos & IA', icon: 'ri-database-2-line' },
   { id: 'qa', label: 'QA & Calidad', icon: 'ri-checkbox-circle-line' },
@@ -87,7 +87,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.33';
+  const APP_VERSION = 'v1.2.34';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -932,43 +932,27 @@ export function App() {
             </div>
 
             {/* =====================================================================
-                ZONA DE CONTROL NATIVA PERSISTENTE (STICKY HEADER):
-                TÍTULO, ESTADO, BARRA DE BÚSQUEDA Y CARRUSEL DE ÁREAS
-                (Permanece fija al hacer scroll para búsqueda y filtrado inmediato)
+                ZONA DE CONTROL NATIVA PERSISTENTE (STICKY HEADER ULTRA-COMPACTO):
+                LÍNEA 1: TÍTULO "EMPLEOS" + VACANTES ACTIVAS DEBAJO | BUSCADOR | SELECTOR IDIOMA | BOTÓN ACTUALIZAR
+                LÍNEA 2: CARRUSEL HORIZONTAL DE CATEGORÍAS (CON "TODAS" Y SIN CORTES)
                 ===================================================================== */}
-            <div className="sticky top-[92px] sm:top-16 z-30 bg-[#F3F4F6]/98 dark:bg-[#070709]/98 backdrop-blur-md pt-2 pb-2.5 space-y-2.5 border-b border-neutral-300/80 dark:border-[#1a1e29] shadow-sm -mx-4 px-4 sm:-mx-6 sm:px-6 transition-all">
-              {/* ENCABEZADO: TÍTULO "OPORTUNIDADES DE EMPLEO" + ESTADO + BOTÓN ACTUALIZAR */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-montserrat text-sm sm:text-base font-extrabold uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    Oportunidades de Empleo
+            <div className="sticky top-[92px] sm:top-16 z-30 bg-[#F3F4F6]/98 dark:bg-[#070709]/98 backdrop-blur-md py-2 space-y-2 border-b border-neutral-300/80 dark:border-[#1a1e29] shadow-sm -mx-4 px-4 sm:-mx-6 sm:px-6 transition-all">
+              {/* LÍNEA 1: TÍTULO CORTO + STATUS DEBAJO, BUSCADOR, IDIOMA CON ESTILO Y ACTUALIZAR EN LA MISMA LÍNEA */}
+              <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5">
+                {/* Título más corto "EMPLEOS" y etiqueta de vacantes activas debajo de él de forma elegante */}
+                <div className="flex flex-row md:flex-col items-center md:items-start justify-between md:justify-center shrink-0 pr-1">
+                  <h3 className="font-montserrat text-xs sm:text-sm font-black uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-1.5 leading-none">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                    <span>EMPLEOS</span>
                   </h3>
-                  {!session.isAuthenticated ? (
-                    <span className="text-[10px] sm:text-[11px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/25 font-bold uppercase tracking-wider flex items-center gap-1">
-                      <i className="ri-eye-line text-xs" /> Muestra Pública (10x)
-                    </span>
-                  ) : (
-                    <span className="text-[11px] px-2 py-0.5 rounded-md text-neutral-600 dark:text-neutral-400 bg-neutral-100/70 dark:bg-[#13161f] border border-neutral-200/80 dark:border-[#222734] font-medium flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                      {apiStatusText}
-                    </span>
-                  )}
+                  <div className="flex items-center gap-1.5 text-[10px] text-neutral-500 dark:text-neutral-400 font-medium md:pl-3.5 mt-0.5 leading-tight tracking-tight">
+                    <span className="w-1 h-1 rounded-full bg-emerald-500 shrink-0" />
+                    <span>{apiStatusText.replace('•', '').replace('En vivo', '').trim() || `${jobs.length} activas`}</span>
+                  </div>
                 </div>
 
-                <button
-                  onClick={() => handleSyncLiveJobs()}
-                  disabled={isSyncingApi}
-                  className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#2f3545] bg-white dark:bg-[#181c25] hover:bg-neutral-100 dark:hover:bg-[#202633] text-neutral-800 dark:text-neutral-200 cursor-pointer transition-colors shadow-2xs"
-                >
-                  <i className={`ri-refresh-line text-sm ${isSyncingApi ? 'animate-spin' : ''}`} />
-                  <span>Actualizar</span>
-                </button>
-              </div>
-
-              {/* BARRA UNIFICADA DE BÚSQUEDA Y FILTRO DE IDIOMA */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-neutral-200/50 dark:bg-[#131720] p-1.5 rounded-xl border border-neutral-300/80 dark:border-[#222736]">
-                <div className="relative flex-1">
+                {/* Barra de búsqueda central integrada */}
+                <div className="relative flex-1 min-w-0">
                   <i className="ri-search-2-line text-sm text-neutral-400 absolute left-3 top-2.5" />
                   <input
                     type="text"
@@ -976,7 +960,7 @@ export function App() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSyncLiveJobs(searchQuery)}
-                    className="w-full pl-9 pr-8 py-2 rounded-lg text-xs bg-white dark:bg-[#0c0f14] border border-neutral-300 dark:border-[#262c3b] text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80] transition-colors"
+                    className="w-full pl-9 pr-8 py-1.5 rounded-lg text-xs bg-white dark:bg-[#11141c] border border-neutral-300 dark:border-[#262c3b] text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80] transition-colors shadow-2xs"
                   />
                   {searchQuery && (
                     <button
@@ -984,34 +968,48 @@ export function App() {
                         setSearchQuery('');
                         handleSyncLiveJobs('');
                       }}
-                      className="absolute right-2.5 top-2.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-white text-xs cursor-pointer"
+                      className="absolute right-2.5 top-2 text-neutral-400 hover:text-neutral-600 dark:hover:text-white text-xs cursor-pointer"
                     >
                       <i className="ri-close-circle-fill" />
                     </button>
                   )}
                 </div>
 
-                <div className="sm:w-52 shrink-0">
+                {/* Selector de idioma estilizado con la estética del proyecto */}
+                <div className="relative shrink-0 sm:w-48">
                   <select
                     value={languageFilter}
                     onChange={(e) => setLanguageFilter(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-lg text-xs font-semibold bg-white dark:bg-[#0c0f14] border border-neutral-300 dark:border-[#262c3b] text-neutral-900 dark:text-neutral-200 focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80] cursor-pointer"
+                    className="w-full pl-8 pr-7 py-1.5 rounded-lg text-xs font-montserrat font-bold bg-white dark:bg-[#11141c] border border-neutral-300 dark:border-[#262c3b] text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80] cursor-pointer appearance-none shadow-2xs transition-colors"
                   >
-                    <option value="all">🌐 Idioma: Todos</option>
-                    <option value="es">🇪🇸 Solo 100% Español</option>
-                    <option value="written-en">✍️ Sin Inglés Hablado</option>
+                    <option value="all" className="bg-white dark:bg-[#11141c] text-neutral-900 dark:text-neutral-100 py-1">🌐 Idioma: Todos</option>
+                    <option value="es" className="bg-white dark:bg-[#11141c] text-neutral-900 dark:text-neutral-100 py-1">🇪🇸 Solo 100% Español</option>
+                    <option value="written-en" className="bg-white dark:bg-[#11141c] text-neutral-900 dark:text-neutral-100 py-1">✍️ Sin Inglés Hablado</option>
                   </select>
+                  <i className="ri-global-line text-xs text-sky-500 absolute left-2.5 top-2.5 pointer-events-none" />
+                  <i className="ri-arrow-down-s-line text-sm text-neutral-400 absolute right-2.5 top-2 pointer-events-none" />
                 </div>
+
+                {/* Botón de actualizar en la misma línea */}
+                <button
+                  onClick={() => handleSyncLiveJobs()}
+                  disabled={isSyncingApi}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-extrabold uppercase tracking-wider border border-neutral-300 dark:border-[#2f3545] bg-white dark:bg-[#181c25] hover:bg-neutral-100 dark:hover:bg-[#202633] text-neutral-800 dark:text-neutral-200 cursor-pointer transition-colors shadow-2xs shrink-0"
+                  title="Sincronizar y actualizar vacantes en vivo"
+                >
+                  <i className={`ri-refresh-line text-sm ${isSyncingApi ? 'animate-spin' : ''}`} />
+                  <span>Actualizar</span>
+                </button>
               </div>
 
-              {/* CARRUSEL HORIZONTAL NATIVO DE CATEGORÍAS CON ÍCONOS */}
+              {/* LÍNEA 2: CARRUSEL HORIZONTAL DE CATEGORÍAS (SIN CORTARSE Y CON "TODAS") */}
               <div className="relative">
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 pt-0.5 no-scrollbar scroll-smooth">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 px-1.5 no-scrollbar scroll-smooth">
                   {CATEGORY_ITEMS.map((cat) => (
                     <button
                       key={cat.id}
                       onClick={() => setSelectedCategory(cat.id)}
-                      className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+                      className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-montserrat font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                         selectedCategory === cat.id
                           ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs scale-102 ring-2 ring-emerald-500/30'
                           : 'bg-white dark:bg-[#151922] text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white border border-neutral-300/80 dark:border-[#252b3a] hover:border-neutral-400'

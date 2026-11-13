@@ -44,7 +44,7 @@ interface ProfileViewProps {
   totalJobsIndexed: number;
 }
 
-type ProfileTab = 'identity' | 'vault' | 'network' | 'metrics' | 'sovereignty';
+type ProfileTab = 'identity' | 'vault' | 'network' | 'metrics';
 
 interface CommunityPost {
   id: string;
@@ -77,6 +77,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 }) => {
   const [currentTab, setCurrentTab] = useState<ProfileTab>('identity');
   const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
+
+  // Estados de paginación para pantallas/opciones del perfil
+  const [metricsSubPage, setMetricsSubPage] = useState<1 | 2>(1);
+  const [postsPage, setPostsPage] = useState<number>(1);
+  const POSTS_PER_PAGE = 2;
 
   // Estado local para los datos editables del perfil profesional
   const [formData, setFormData] = useState({
@@ -337,73 +342,55 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       </section>
 
       {/* =====================================================================
-          PESTAÑAS DE NAVEGACIÓN DEL PERFIL
+          PESTAÑAS DE NAVEGACIÓN DEL PERFIL (SIN SCROLL LATERAL: GRID RESPONSIVO)
           ===================================================================== */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar border-b border-neutral-200 dark:border-[#222736]">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 w-full pb-2 border-b border-neutral-200 dark:border-[#222736]">
         <button
           onClick={() => setCurrentTab('identity')}
-          className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-montserrat text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
+          className={`w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl font-montserrat text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer text-center ${
             currentTab === 'identity'
               ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-sm'
-              : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+              : 'bg-neutral-100/70 dark:bg-[#141822] text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white border border-neutral-200/80 dark:border-[#222838]'
           }`}
         >
-          <User className="w-3.5 h-3.5" />
-          <span>Datos de Perfil & Pitch</span>
+          <User className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Datos de Perfil</span>
         </button>
 
         <button
           onClick={() => setCurrentTab('vault')}
-          className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-montserrat text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
+          className={`w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl font-montserrat text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer text-center ${
             currentTab === 'vault'
               ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-sm'
-              : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+              : 'bg-neutral-100/70 dark:bg-[#141822] text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white border border-neutral-200/80 dark:border-[#222838]'
           }`}
         >
-          <FileText className="w-3.5 h-3.5" />
-          <span>Bóveda de CVs ({cvVersions.length})</span>
+          <FileText className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">CVs</span>
         </button>
 
         <button
           onClick={() => setCurrentTab('network')}
-          className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-montserrat text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
+          className={`w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl font-montserrat text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer text-center ${
             currentTab === 'network'
               ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-sm'
-              : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+              : 'bg-neutral-100/70 dark:bg-[#141822] text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white border border-neutral-200/80 dark:border-[#222838]'
           }`}
         >
-          <Flame className="w-3.5 h-3.5 text-amber-500" />
-          <span>Red Anti-LinkedIn (Sin Humo)</span>
-          <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[9px] font-bold">
-            PROTOTIPO
-          </span>
+          <Flame className="w-3.5 h-3.5 shrink-0 text-amber-500" />
+          <span className="truncate">Social Jobs</span>
         </button>
 
         <button
           onClick={() => setCurrentTab('metrics')}
-          className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-montserrat text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
+          className={`w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl font-montserrat text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer text-center ${
             currentTab === 'metrics'
               ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-sm'
-              : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+              : 'bg-neutral-100/70 dark:bg-[#141822] text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white border border-neutral-200/80 dark:border-[#222838]'
           }`}
         >
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Métricas de Empleabilidad</span>
-        </button>
-
-        <button
-          onClick={() => setCurrentTab('sovereignty')}
-          className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-montserrat text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
-            currentTab === 'sovereignty'
-              ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-sm'
-              : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
-          }`}
-        >
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 dark:text-[#4ade80]" />
-          <span>Soberanía & Portabilidad</span>
-          <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-700 dark:text-[#4ade80] text-[9px] font-bold">
-            100% TUYO
-          </span>
+          <Sparkles className="w-3.5 h-3.5 shrink-0 text-emerald-500 dark:text-[#4ade80]" />
+          <span className="truncate">Métricas y Portabilidad</span>
         </button>
       </div>
 
@@ -778,9 +765,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </div>
           </form>
 
-          {/* Listado de Publicaciones */}
+          {/* Listado de Publicaciones Paginado */}
           <div className="space-y-4">
-            {posts.map((post) => (
+            {posts
+              .slice((postsPage - 1) * POSTS_PER_PAGE, postsPage * POSTS_PER_PAGE)
+              .map((post) => (
               <article
                 key={post.id}
                 className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-3"
@@ -858,77 +847,137 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 </div>
               </article>
             ))}
+
+            {/* BARRA DE PAGINACIÓN DE SOCIAL JOBS */}
+            {Math.ceil(posts.length / POSTS_PER_PAGE) > 1 && (
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-white dark:bg-[#12151c] border border-neutral-200 dark:border-[#252a36] shadow-xs text-xs font-montserrat font-bold">
+                <button
+                  onClick={() => setPostsPage((p) => Math.max(1, p - 1))}
+                  disabled={postsPage === 1}
+                  className="px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-[#2b3345] bg-neutral-50 dark:bg-[#181c25] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer hover:bg-neutral-100 dark:hover:bg-[#202737] transition-colors"
+                >
+                  <i className="ri-arrow-left-s-line mr-1" /> Anterior
+                </button>
+                <span className="text-neutral-600 dark:text-neutral-400">
+                  Página {postsPage} de {Math.ceil(posts.length / POSTS_PER_PAGE)}
+                </span>
+                <button
+                  onClick={() => setPostsPage((p) => Math.min(Math.ceil(posts.length / POSTS_PER_PAGE), p + 1))}
+                  disabled={postsPage === Math.ceil(posts.length / POSTS_PER_PAGE)}
+                  className="px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-[#2b3345] bg-neutral-50 dark:bg-[#181c25] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer hover:bg-neutral-100 dark:hover:bg-[#202737] transition-colors"
+                >
+                  Siguiente <i className="ri-arrow-right-s-line ml-1" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {/* =====================================================================
-          CONTENIDO 4: MÉTRICAS DE EMPLEABILIDAD
+          CONTENIDO 4: MÉTRICAS Y PORTABILIDAD (CON PAGINACIÓN ENTRE PANTALLAS)
           ===================================================================== */}
       {currentTab === 'metrics' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
-            <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
-              Vacantes Indexadas en Vivo
-            </span>
-            <div className="text-2xl font-montserrat font-black text-emerald-600 dark:text-[#4ade80]">
-              {totalJobsIndexed}
+        <div className="space-y-5">
+          {/* BARRA DE PAGINACIÓN DE MÉTRICAS Y PORTABILIDAD */}
+          <div className="p-3 rounded-2xl bg-white dark:bg-[#12151c] border border-neutral-200 dark:border-[#252a36] shadow-xs flex items-center justify-between gap-3">
+            <button
+              onClick={() => setMetricsSubPage(1)}
+              disabled={metricsSubPage === 1}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#2b3345] bg-neutral-50 dark:bg-[#181c25] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-[#202737] cursor-pointer transition-colors"
+            >
+              <i className="ri-arrow-left-s-line text-sm" />
+              <span>Anterior</span>
+            </button>
+
+            <div className="flex items-center gap-2 text-xs font-montserrat font-extrabold text-neutral-800 dark:text-neutral-200">
+              <span className="text-emerald-600 dark:text-[#4ade80]">
+                Página {metricsSubPage} de 2:
+              </span>
+              <span>
+                {metricsSubPage === 1
+                  ? 'Diagnóstico & Métricas ATS'
+                  : 'Soberanía, Exportación JSON & GDPR'}
+              </span>
             </div>
-            <p className="text-[11px] text-neutral-500">12 portales conectados sin intermediarios</p>
+
+            <button
+              onClick={() => setMetricsSubPage(2)}
+              disabled={metricsSubPage === 2}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#2b3345] bg-neutral-50 dark:bg-[#181c25] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-[#202737] cursor-pointer transition-colors"
+            >
+              <span>Siguiente</span>
+              <i className="ri-arrow-right-s-line text-sm" />
+            </button>
           </div>
 
-          <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
-            <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
-              Versiones de CV en Bóveda
-            </span>
-            <div className="text-2xl font-montserrat font-black text-sky-600 dark:text-sky-300">
-              {cvVersions.length}
-            </div>
-            <p className="text-[11px] text-neutral-500">Optimizadas para filtros ATS</p>
-          </div>
+          {/* PÁGINA 1: MÉTRICAS DE EMPLEABILIDAD */}
+          {metricsSubPage === 1 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
+              <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
+                <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
+                  Vacantes Indexadas en Vivo
+                </span>
+                <div className="text-2xl font-montserrat font-black text-emerald-600 dark:text-[#4ade80]">
+                  {totalJobsIndexed}
+                </div>
+                <p className="text-[11px] text-neutral-500">12 portales conectados sin intermediarios</p>
+              </div>
 
-          <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
-            <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
-              Afinidad Promedio ATS
-            </span>
-            <div className="text-2xl font-montserrat font-black text-amber-500">
-              92%
-            </div>
-            <p className="text-[11px] text-neutral-500">Tasa de aprobación algorítmica</p>
-          </div>
+              <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
+                <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
+                  Versiones de CV en Bóveda
+                </span>
+                <div className="text-2xl font-montserrat font-black text-sky-600 dark:text-sky-300">
+                  {cvVersions.length}
+                </div>
+                <p className="text-[11px] text-neutral-500">Optimizadas para filtros ATS</p>
+              </div>
 
-          <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
-            <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
-              Ahorro vs LinkedIn Premium
-            </span>
-            <div className="text-2xl font-montserrat font-black text-emerald-500">
-              $479 USD/año
+              <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
+                <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
+                  Afinidad Promedio ATS
+                </span>
+                <div className="text-2xl font-montserrat font-black text-amber-500">
+                  92%
+                </div>
+                <p className="text-[11px] text-neutral-500">Tasa de aprobación algorítmica</p>
+              </div>
+
+              <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
+                <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
+                  Ahorro vs LinkedIn Premium
+                </span>
+                <div className="text-2xl font-montserrat font-black text-emerald-500">
+                  $479 USD/año
+                </div>
+                <p className="text-[11px] text-neutral-500">Protocolos abiertos sin muro de pago</p>
+              </div>
             </div>
-            <p className="text-[11px] text-neutral-500">Protocolos abiertos sin muro de pago</p>
-          </div>
+          )}
+
+          {/* PÁGINA 2: SOBERANÍA Y PORTABILIDAD */}
+          {metricsSubPage === 2 && (
+            <div className="animate-fade-in">
+              <SovereigntyVaultPanel
+                cvVersions={cvVersions}
+                activeCv={activeCv}
+                userId={session.uid}
+                userEmail={session.email}
+                onRestoreVersions={(restored) => {
+                  setCvVersions(restored);
+                  if (restored.length > 0) setActiveCvId(restored[0].id);
+                  setSaveSuccessMessage(`Bóveda restaurada: ${restored.length} variantes disponibles.`);
+                  setTimeout(() => setSaveSuccessMessage(null), 3000);
+                }}
+                onPurgeComplete={() => {
+                  onLogout();
+                  onNavigateToJobs();
+                }}
+              />
+            </div>
+          )}
         </div>
-      )}
-
-      {/* =====================================================================
-          CONTENIDO 5: BÓVEDA DE SOBERANÍA Y PORTABILIDAD (100% CONTROL USUARIO)
-          ===================================================================== */}
-      {currentTab === 'sovereignty' && (
-        <SovereigntyVaultPanel
-          cvVersions={cvVersions}
-          activeCv={activeCv}
-          userId={session.uid}
-          userEmail={session.email}
-          onRestoreVersions={(restored) => {
-            setCvVersions(restored);
-            if (restored.length > 0) setActiveCvId(restored[0].id);
-            setSaveSuccessMessage(`Bóveda restaurada: ${restored.length} variantes disponibles.`);
-            setTimeout(() => setSaveSuccessMessage(null), 3000);
-          }}
-          onPurgeComplete={() => {
-            onLogout();
-            onNavigateToJobs();
-          }}
-        />
       )}
     </div>
   );

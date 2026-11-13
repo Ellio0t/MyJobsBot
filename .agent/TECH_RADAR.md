@@ -164,7 +164,7 @@ Este inventario audita las herramientas y tecnologías utilizadas en todos los p
 
 ### **Font Awesome 6 & Semantic UI Tagging System**
 - **Proyectos:** `JobsBOT` (`src/App.tsx`, `src/components/JobDetailModal.tsx`, `index.html`)
-- **Función:** Sistema de diseño y jerarquía visual para micro-metadatos de empleo: integración CDN de Font Awesome (`fa-solid fa-hand-holding-dollar`) para la remuneración en verde dinero desprovisto de contenedores artificiales, codificación cromática semántica exclusiva para geolocalización (Azul Cielo / Sky Blue con `ri-map-pin-2-line`) y requisitos de idioma (Púrpura de Comunicación / Translation Purple con `ri-translate-2`), eliminando la sobrecarga cognitiva en el escaneo rápido de vacantes.
+- **Función:** Sistema de diseño y jerarquía visual para micro-metadatos de empleo: integración CDN de Font Awesome (`fa-solid fa-sack-dollar` - bolsa de dinero) para la remuneración en verde dinero desprovisto de contenedores artificiales, codificación cromática semántica exclusiva para geolocalización (Azul Cielo / Sky Blue con `ri-map-pin-2-line`) y requisitos de idioma (Púrpura de Comunicación / Translation Purple con `ri-translate-2`), eliminando la sobrecarga cognitiva en el escaneo rápido de vacantes.
 - **¿Por qué la IA depende del humano aquí?:** La IA tiende a encapsular todos los campos en píldoras idénticas con los mismos tonos neutros o verdes monocromáticos, provocando fatiga visual y confusión entre el sueldo (dinero) y las condiciones de contratación. El criterio humano de diseño de producto asigna pesos semánticos y contrastes cromáticos que guían la atención del candidato hacia lo que realmente importa en menos de 2 segundos.
 
 

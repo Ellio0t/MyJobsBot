@@ -87,7 +87,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.31';
+  const APP_VERSION = 'v1.2.32';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -1126,9 +1126,9 @@ export function App() {
 
                       {/* SUELDO DESTACADO EN VERDE DINERO (SIN RECUADRO AZUL) + ETIQUETAS CARACTERÍSTICAS */}
                       <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 mt-2">
-                        {/* Sueldo destacado: Verde dinero puro sin recuadro azul con icono fa-hand-holding-dollar */}
+                        {/* Sueldo destacado: Verde dinero puro sin recuadro azul con icono fa-sack-dollar */}
                         <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-montserrat font-black text-emerald-600 dark:text-[#4ade80] tracking-tight">
-                          <i className="fa-solid fa-hand-holding-dollar text-xs sm:text-sm text-emerald-600 dark:text-[#4ade80]" />
+                          <i className="fa-solid fa-sack-dollar text-xs sm:text-sm text-emerald-600 dark:text-[#4ade80]" />
                           <span>{formatCompactSalary(job.salary)}</span>
                         </span>
 

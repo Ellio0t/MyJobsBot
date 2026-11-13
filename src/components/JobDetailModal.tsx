@@ -165,7 +165,7 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="p-3 rounded-xl bg-neutral-100 dark:bg-[#161922] border border-neutral-200 dark:border-[#222837] space-y-1">
               <div className="flex items-center gap-1.5 text-[11px] font-montserrat font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                <i className="fa-solid fa-hand-holding-dollar text-xs text-emerald-600 dark:text-[#4ade80]" />
+                <i className="fa-solid fa-sack-dollar text-xs text-emerald-600 dark:text-[#4ade80]" />
                 <span>Salario</span>
               </div>
               <p className="font-montserrat font-extrabold text-xs text-emerald-600 dark:text-[#4ade80] truncate">

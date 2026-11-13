@@ -87,7 +87,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.29';
+  const APP_VERSION = 'v1.2.30';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -934,7 +934,7 @@ export function App() {
                 TÍTULO, ESTADO, BARRA DE BÚSQUEDA Y CARRUSEL DE ÁREAS
                 (Permanece fija al hacer scroll para búsqueda y filtrado inmediato)
                 ===================================================================== */}
-            <div className="sticky top-14 sm:top-16 z-30 bg-[#F3F4F6]/95 dark:bg-[#070709]/95 backdrop-blur-md pt-2 pb-2.5 space-y-2.5 border-b border-neutral-300/70 dark:border-[#1a1e29]/90 shadow-xs -mx-4 px-4 sm:-mx-6 sm:px-6 transition-all">
+            <div className="sticky top-[92px] sm:top-16 z-30 bg-[#F3F4F6]/98 dark:bg-[#070709]/98 backdrop-blur-md pt-2 pb-2.5 space-y-2.5 border-b border-neutral-300/80 dark:border-[#1a1e29] shadow-sm -mx-4 px-4 sm:-mx-6 sm:px-6 transition-all">
               {/* ENCABEZADO: TÍTULO "OPORTUNIDADES DE EMPLEO" + ESTADO + BOTÓN ACTUALIZAR */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                 <div className="flex items-center gap-2 flex-wrap">

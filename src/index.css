@@ -8,19 +8,27 @@
     --font-body: 'Open Sans', sans-serif;
   }
 
-  html, body {
-    overflow-x: hidden !important;
-    max-width: 100% !important;
-    width: 100% !important;
+  html {
+    max-width: 100%;
+    width: 100%;
     margin: 0;
     padding: 0;
     font-family: var(--font-body);
   }
 
-  #root {
-    overflow-x: hidden !important;
-    max-width: 100% !important;
+  body {
+    max-width: 100%;
     width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body);
+    overflow-x: clip;
+  }
+
+  #root {
+    max-width: 100%;
+    width: 100%;
+    min-height: 100vh;
   }
 
   h1, h2, h3, h4, .font-montserrat {

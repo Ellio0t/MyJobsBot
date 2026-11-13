@@ -44,7 +44,7 @@ interface ProfileViewProps {
   totalJobsIndexed: number;
 }
 
-type ProfileTab = 'identity' | 'vault' | 'network' | 'metrics';
+type ProfileTab = 'identity' | 'vault' | 'network' | 'metrics' | 'portability';
 
 interface CommunityPost {
   id: string;
@@ -78,8 +78,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const [currentTab, setCurrentTab] = useState<ProfileTab>('identity');
   const [saveSuccessMessage, setSaveSuccessMessage] = useState<string | null>(null);
 
-  // Estados de paginación para pantallas/opciones del perfil
-  const [metricsSubPage, setMetricsSubPage] = useState<1 | 2>(1);
+  // Estados de paginación para pantallas/opciones del perfil (ej: posts de Social Jobs)
   const [postsPage, setPostsPage] = useState<number>(1);
   const POSTS_PER_PAGE = 2;
 
@@ -344,7 +343,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       {/* =====================================================================
           PESTAÑAS DE NAVEGACIÓN DEL PERFIL (SIN SCROLL LATERAL: GRID RESPONSIVO)
           ===================================================================== */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 w-full pb-2 border-b border-neutral-200 dark:border-[#222736]">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 w-full pb-2 border-b border-neutral-200 dark:border-[#222736]">
         <button
           onClick={() => setCurrentTab('identity')}
           className={`w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl font-montserrat text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer text-center ${
@@ -390,7 +389,19 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           }`}
         >
           <Sparkles className="w-3.5 h-3.5 shrink-0 text-emerald-500 dark:text-[#4ade80]" />
-          <span className="truncate">Métricas y Portabilidad</span>
+          <span className="truncate">Métricas</span>
+        </button>
+
+        <button
+          onClick={() => setCurrentTab('portability')}
+          className={`col-span-2 sm:col-span-1 w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl font-montserrat text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer text-center ${
+            currentTab === 'portability'
+              ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-sm'
+              : 'bg-neutral-100/70 dark:bg-[#141822] text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white border border-neutral-200/80 dark:border-[#222838]'
+          }`}
+        >
+          <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-sky-500" />
+          <span className="truncate">Portabilidad</span>
         </button>
       </div>
 
@@ -875,108 +886,75 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       )}
 
       {/* =====================================================================
-          CONTENIDO 4: MÉTRICAS Y PORTABILIDAD (CON PAGINACIÓN ENTRE PANTALLAS)
+          CONTENIDO 4: MÉTRICAS ATS Y RENDIMIENTO
           ===================================================================== */}
       {currentTab === 'metrics' && (
-        <div className="space-y-5">
-          {/* BARRA DE PAGINACIÓN DE MÉTRICAS Y PORTABILIDAD */}
-          <div className="p-3 rounded-2xl bg-white dark:bg-[#12151c] border border-neutral-200 dark:border-[#252a36] shadow-xs flex items-center justify-between gap-3">
-            <button
-              onClick={() => setMetricsSubPage(1)}
-              disabled={metricsSubPage === 1}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#2b3345] bg-neutral-50 dark:bg-[#181c25] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-[#202737] cursor-pointer transition-colors"
-            >
-              <i className="ri-arrow-left-s-line text-sm" />
-              <span>Anterior</span>
-            </button>
-
-            <div className="flex items-center gap-2 text-xs font-montserrat font-extrabold text-neutral-800 dark:text-neutral-200">
-              <span className="text-emerald-600 dark:text-[#4ade80]">
-                Página {metricsSubPage} de 2:
+        <div className="space-y-5 animate-fade-in">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
+              <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
+                Vacantes Indexadas en Vivo
               </span>
-              <span>
-                {metricsSubPage === 1
-                  ? 'Diagnóstico & Métricas ATS'
-                  : 'Soberanía, Exportación JSON & GDPR'}
-              </span>
+              <div className="text-2xl font-montserrat font-black text-emerald-600 dark:text-[#4ade80]">
+                {totalJobsIndexed}
+              </div>
+              <p className="text-[11px] text-neutral-500">12 portales conectados sin intermediarios</p>
             </div>
 
-            <button
-              onClick={() => setMetricsSubPage(2)}
-              disabled={metricsSubPage === 2}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider border border-neutral-300 dark:border-[#2b3345] bg-neutral-50 dark:bg-[#181c25] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-[#202737] cursor-pointer transition-colors"
-            >
-              <span>Siguiente</span>
-              <i className="ri-arrow-right-s-line text-sm" />
-            </button>
+            <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
+              <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
+                Versiones de CV en Bóveda
+              </span>
+              <div className="text-2xl font-montserrat font-black text-sky-600 dark:text-sky-300">
+                {cvVersions.length}
+              </div>
+              <p className="text-[11px] text-neutral-500">Optimizadas para filtros ATS</p>
+            </div>
+
+            <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
+              <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
+                Afinidad Promedio ATS
+              </span>
+              <div className="text-2xl font-montserrat font-black text-amber-500">
+                92%
+              </div>
+              <p className="text-[11px] text-neutral-500">Tasa de aprobación algorítmica</p>
+            </div>
+
+            <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
+              <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
+                Ahorro vs LinkedIn Premium
+              </span>
+              <div className="text-2xl font-montserrat font-black text-emerald-500">
+                $479 USD/año
+              </div>
+              <p className="text-[11px] text-neutral-500">Protocolos abiertos sin muro de pago</p>
+            </div>
           </div>
+        </div>
+      )}
 
-          {/* PÁGINA 1: MÉTRICAS DE EMPLEABILIDAD */}
-          {metricsSubPage === 1 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
-              <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
-                <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
-                  Vacantes Indexadas en Vivo
-                </span>
-                <div className="text-2xl font-montserrat font-black text-emerald-600 dark:text-[#4ade80]">
-                  {totalJobsIndexed}
-                </div>
-                <p className="text-[11px] text-neutral-500">12 portales conectados sin intermediarios</p>
-              </div>
-
-              <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
-                <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
-                  Versiones de CV en Bóveda
-                </span>
-                <div className="text-2xl font-montserrat font-black text-sky-600 dark:text-sky-300">
-                  {cvVersions.length}
-                </div>
-                <p className="text-[11px] text-neutral-500">Optimizadas para filtros ATS</p>
-              </div>
-
-              <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
-                <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
-                  Afinidad Promedio ATS
-                </span>
-                <div className="text-2xl font-montserrat font-black text-amber-500">
-                  92%
-                </div>
-                <p className="text-[11px] text-neutral-500">Tasa de aprobación algorítmica</p>
-              </div>
-
-              <div className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-1">
-                <span className="text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400">
-                  Ahorro vs LinkedIn Premium
-                </span>
-                <div className="text-2xl font-montserrat font-black text-emerald-500">
-                  $479 USD/año
-                </div>
-                <p className="text-[11px] text-neutral-500">Protocolos abiertos sin muro de pago</p>
-              </div>
-            </div>
-          )}
-
-          {/* PÁGINA 2: SOBERANÍA Y PORTABILIDAD */}
-          {metricsSubPage === 2 && (
-            <div className="animate-fade-in">
-              <SovereigntyVaultPanel
-                cvVersions={cvVersions}
-                activeCv={activeCv}
-                userId={session.uid}
-                userEmail={session.email}
-                onRestoreVersions={(restored) => {
-                  setCvVersions(restored);
-                  if (restored.length > 0) setActiveCvId(restored[0].id);
-                  setSaveSuccessMessage(`Bóveda restaurada: ${restored.length} variantes disponibles.`);
-                  setTimeout(() => setSaveSuccessMessage(null), 3000);
-                }}
-                onPurgeComplete={() => {
-                  onLogout();
-                  onNavigateToJobs();
-                }}
-              />
-            </div>
-          )}
+      {/* =====================================================================
+          CONTENIDO 5: PORTABILIDAD, SOBERANÍA Y EXPORTACIÓN JSON
+          ===================================================================== */}
+      {currentTab === 'portability' && (
+        <div className="animate-fade-in space-y-5">
+          <SovereigntyVaultPanel
+            cvVersions={cvVersions}
+            activeCv={activeCv}
+            userId={session.uid}
+            userEmail={session.email}
+            onRestoreVersions={(restored) => {
+              setCvVersions(restored);
+              if (restored.length > 0) setActiveCvId(restored[0].id);
+              setSaveSuccessMessage(`Bóveda restaurada: ${restored.length} variantes disponibles.`);
+              setTimeout(() => setSaveSuccessMessage(null), 3000);
+            }}
+            onPurgeComplete={() => {
+              onLogout();
+              onNavigateToJobs();
+            }}
+          />
         </div>
       )}
     </div>

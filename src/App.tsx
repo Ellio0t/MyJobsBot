@@ -87,7 +87,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.37';
+  const APP_VERSION = 'v1.2.38';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)

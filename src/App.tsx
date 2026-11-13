@@ -87,7 +87,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.38';
+  const APP_VERSION = 'v1.2.39';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -1442,7 +1442,7 @@ export function App() {
                   <span className="hidden sm:inline">Pestaña Limpia</span>
                 </button>
 
-                {/* BOTÓN ASISTENTE JOBOT FLOTANTE */}
+                {/* BOTÓN JOBOT FLOTANTE */}
                 <button
                   onClick={() => {
                     setIsJobotFloatingOpen(true);
@@ -1454,13 +1454,19 @@ export function App() {
                       ? 'bg-[#4ade80] text-[#070709] border border-[#4ade80]'
                       : 'bg-neutral-100 dark:bg-[#161a23] text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-[#2a2f3e] hover:border-neutral-900 dark:hover:border-[#4ade80]'
                   }`}
-                  title="Abrir o enfocar Asistente JoBOT"
+                  title="Abrir o enfocar JoBOT"
                 >
-                  <img src="/favicon.svg" alt="JoBOT" className="w-4 h-4 object-contain shrink-0" />
-                  <span>Asistente JoBOT</span>
+                  <JobotIcon
+                    className={`w-4 h-4 shrink-0 transition-colors ${
+                      isJobotFloatingOpen && !isJobotMinimized && studioRightMode === 'chat'
+                        ? 'text-[#070709]'
+                        : 'text-emerald-500 dark:text-[#4ade80]'
+                    }`}
+                  />
+                  <span>JOBOT</span>
                 </button>
 
-                {/* BOTÓN MODIFICAR A MANO */}
+                {/* BOTÓN EDITAR DIRECTO */}
                 <button
                   onClick={() => {
                     setIsJobotFloatingOpen(true);
@@ -1475,7 +1481,7 @@ export function App() {
                   title="Modificar directamente campos del CV"
                 >
                   <i className="ri-edit-line text-xs" />
-                  <span className="hidden sm:inline">Editar a Mano</span>
+                  <span>EDITAR</span>
                 </button>
 
                 {/* BOTÓN IMPRIMIR PDF: AISLAMIENTO PURO A4 */}
@@ -1512,29 +1518,33 @@ export function App() {
               <aside className="no-print fixed bottom-6 right-4 sm:bottom-6 sm:right-6 z-50 w-[94vw] sm:w-[420px] h-[580px] max-h-[82vh] bg-white dark:bg-[#12151c] rounded-2xl border border-neutral-200 dark:border-[#293040] shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-200">
                 {/* CABECERA DE LA VENTANA FLOTANTE */}
                 <div className="p-2.5 bg-[#111111] dark:bg-[#161a23] text-white border-b border-neutral-800 dark:border-[#242936] flex items-center justify-between gap-2 select-none">
-                  {/* SELECTOR DE PESTAÑAS DENTRO DEL ASISTENTE FLOTANTE */}
-                  <div className="flex items-center gap-1 bg-black/40 p-1 rounded-lg flex-1">
+                  {/* SELECTOR DE PESTAÑAS DENTRO DEL ASISTENTE FLOTANTE: JOBOT / EDITAR */}
+                  <div className="flex items-center gap-1.5 bg-black/40 p-1 rounded-lg flex-1">
                     <button
                       onClick={() => setStudioRightMode('chat')}
-                      className={`flex-1 py-1 px-2.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      className={`flex-1 py-1.5 px-3 rounded-md font-montserrat text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
                         studioRightMode === 'chat'
                           ? 'bg-[#4ade80] text-[#070709] shadow-sm'
                           : 'text-neutral-400 hover:text-white'
                       }`}
                     >
-                      <img src="/favicon.svg" alt="JoBOT" className="w-4 h-4 object-contain shrink-0" />
-                      <span>Asistente JoBOT</span>
+                      <JobotIcon
+                        className={`w-4 h-4 shrink-0 transition-colors ${
+                          studioRightMode === 'chat' ? 'text-[#070709]' : 'text-[#4ade80]'
+                        }`}
+                      />
+                      <span>JOBOT</span>
                     </button>
                     <button
                       onClick={() => setStudioRightMode('editor')}
-                      className={`flex-1 py-1 px-2.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      className={`flex-1 py-1.5 px-3 rounded-md font-montserrat text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
                         studioRightMode === 'editor'
                           ? 'bg-[#4ade80] text-[#070709] shadow-sm'
                           : 'text-neutral-400 hover:text-white'
                       }`}
                     >
-                      <i className="ri-edit-line text-xs" />
-                      <span>Editar a Mano</span>
+                      <i className="ri-edit-line text-xs shrink-0" />
+                      <span>EDITAR</span>
                     </button>
                   </div>
 
@@ -1655,12 +1665,12 @@ export function App() {
                   setIsJobotFloatingOpen(true);
                   setIsJobotMinimized(false);
                 }}
-                className="no-print fixed bottom-6 right-4 sm:bottom-8 sm:right-8 z-50 flex items-center gap-2.5 px-4 py-3 rounded-full bg-[#111111] dark:bg-[#4ade80] text-white dark:text-[#070709] shadow-2xl hover:scale-105 active:scale-95 transition-all border border-neutral-700 dark:border-[#4ade80] font-montserrat font-extrabold text-xs uppercase tracking-wider cursor-pointer"
-                title="Abrir Asistente JoBOT"
+                className="no-print fixed bottom-6 right-4 sm:bottom-8 sm:right-8 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[#111111] dark:bg-[#4ade80] text-white dark:text-[#070709] shadow-2xl hover:scale-105 active:scale-95 transition-all border border-neutral-700 dark:border-[#4ade80] font-montserrat font-extrabold text-xs uppercase tracking-wider cursor-pointer"
+                title="Abrir JoBOT"
               >
-                <img src="/favicon.svg" alt="JoBOT" className="w-5 h-5 object-contain" />
-                <span>Asistente JoBOT</span>
-                <span className="w-2 h-2 rounded-full bg-emerald-400 dark:bg-[#070709] animate-pulse"></span>
+                <JobotIcon className="w-5 h-5 shrink-0 text-emerald-400 dark:text-[#070709]" />
+                <span>JOBOT</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 dark:bg-[#070709] animate-pulse" />
               </button>
             )}
           </div>

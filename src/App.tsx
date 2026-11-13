@@ -87,7 +87,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.34';
+  const APP_VERSION = 'v1.2.35';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -195,9 +195,38 @@ export function App() {
   const [jobs, setJobs] = useState<JobOffer[]>(CURATED_JOBS);
   const [selectedCategory, setSelectedCategory] = useState<JobCategory>('all');
   const [languageFilter, setLanguageFilter] = useState<'all' | 'es' | 'written-en'>('all');
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+  const langMenuRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSyncingApi, setIsSyncingApi] = useState(false);
   const [apiStatusText, setApiStatusText] = useState('Sincronizando...');
+
+  // Cerrar menú de idioma al hacer clic fuera
+  useEffect(() => {
+    function handleClickOutsideLang(event: MouseEvent) {
+      if (langMenuRef.current && !langMenuRef.current.contains(event.target as Node)) {
+        setIsLangMenuOpen(false);
+      }
+    }
+    if (isLangMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutsideLang);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutsideLang);
+    };
+  }, [isLangMenuOpen]);
+
+  const getLanguageLabel = (filter: 'all' | 'es' | 'written-en') => {
+    switch (filter) {
+      case 'es':
+        return 'Solo 100% Español';
+      case 'written-en':
+        return 'Sin Inglés Hablado';
+      case 'all':
+      default:
+        return 'Idioma: Todos';
+    }
+  };
 
   // 6. Modales
   const [selectedJobForEmail, setSelectedJobForEmail] = useState<JobOffer | null>(null);
@@ -933,73 +962,111 @@ export function App() {
 
             {/* =====================================================================
                 ZONA DE CONTROL NATIVA PERSISTENTE (STICKY HEADER ULTRA-COMPACTO):
-                LÍNEA 1: TÍTULO "EMPLEOS" + VACANTES ACTIVAS DEBAJO | BUSCADOR | SELECTOR IDIOMA | BOTÓN ACTUALIZAR
+                LÍNEA 1: TÍTULO "OFERTAS DE EMPLEO" + VACANTES ACTIVAS DEBAJO | BUSCADOR COMPACTO | SELECTOR IDIOMA CUSTOM | BOTÓN ACTUALIZAR
                 LÍNEA 2: CARRUSEL HORIZONTAL DE CATEGORÍAS (CON "TODAS" Y SIN CORTES)
                 ===================================================================== */}
             <div className="sticky top-[92px] sm:top-16 z-30 bg-[#F3F4F6]/98 dark:bg-[#070709]/98 backdrop-blur-md py-2 space-y-2 border-b border-neutral-300/80 dark:border-[#1a1e29] shadow-sm -mx-4 px-4 sm:-mx-6 sm:px-6 transition-all">
-              {/* LÍNEA 1: TÍTULO CORTO + STATUS DEBAJO, BUSCADOR, IDIOMA CON ESTILO Y ACTUALIZAR EN LA MISMA LÍNEA */}
+              {/* LÍNEA 1: TÍTULO "OFERTAS DE EMPLEO" + STATUS DEBAJO, BUSCADOR CONTROLADO, SELECTOR DE IDIOMA CUSTOM Y BOTÓN ACTUALIZAR */}
               <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5">
-                {/* Título más corto "EMPLEOS" y etiqueta de vacantes activas debajo de él de forma elegante */}
-                <div className="flex flex-row md:flex-col items-center md:items-start justify-between md:justify-center shrink-0 pr-1">
+                {/* Título conciso "OFERTAS DE EMPLEO" y etiqueta de vacantes activas adaptada debajo */}
+                <div className="flex flex-row md:flex-col items-center md:items-start justify-between md:justify-center shrink-0 pr-2">
                   <h3 className="font-montserrat text-xs sm:text-sm font-black uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-1.5 leading-none">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                    <span>EMPLEOS</span>
+                    <span>OFERTAS DE EMPLEO</span>
                   </h3>
                   <div className="flex items-center gap-1.5 text-[10px] text-neutral-500 dark:text-neutral-400 font-medium md:pl-3.5 mt-0.5 leading-tight tracking-tight">
                     <span className="w-1 h-1 rounded-full bg-emerald-500 shrink-0" />
-                    <span>{apiStatusText.replace('•', '').replace('En vivo', '').trim() || `${jobs.length} activas`}</span>
+                    <span>{apiStatusText.replace('•', '').replace('En vivo', '').trim() || `${jobs.length} vacantes activas`}</span>
                   </div>
                 </div>
 
-                {/* Barra de búsqueda central integrada */}
-                <div className="relative flex-1 min-w-0">
-                  <i className="ri-search-2-line text-sm text-neutral-400 absolute left-3 top-2.5" />
-                  <input
-                    type="text"
-                    placeholder="Buscar puesto, empresa, rubro (ej: QA, Data, React)..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSyncLiveJobs(searchQuery)}
-                    className="w-full pl-9 pr-8 py-1.5 rounded-lg text-xs bg-white dark:bg-[#11141c] border border-neutral-300 dark:border-[#262c3b] text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80] transition-colors shadow-2xs"
-                  />
-                  {searchQuery && (
+                {/* Agrupación compacta de controles: Buscador controlado, Selector de Idioma Custom y Actualizar */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 md:flex-initial md:justify-end">
+                  {/* Barra de búsqueda de ancho equilibrado (no desmedida) */}
+                  <div className="relative w-full sm:w-64 md:w-72 lg:w-80">
+                    <i className="ri-search-2-line text-sm text-neutral-400 absolute left-3 top-2" />
+                    <input
+                      type="text"
+                      placeholder="Buscar puesto, empresa, rubro (ej: QA, Data)..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSyncLiveJobs(searchQuery)}
+                      className="w-full pl-9 pr-8 py-1.5 rounded-lg text-xs bg-white dark:bg-[#11141c] border border-neutral-300 dark:border-[#262c3b] text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80] transition-colors shadow-2xs"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => {
+                          setSearchQuery('');
+                          handleSyncLiveJobs('');
+                        }}
+                        className="absolute right-2.5 top-2 text-neutral-400 hover:text-neutral-600 dark:hover:text-white text-xs cursor-pointer"
+                      >
+                        <i className="ri-close-circle-fill" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Selector de idioma con Menú Desplegable Personalizado del Portal (Cero menús nativos azules, Cero iconos redundantes) */}
+                  <div className="relative shrink-0" ref={langMenuRef}>
                     <button
-                      onClick={() => {
-                        setSearchQuery('');
-                        handleSyncLiveJobs('');
-                      }}
-                      className="absolute right-2.5 top-2 text-neutral-400 hover:text-neutral-600 dark:hover:text-white text-xs cursor-pointer"
+                      type="button"
+                      onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+                      className="w-full sm:w-auto inline-flex items-center justify-between sm:justify-start gap-2 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold bg-white dark:bg-[#11141c] border border-neutral-300 dark:border-[#262c3b] text-neutral-800 dark:text-neutral-200 hover:border-neutral-400 dark:hover:border-[#384257] shadow-2xs transition-all cursor-pointer whitespace-nowrap"
+                      title="Filtrar por idioma"
                     >
-                      <i className="ri-close-circle-fill" />
+                      <i className="ri-translate-2 text-xs text-purple-500 dark:text-purple-400" />
+                      <span>{getLanguageLabel(languageFilter)}</span>
+                      <i className={`ri-arrow-down-s-line text-sm text-neutral-400 transition-transform duration-200 ${isLangMenuOpen ? 'rotate-180' : ''}`} />
                     </button>
-                  )}
-                </div>
 
-                {/* Selector de idioma estilizado con la estética del proyecto */}
-                <div className="relative shrink-0 sm:w-48">
-                  <select
-                    value={languageFilter}
-                    onChange={(e) => setLanguageFilter(e.target.value as any)}
-                    className="w-full pl-8 pr-7 py-1.5 rounded-lg text-xs font-montserrat font-bold bg-white dark:bg-[#11141c] border border-neutral-300 dark:border-[#262c3b] text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80] cursor-pointer appearance-none shadow-2xs transition-colors"
+                    {/* Popover con diseño nativo del portal JobsBOT */}
+                    {isLangMenuOpen && (
+                      <div className="absolute top-full left-0 sm:left-auto sm:right-0 mt-1.5 w-full sm:w-56 bg-white dark:bg-[#121622] rounded-xl border border-neutral-200 dark:border-[#283042] shadow-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                        <div className="px-2.5 py-1 text-[10px] font-montserrat font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 border-b border-neutral-100 dark:border-[#1e2433] mb-1">
+                          Filtrar por Idioma
+                        </div>
+                        {[
+                          { id: 'all', label: 'Todos los idiomas', hint: 'Cualquier nivel o requisito' },
+                          { id: 'es', label: 'Solo 100% Español', hint: 'Sin requisito de inglés' },
+                          { id: 'written-en', label: 'Sin Inglés Hablado', hint: 'Inglés escrito o técnico' },
+                        ].map((opt) => (
+                          <button
+                            key={opt.id}
+                            type="button"
+                            onClick={() => {
+                              setLanguageFilter(opt.id as any);
+                              setIsLangMenuOpen(false);
+                            }}
+                            className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-montserrat transition-colors cursor-pointer text-left ${
+                              languageFilter === opt.id
+                                ? 'bg-purple-500/10 text-purple-700 dark:text-purple-300 font-bold border border-purple-500/25'
+                                : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-[#1a202c] font-medium'
+                            }`}
+                          >
+                            <div>
+                              <div className="leading-tight">{opt.label}</div>
+                              <div className="text-[10px] text-neutral-400 dark:text-neutral-500 font-normal">{opt.hint}</div>
+                            </div>
+                            {languageFilter === opt.id && (
+                              <i className="ri-check-line text-sm text-purple-600 dark:text-purple-400 shrink-0 ml-2" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Botón de actualizar en la misma línea */}
+                  <button
+                    onClick={() => handleSyncLiveJobs()}
+                    disabled={isSyncingApi}
+                    className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-extrabold uppercase tracking-wider border border-neutral-300 dark:border-[#2f3545] bg-white dark:bg-[#181c25] hover:bg-neutral-100 dark:hover:bg-[#202633] text-neutral-800 dark:text-neutral-200 cursor-pointer transition-colors shadow-2xs shrink-0"
+                    title="Sincronizar y actualizar vacantes en vivo"
                   >
-                    <option value="all" className="bg-white dark:bg-[#11141c] text-neutral-900 dark:text-neutral-100 py-1">🌐 Idioma: Todos</option>
-                    <option value="es" className="bg-white dark:bg-[#11141c] text-neutral-900 dark:text-neutral-100 py-1">🇪🇸 Solo 100% Español</option>
-                    <option value="written-en" className="bg-white dark:bg-[#11141c] text-neutral-900 dark:text-neutral-100 py-1">✍️ Sin Inglés Hablado</option>
-                  </select>
-                  <i className="ri-global-line text-xs text-sky-500 absolute left-2.5 top-2.5 pointer-events-none" />
-                  <i className="ri-arrow-down-s-line text-sm text-neutral-400 absolute right-2.5 top-2 pointer-events-none" />
+                    <i className={`ri-refresh-line text-sm ${isSyncingApi ? 'animate-spin' : ''}`} />
+                    <span>Actualizar</span>
+                  </button>
                 </div>
-
-                {/* Botón de actualizar en la misma línea */}
-                <button
-                  onClick={() => handleSyncLiveJobs()}
-                  disabled={isSyncingApi}
-                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-extrabold uppercase tracking-wider border border-neutral-300 dark:border-[#2f3545] bg-white dark:bg-[#181c25] hover:bg-neutral-100 dark:hover:bg-[#202633] text-neutral-800 dark:text-neutral-200 cursor-pointer transition-colors shadow-2xs shrink-0"
-                  title="Sincronizar y actualizar vacantes en vivo"
-                >
-                  <i className={`ri-refresh-line text-sm ${isSyncingApi ? 'animate-spin' : ''}`} />
-                  <span>Actualizar</span>
-                </button>
               </div>
 
               {/* LÍNEA 2: CARRUSEL HORIZONTAL DE CATEGORÍAS (SIN CORTARSE Y CON "TODAS") */}

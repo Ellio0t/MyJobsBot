@@ -87,7 +87,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.30';
+  const APP_VERSION = 'v1.2.31';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -1124,23 +1124,24 @@ export function App() {
                         {job.title}
                       </h4>
 
-                      {/* SUELDO DESTACADO INMEDIATAMENTE DEBAJO DEL TÍTULO + ETIQUETAS COMPACTAS */}
-                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2">
-                        {/* Sueldo destacado: solo números/montos limpios */}
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-montserrat font-black bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800/50 shadow-2xs">
-                          <i className="ri-money-dollar-circle-line text-xs" />
+                      {/* SUELDO DESTACADO EN VERDE DINERO (SIN RECUADRO AZUL) + ETIQUETAS CARACTERÍSTICAS */}
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 mt-2">
+                        {/* Sueldo destacado: Verde dinero puro sin recuadro azul con icono fa-hand-holding-dollar */}
+                        <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-montserrat font-black text-emerald-600 dark:text-[#4ade80] tracking-tight">
+                          <i className="fa-solid fa-hand-holding-dollar text-xs sm:text-sm text-emerald-600 dark:text-[#4ade80]" />
                           <span>{formatCompactSalary(job.salary)}</span>
                         </span>
 
-                        {/* Alcance geográfico compacto */}
-                        <span className="px-2 py-1 rounded-md text-[10px] sm:text-[11px] font-semibold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-[#2a3040] truncate max-w-[170px] sm:max-w-none">
-                          <i className="ri-map-pin-2-line text-xs mr-1 text-neutral-400" />
-                          {formatCompactCountry(job.countryScope)}
+                        {/* Localidad: Color característico Azul Cielo Geográfico (no verde) */}
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-semibold bg-sky-500/10 dark:bg-sky-500/15 text-sky-700 dark:text-sky-300 border border-sky-500/25 dark:border-sky-500/35 truncate max-w-[170px] sm:max-w-none shadow-2xs">
+                          <i className="ri-map-pin-2-line text-xs mr-1 text-sky-500 dark:text-sky-400" />
+                          <span>{formatCompactCountry(job.countryScope)}</span>
                         </span>
 
-                        {/* Idioma compacto */}
-                        <span className="px-2 py-1 rounded-md text-[10px] sm:text-[11px] font-semibold bg-neutral-100 dark:bg-[#1a1e28] text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-[#2a3040]">
-                          {job.languageReq}
+                        {/* Idioma: Color característico Púrpura de Comunicación/Traducción (no verde) */}
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-semibold bg-purple-500/10 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/25 dark:border-purple-500/35 shadow-2xs">
+                          <i className="ri-translate-2 text-xs mr-1 text-purple-500 dark:text-purple-400" />
+                          <span>{job.languageReq}</span>
                         </span>
                       </div>
 

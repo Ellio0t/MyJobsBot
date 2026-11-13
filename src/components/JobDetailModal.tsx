@@ -165,17 +165,17 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="p-3 rounded-xl bg-neutral-100 dark:bg-[#161922] border border-neutral-200 dark:border-[#222837] space-y-1">
               <div className="flex items-center gap-1.5 text-[11px] font-montserrat font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                <DollarSign className="w-3.5 h-3.5 text-emerald-600 dark:text-[#4ade80]" />
+                <i className="fa-solid fa-hand-holding-dollar text-xs text-emerald-600 dark:text-[#4ade80]" />
                 <span>Salario</span>
               </div>
-              <p className="font-montserrat font-extrabold text-xs text-neutral-900 dark:text-white truncate">
+              <p className="font-montserrat font-extrabold text-xs text-emerald-600 dark:text-[#4ade80] truncate">
                 {job.salary || 'A convenir'}
               </p>
             </div>
 
             <div className="p-3 rounded-xl bg-neutral-100 dark:bg-[#161922] border border-neutral-200 dark:border-[#222837] space-y-1">
-              <div className="flex items-center gap-1.5 text-[11px] font-montserrat font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                <MapPin className="w-3.5 h-3.5 text-emerald-600 dark:text-[#4ade80]" />
+              <div className="flex items-center gap-1.5 text-[11px] font-montserrat font-bold uppercase tracking-wider text-sky-700 dark:text-sky-300">
+                <MapPin className="w-3.5 h-3.5 text-sky-500 dark:text-sky-400" />
                 <span>Modalidad</span>
               </div>
               <p className="font-montserrat font-extrabold text-xs text-neutral-900 dark:text-white truncate">
@@ -184,8 +184,8 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
             </div>
 
             <div className="p-3 rounded-xl bg-neutral-100 dark:bg-[#161922] border border-neutral-200 dark:border-[#222837] space-y-1">
-              <div className="flex items-center gap-1.5 text-[11px] font-montserrat font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                <Languages className="w-3.5 h-3.5 text-emerald-600 dark:text-[#4ade80]" />
+              <div className="flex items-center gap-1.5 text-[11px] font-montserrat font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
+                <Languages className="w-3.5 h-3.5 text-purple-500 dark:text-purple-400" />
                 <span>Idioma</span>
               </div>
               <p className="font-montserrat font-extrabold text-xs text-neutral-900 dark:text-white truncate">
@@ -194,8 +194,8 @@ export const JobDetailModal: React.FC<JobDetailModalProps> = ({
             </div>
 
             <div className="p-3 rounded-xl bg-neutral-100 dark:bg-[#161922] border border-neutral-200 dark:border-[#222837] space-y-1">
-              <div className="flex items-center gap-1.5 text-[11px] font-montserrat font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                <Calendar className="w-3.5 h-3.5 text-emerald-600 dark:text-[#4ade80]" />
+              <div className="flex items-center gap-1.5 text-[11px] font-montserrat font-bold uppercase tracking-wider text-sky-700 dark:text-sky-300">
+                <Calendar className="w-3.5 h-3.5 text-sky-500 dark:text-sky-400" />
                 <span>Cobertura</span>
               </div>
               <p className="font-montserrat font-extrabold text-xs text-neutral-900 dark:text-white truncate">

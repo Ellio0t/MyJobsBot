@@ -167,6 +167,11 @@ Este inventario audita las herramientas y tecnologías utilizadas en todos los p
 - **Función:** Sistema de diseño y jerarquía visual para micro-metadatos de empleo: integración CDN de Font Awesome (`fa-solid fa-sack-dollar` - bolsa de dinero) para la remuneración en verde dinero desprovisto de contenedores artificiales, codificación cromática semántica exclusiva para geolocalización (Azul Cielo / Sky Blue con `ri-map-pin-2-line`) y requisitos de idioma (Púrpura de Comunicación / Translation Purple con `ri-translate-2`), eliminando la sobrecarga cognitiva en el escaneo rápido de vacantes.
 - **¿Por qué la IA depende del humano aquí?:** La IA tiende a encapsular todos los campos en píldoras idénticas con los mismos tonos neutros o verdes monocromáticos, provocando fatiga visual y confusión entre el sueldo (dinero) y las condiciones de contratación. El criterio humano de diseño de producto asigna pesos semánticos y contrastes cromáticos que guían la atención del candidato hacia lo que realmente importa en menos de 2 segundos.
 
+### **Floating Copilot Assistant & 100% WYSIWYG A4 Canvas Studio**
+- **Proyectos:** `JobsBOT` (`src/App.tsx`, `src/components/CvA4Canvas.tsx`, `src/index.css`)
+- **Función:** Arquitectura de desacoplamiento visual del estudio de currículums: (1) Lienzo A4 protagonista centrado al 100% de proporción física real (210mm x 297mm) sin cortes laterales ni scrollbars forzados, (2) Controles de aumento y zoom dinámico (+ / - / 100% Real), (3) Asistente JoBOT y panel de edición transformados en una ventana flotante inteligente (Floating Copilot Card) minimizable a un FAB esférico en la esquina inferior derecha, y (4) Aislamiento estricto de impresión `@media print` (`#cv-sheet-to-print` con ocultamiento total del DOM web) para generar PDFs 100% puros y libres de marcos web, scrollbars o banners.
+- **¿Por qué la IA depende del humano aquí?:** Las IAs dividen ciegamente la pantalla en columnas proporcionales (`col-span-7 / col-span-5`), ignorando que un documento A4 estándar mide físicamente 794px a 96 DPI y no puede caber en la mitad de una pantalla de laptop común sin recortarse o crear un doble scroll interno repugnante. El arquitecto humano eleva el documento a héroe central y delega el asistente a un plano flotante no intrusivo.
+
 
 ---
 

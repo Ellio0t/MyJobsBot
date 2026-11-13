@@ -29,6 +29,7 @@ export const CvA4Canvas: React.FC<CvA4CanvasProps> = ({
       }}
     >
       <div
+        id="cv-sheet-to-print"
         className="cv-a4-sheet bg-white text-[#222222] shadow-2xl border border-neutral-300 print:border-none print:shadow-none print:transform-none origin-top transition-transform"
         style={{
           width: `${BASE_WIDTH_MM}mm`,

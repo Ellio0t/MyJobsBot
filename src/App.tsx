@@ -87,7 +87,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.32';
+  const APP_VERSION = 'v1.2.33';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -156,9 +156,11 @@ export function App() {
   const hasCustomCv = activeCv.id !== 'cv-sample-visitor';
 
   // Configuración de visualización y edición en CV Studio
-  const [cvScale, setCvScale] = useState<number>(0.68); // Proporción exacta para emparejar con el alto de pantalla del asistente
+  const [cvScale, setCvScale] = useState<number>(1); // Predeterminado: 100% tamaño real de la hoja física A4 (lo que ves es lo que se imprime)
   const [cvTemplate, setCvTemplate] = useState<CvTemplateId>('harvard'); // Harvard ATS por defecto (1 columna de máxima tracción)
   const [studioRightMode, setStudioRightMode] = useState<'chat' | 'editor'>('chat'); // Alternar entre IA JoBOT y Editor Manual
+  const [isJobotFloatingOpen, setIsJobotFloatingOpen] = useState<boolean>(true); // Ventana flotante inteligente de JoBOT
+  const [isJobotMinimized, setIsJobotMinimized] = useState<boolean>(false);
 
   const updateActiveCvProfile = (partial: Partial<CVProfile>) => {
     setCvVersions((prev) =>
@@ -1306,44 +1308,41 @@ export function App() {
                   </button>
                 </div>
 
-                {/* SELECTOR DE ESCALA / PROPORCIÓN WYSIWYG */}
+                {/* SELECTOR DE ESCALA / PROPORCIÓN WYSIWYG Y ZOOM */}
                 <div className="flex items-center bg-neutral-100 dark:bg-[#161a23] p-1 rounded-lg border border-neutral-200 dark:border-[#2a2f3e]">
                   <span className="text-[10px] font-montserrat font-bold text-neutral-400 px-1.5 hidden sm:inline">
-                    Vista:
+                    Zoom:
                   </span>
                   <button
-                    onClick={() => setCvScale(0.68)}
-                    className={`px-2 py-1 rounded text-[10px] font-montserrat font-bold uppercase tracking-wider transition-colors cursor-pointer ${
-                      cvScale === 0.68
-                        ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709]'
-                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
-                    }`}
-                    title="Ajuste matemático proporcional a la par del panel derecho"
+                    onClick={() => setCvScale((prev) => Math.max(0.5, Number((prev - 0.15).toFixed(2))))}
+                    className="p-1.5 rounded text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200 dark:hover:bg-[#202534] transition-colors cursor-pointer"
+                    title="Alejar (-)"
                   >
-                    68% (Par)
-                  </button>
-                  <button
-                    onClick={() => setCvScale(0.85)}
-                    className={`px-2 py-1 rounded text-[10px] font-montserrat font-bold uppercase tracking-wider transition-colors cursor-pointer ${
-                      cvScale === 0.85
-                        ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709]'
-                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
-                    }`}
-                    title="Zoom medio para lectura cómoda"
-                  >
-                    85%
+                    <i className="ri-zoom-out-line text-xs" />
                   </button>
                   <button
                     onClick={() => setCvScale(1)}
-                    className={`px-2 py-1 rounded text-[10px] font-montserrat font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                    className={`px-2.5 py-1 rounded text-[10px] font-montserrat font-bold uppercase tracking-wider transition-colors cursor-pointer ${
                       cvScale === 1
                         ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709]'
                         : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
                     }`}
-                    title="Tamaño real 100% de la hoja A4"
+                    title="100% Proporción exacta física A4 (lo que ves es lo que se imprime)"
                   >
-                    100%
+                    100% (Real)
                   </button>
+                  <button
+                    onClick={() => setCvScale((prev) => Math.min(1.5, Number((prev + 0.15).toFixed(2))))}
+                    className="p-1.5 rounded text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200 dark:hover:bg-[#202534] transition-colors cursor-pointer"
+                    title="Aumentar (+) para inspeccionar detalles"
+                  >
+                    <i className="ri-zoom-in-line text-xs" />
+                  </button>
+                  {cvScale !== 1 && (
+                    <span className="text-[9px] font-mono font-bold text-emerald-600 dark:text-[#4ade80] px-1">
+                      {Math.round(cvScale * 100)}%
+                    </span>
+                  )}
                 </div>
 
                 {/* ACCIONES DEL DOCUMENTO */}
@@ -1379,9 +1378,50 @@ export function App() {
                   <span className="hidden sm:inline">Pestaña Limpia</span>
                 </button>
 
+                {/* BOTÓN ASISTENTE JOBOT FLOTANTE */}
                 <button
-                  onClick={() => window.print()}
+                  onClick={() => {
+                    setIsJobotFloatingOpen(true);
+                    setIsJobotMinimized(false);
+                    setStudioRightMode('chat');
+                  }}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-extrabold uppercase tracking-wider transition-all cursor-pointer shadow-xs ${
+                    isJobotFloatingOpen && !isJobotMinimized && studioRightMode === 'chat'
+                      ? 'bg-[#4ade80] text-[#070709] border border-[#4ade80]'
+                      : 'bg-neutral-100 dark:bg-[#161a23] text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-[#2a2f3e] hover:border-neutral-900 dark:hover:border-[#4ade80]'
+                  }`}
+                  title="Abrir o enfocar Asistente JoBOT"
+                >
+                  <img src="/favicon.svg" alt="JoBOT" className="w-4 h-4 object-contain shrink-0" />
+                  <span>Asistente JoBOT</span>
+                </button>
+
+                {/* BOTÓN MODIFICAR A MANO */}
+                <button
+                  onClick={() => {
+                    setIsJobotFloatingOpen(true);
+                    setIsJobotMinimized(false);
+                    setStudioRightMode('editor');
+                  }}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-extrabold uppercase tracking-wider transition-all cursor-pointer shadow-xs ${
+                    isJobotFloatingOpen && !isJobotMinimized && studioRightMode === 'editor'
+                      ? 'bg-[#4ade80] text-[#070709] border border-[#4ade80]'
+                      : 'bg-neutral-100 dark:bg-[#161a23] text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-[#2a2f3e] hover:border-neutral-900 dark:hover:border-[#4ade80]'
+                  }`}
+                  title="Modificar directamente campos del CV"
+                >
+                  <i className="ri-edit-line text-xs" />
+                  <span className="hidden sm:inline">Editar a Mano</span>
+                </button>
+
+                {/* BOTÓN IMPRIMIR PDF: AISLAMIENTO PURO A4 */}
+                <button
+                  onClick={() => {
+                    if (cvScale !== 1) setCvScale(1);
+                    setTimeout(() => window.print(), 120);
+                  }}
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-montserrat font-extrabold uppercase tracking-wider bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] hover:opacity-90 cursor-pointer shadow-sm"
+                  title="Imprimir o exportar en PDF la hoja de tu CV limpia"
                 >
                   <i className="ri-printer-line text-sm" />
                   <span>Imprimir PDF</span>
@@ -1389,49 +1429,71 @@ export function App() {
               </div>
             </div>
 
-            {/* CONTENEDOR EN PROPORCIÓN: HOJA A4 EXACTA A LA IZQUIERDA Y ASISTENTE/EDITOR A LA DERECHA */}
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-              {/* LIENZO A4 PROPORCIONAL Y EXACTO A LA IMPRESIÓN */}
-              <div className="print-only-wrapper xl:col-span-7 flex flex-col items-center bg-neutral-100 dark:bg-[#0c0e14] p-3 sm:p-5 rounded-xl border border-neutral-200 dark:border-[#252a36] shadow-inner h-[760px] overflow-y-auto overflow-x-auto scrollbar-thin">
-                <CvA4Canvas
-                  profile={activeCv.profile}
-                  onAvatarClick={() => avatarInputRef.current?.click()}
-                  template={cvTemplate}
-                  scale={cvScale}
-                />
-              </div>
+            {/* ===================================================================
+                LIENZO CENTRAL HERO: HOJA A4 AL 100% DE PROPORCIÓN REAL (SIN CORTES)
+                =================================================================== */}
+            <div className="w-full flex flex-col items-center justify-start bg-neutral-100/60 dark:bg-[#0c0e14] p-3 sm:p-8 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-inner min-h-[900px] overflow-x-auto overflow-y-visible">
+              <CvA4Canvas
+                profile={activeCv.profile}
+                onAvatarClick={() => avatarInputRef.current?.click()}
+                template={cvTemplate}
+                scale={cvScale}
+              />
+            </div>
 
-              {/* PANEL DERECHO CONMUTABLE: ASISTENTE JOBOT O HERRAMIENTAS DE EDICIÓN DIRECTA */}
-              <aside className="no-print xl:col-span-5 bg-white dark:bg-[#12151c] rounded-xl border border-neutral-200 dark:border-[#252a36] shadow-xl flex flex-col h-[760px] sticky top-20 overflow-hidden">
-                {/* SELECTOR DE PESTAÑAS: ASISTENTE IA VS HERRAMIENTAS DE EDICIÓN MANUAL */}
-                <div className="p-2.5 bg-[#111111] dark:bg-[#161a23] text-white border-b border-neutral-800 dark:border-[#242936] flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1 bg-black/40 p-1 rounded-lg w-full">
+            {/* ===================================================================
+                VENTANA FLOTANTE INTELIGENTE: ASISTENTE JOBOT / EDITOR DIRECTO
+                =================================================================== */}
+            {isJobotFloatingOpen && !isJobotMinimized && (
+              <aside className="no-print fixed bottom-6 right-4 sm:bottom-6 sm:right-6 z-50 w-[94vw] sm:w-[420px] h-[580px] max-h-[82vh] bg-white dark:bg-[#12151c] rounded-2xl border border-neutral-200 dark:border-[#293040] shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl animate-in fade-in slide-in-from-bottom-4 duration-200">
+                {/* CABECERA DE LA VENTANA FLOTANTE */}
+                <div className="p-2.5 bg-[#111111] dark:bg-[#161a23] text-white border-b border-neutral-800 dark:border-[#242936] flex items-center justify-between gap-2 select-none">
+                  {/* SELECTOR DE PESTAÑAS DENTRO DEL ASISTENTE FLOTANTE */}
+                  <div className="flex items-center gap-1 bg-black/40 p-1 rounded-lg flex-1">
                     <button
                       onClick={() => setStudioRightMode('chat')}
-                      className={`flex-1 py-1.5 px-3 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      className={`flex-1 py-1 px-2.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         studioRightMode === 'chat'
                           ? 'bg-[#4ade80] text-[#070709] shadow-sm'
                           : 'text-neutral-400 hover:text-white'
                       }`}
                     >
-                      <i className="ri-robot-2-line text-sm" />
+                      <img src="/favicon.svg" alt="JoBOT" className="w-4 h-4 object-contain shrink-0" />
                       <span>Asistente JoBOT</span>
                     </button>
                     <button
                       onClick={() => setStudioRightMode('editor')}
-                      className={`flex-1 py-1.5 px-3 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      className={`flex-1 py-1 px-2.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         studioRightMode === 'editor'
                           ? 'bg-[#4ade80] text-[#070709] shadow-sm'
                           : 'text-neutral-400 hover:text-white'
                       }`}
                     >
-                      <i className="ri-edit-line text-sm" />
-                      <span>Modificar CV a Mano</span>
+                      <i className="ri-edit-line text-xs" />
+                      <span>Editar a Mano</span>
+                    </button>
+                  </div>
+
+                  {/* CONTROLES DE VENTANA FLOTANTE: MINIMIZAR Y CERRAR */}
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => setIsJobotMinimized(true)}
+                      className="p-1.5 rounded-md text-neutral-400 hover:text-white hover:bg-neutral-800 dark:hover:bg-[#202636] transition-colors cursor-pointer"
+                      title="Minimizar ventana a botón flotante"
+                    >
+                      <i className="ri-subtract-line text-sm" />
+                    </button>
+                    <button
+                      onClick={() => setIsJobotFloatingOpen(false)}
+                      className="p-1.5 rounded-md text-neutral-400 hover:text-white hover:bg-neutral-800 dark:hover:bg-[#202636] transition-colors cursor-pointer"
+                      title="Cerrar ventana flotante"
+                    >
+                      <i className="ri-close-line text-sm" />
                     </button>
                   </div>
                 </div>
 
-                {/* VISTA 1: EDITOR MANUAL DIRECTO EN TIEMPO REAL */}
+                {/* CUERPO DEL ASISTENTE FLOTANTE: MODO EDITOR DIRECTO O CHAT */}
                 {studioRightMode === 'editor' ? (
                   <div className="flex-1 overflow-hidden">
                     <CvQuickEditorPanel
@@ -1440,9 +1502,9 @@ export function App() {
                     />
                   </div>
                 ) : (
-                  /* VISTA 2: ASISTENTE DE IA JOBOT */
+                  /* VISTA DE CHAT CON ASISTENTE JOBOT */
                   <div className="flex-1 flex flex-col overflow-hidden">
-                    <div className="p-3 bg-neutral-50 dark:bg-[#151821] border-b border-neutral-200 dark:border-[#242936] flex flex-wrap gap-1.5">
+                    <div className="p-2.5 bg-neutral-50 dark:bg-[#151821] border-b border-neutral-200 dark:border-[#242936] flex flex-wrap gap-1.5 max-h-[110px] overflow-y-auto">
                       <span className="w-full text-[9px] font-montserrat font-bold uppercase tracking-wider text-emerald-600 dark:text-[#4ade80] mb-0.5 flex items-center gap-1">
                         <i className="ri-sparkling-fill text-xs" /> Sugerencias JoBOT según tu CV:
                       </span>
@@ -1450,14 +1512,14 @@ export function App() {
                         <button
                           key={idx}
                           onClick={() => setChatInput(quick)}
-                          className="text-[10px] px-2.5 py-1 rounded-md bg-white dark:bg-[#1c212c] border border-neutral-200 dark:border-[#2d3444] text-neutral-800 dark:text-neutral-200 hover:border-neutral-900 dark:hover:border-[#4ade80] transition-colors cursor-pointer"
+                          className="text-[10px] px-2 py-0.5 rounded-md bg-white dark:bg-[#1c212c] border border-neutral-200 dark:border-[#2d3444] text-neutral-800 dark:text-neutral-200 hover:border-neutral-900 dark:hover:border-[#4ade80] transition-colors cursor-pointer"
                         >
                           + {quick}
                         </button>
                       ))}
                     </div>
 
-                    <div className="flex-1 p-4 overflow-y-auto space-y-3">
+                    <div className="flex-1 p-3.5 overflow-y-auto space-y-3">
                       {chatMessages.map((msg) => (
                         <div
                           key={msg.id}
@@ -1467,11 +1529,13 @@ export function App() {
                         >
                           <div className="flex items-start gap-2 max-w-[95%]">
                             {msg.sender === 'bot' && (
-                              <img
-                                src="/favicon.svg?v=1.2.26"
-                                alt="JoBOT"
-                                className="w-5 h-5 shrink-0 mt-0.5 drop-shadow-[0_0_6px_rgba(74,222,128,0.3)]"
-                              />
+                              <div className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 rounded-full bg-emerald-500/10 dark:bg-[#4ade80]/15 border border-emerald-500/30 flex items-center justify-center p-1 shadow-xs mt-0.5">
+                                <img
+                                  src="/favicon.svg"
+                                  alt="JoBOT"
+                                  className="w-full h-full object-contain"
+                                />
+                              </div>
                             )}
                             <div
                               className={`rounded-xl p-3 text-xs leading-relaxed ${
@@ -1499,7 +1563,7 @@ export function App() {
 
                     <form
                       onSubmit={handleSendChatPrompt}
-                      className="p-3 border-t border-neutral-200 dark:border-[#242936] bg-neutral-50 dark:bg-[#151821] flex gap-2"
+                      className="p-2.5 border-t border-neutral-200 dark:border-[#242936] bg-neutral-50 dark:bg-[#151821] flex gap-2"
                     >
                       <input
                         type="text"
@@ -1518,7 +1582,23 @@ export function App() {
                   </div>
                 )}
               </aside>
-            </div>
+            )}
+
+            {/* BOTÓN FLOTANTE MINIMALISTA (FAB) CUANDO JOBOT ESTÁ MINIMIZADO O CERRADO */}
+            {(!isJobotFloatingOpen || isJobotMinimized) && (
+              <button
+                onClick={() => {
+                  setIsJobotFloatingOpen(true);
+                  setIsJobotMinimized(false);
+                }}
+                className="no-print fixed bottom-6 right-4 sm:bottom-8 sm:right-8 z-50 flex items-center gap-2.5 px-4 py-3 rounded-full bg-[#111111] dark:bg-[#4ade80] text-white dark:text-[#070709] shadow-2xl hover:scale-105 active:scale-95 transition-all border border-neutral-700 dark:border-[#4ade80] font-montserrat font-extrabold text-xs uppercase tracking-wider cursor-pointer"
+                title="Abrir Asistente JoBOT"
+              >
+                <img src="/favicon.svg" alt="JoBOT" className="w-5 h-5 object-contain" />
+                <span>Asistente JoBOT</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 dark:bg-[#070709] animate-pulse"></span>
+              </button>
+            )}
           </div>
         )}
       </main>

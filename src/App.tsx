@@ -87,7 +87,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.27';
+  const APP_VERSION = 'v1.2.28';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -195,7 +195,7 @@ export function App() {
   const [languageFilter, setLanguageFilter] = useState<'all' | 'es' | 'written-en'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSyncingApi, setIsSyncingApi] = useState(false);
-  const [apiStatusText, setApiStatusText] = useState('Sincronizando con redes de empleo...');
+  const [apiStatusText, setApiStatusText] = useState('Sincronizando...');
 
   // 6. Modales
   const [selectedJobForEmail, setSelectedJobForEmail] = useState<JobOffer | null>(null);
@@ -255,12 +255,12 @@ export function App() {
           [...prev, ...liveOffers].forEach((item) => map.set(item.id, item));
           return Array.from(map.values());
         });
-        setApiStatusText(`En vivo (${CURATED_JOBS.length + liveOffers.length} vacantes indexadas)`);
+        setApiStatusText(`${CURATED_JOBS.length + liveOffers.length} vacantes activas`);
       } else {
-        setApiStatusText(`En vivo (${jobs.length} vacantes indexadas)`);
+        setApiStatusText(`${jobs.length} vacantes activas`);
       }
     } catch {
-      setApiStatusText(`En vivo (${jobs.length} vacantes indexadas)`);
+      setApiStatusText(`${jobs.length} vacantes activas`);
     } finally {
       setIsSyncingApi(false);
     }
@@ -921,7 +921,8 @@ export function App() {
                       <i className="ri-eye-line text-xs" /> Muestra Pública (10x)
                     </span>
                   ) : (
-                    <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-[#4ade80] border border-emerald-500/20 dark:border-[#4ade80]/30 font-semibold">
+                    <span className="text-[11px] px-2 py-0.5 rounded-md text-neutral-600 dark:text-neutral-400 bg-neutral-100/70 dark:bg-[#13161f] border border-neutral-200/80 dark:border-[#222734] font-medium flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                       {apiStatusText}
                     </span>
                   )}
@@ -1529,12 +1530,9 @@ export function App() {
 
           {/* BLOQUE DERECHO: INDICADOR EN VIVO TUMBADO A LA DERECHA JUNTO A LOS DEMÁS ANEXOS */}
           <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-            {/* Indicador de Estado En Vivo: Tumbado a la derecha junto a los demás anexos del footer */}
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-semibold bg-emerald-500/10 dark:bg-[#4ade80]/15 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/20 dark:border-[#4ade80]/30 shadow-2xs">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4ade80] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#4ade80]"></span>
-              </span>
+            {/* Indicador Discreto de Estado En Vivo */}
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-medium text-neutral-600 dark:text-neutral-400 bg-neutral-100/70 dark:bg-[#13161f] border border-neutral-200/80 dark:border-[#222734]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
               <span>{apiStatusText}</span>
             </div>
             {/* Botón Adaptado de Descarga en Google Play (Android) */}

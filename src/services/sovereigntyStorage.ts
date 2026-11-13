@@ -216,3 +216,4 @@ export function purgeAllUserData(userId?: string): void {
     console.error('Error al purgar datos locales:', err);
   }
 }
+

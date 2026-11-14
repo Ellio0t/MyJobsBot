@@ -34,13 +34,22 @@ export function formatUserSession(user: FirebaseUser | null): UserSession {
   if (!user) {
     return { isAuthenticated: false };
   }
+  const isGoogle =
+    user.providerData?.some((p) => p.providerId === 'google.com' || p.providerId.includes('google')) ||
+    Boolean(user.photoURL?.includes('googleusercontent.com'));
+
+  // Asegura imagen de alta resolución desde el CDN de Google si está disponible
+  const optimizedPhoto = user.photoURL
+    ? user.photoURL.replace('=s96-c', '=s300-c')
+    : undefined;
+
   return {
     isAuthenticated: true,
     uid: user.uid,
     displayName: user.displayName || user.email?.split('@')[0] || 'Candidato Profesional',
     email: user.email || '',
-    photoURL: user.photoURL || undefined,
-    authProvider: user.providerData?.[0]?.providerId?.includes('google') ? 'google' : 'email',
+    photoURL: optimizedPhoto,
+    authProvider: isGoogle ? 'google' : 'email',
   };
 }
 
@@ -174,6 +183,13 @@ export async function logoutUserReal(): Promise<void> {
  * Observador reactivo de estado de sesión
  */
 export function onAuthStatusChanged(callback: (session: UserSession) => void) {
+  if (auth.currentUser) {
+    try {
+      callback(formatUserSession(auth.currentUser));
+    } catch (e) {
+      // Ignorar fallo inicial silencioso
+    }
+  }
   return onAuthStateChanged(auth, (user) => {
     callback(formatUserSession(user));
   });

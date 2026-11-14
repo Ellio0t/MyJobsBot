@@ -87,7 +87,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.40';
+  const APP_VERSION = 'v1.2.41';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -122,10 +122,56 @@ export function App() {
     isAuthenticated: false,
   });
 
+  /**
+   * Rellena automáticamente los datos del perfil y CV con la cuenta autenticada (Google OAuth)
+   * si aún conserva los nombres o placeholders genéricos por defecto.
+   */
+  const applySessionDataToCv = (userSession: UserSession, versions: CVVersion[]): CVVersion[] => {
+    if (!userSession.isAuthenticated) return versions;
+
+    return versions.map((v) => {
+      const isDefaultName =
+        !v.profile.fullName ||
+        v.profile.fullName === 'TU NOMBRE Y APELLIDO' ||
+        v.profile.fullName === 'Candidato Profesional' ||
+        v.profile.fullName === 'Profesional de Tecnología' ||
+        v.profile.fullName.trim() === '';
+
+      const isDefaultEmail =
+        !v.profile.email ||
+        v.profile.email === 'tu.correo@ejemplo.com' ||
+        v.profile.email === 'usuario@jobsbot.pro' ||
+        v.profile.email.includes('@ejemplo.com') ||
+        v.profile.email.trim() === '';
+
+      const isDefaultAvatar =
+        !v.profile.avatarUrl ||
+        v.profile.avatarUrl.includes('unsplash.com') ||
+        v.profile.avatarUrl.includes('photo-1534528741775') ||
+        v.profile.avatarUrl.trim() === '';
+
+      const nextFullName = isDefaultName && userSession.displayName ? userSession.displayName : v.profile.fullName;
+      const nextEmail = isDefaultEmail && userSession.email ? userSession.email : v.profile.email;
+      const nextAvatar = isDefaultAvatar && userSession.photoURL ? userSession.photoURL : v.profile.avatarUrl;
+
+      return {
+        ...v,
+        profile: {
+          ...v.profile,
+          fullName: nextFullName,
+          email: nextEmail,
+          avatarUrl: nextAvatar,
+          showPhotoInCV: userSession.photoURL ? true : v.profile.showPhotoInCV,
+        },
+      };
+    });
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStatusChanged((fbSession) => {
       if (fbSession.isAuthenticated) {
         setSession(fbSession);
+        setCvVersions((prev) => applySessionDataToCv(fbSession, prev));
       }
     });
     return () => unsubscribe();
@@ -258,10 +304,13 @@ export function App() {
   useEffect(() => {
     const saved = loadVaultLocally(session.uid);
     if (saved && saved.length > 0) {
-      setCvVersions(saved);
-      setActiveCvId(saved[0].id);
+      const merged = session.isAuthenticated ? applySessionDataToCv(session, saved) : saved;
+      setCvVersions(merged);
+      setActiveCvId(merged[0].id);
+    } else if (session.isAuthenticated) {
+      setCvVersions((prev) => applySessionDataToCv(session, prev));
     }
-  }, [session.uid]);
+  }, [session.uid, session.isAuthenticated, session.displayName, session.email, session.photoURL]);
 
   // SINCRONIZACIÓN INMEDIATA: Cada cambio en variantes se sella localmente sin servidores intermediarios
   useEffect(() => {
@@ -430,6 +479,7 @@ export function App() {
 
   const handleLoginSuccess = (newSession: UserSession) => {
     setSession(newSession);
+    setCvVersions((prev) => applySessionDataToCv(newSession, prev));
     if (pendingActionAfterAuth === 'studio' || pendingActionAfterAuth === 'upload') {
       navigateTo('studio');
       if (pendingActionAfterAuth === 'upload') {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   User,
   Briefcase,
@@ -29,6 +29,33 @@ import {
 import { CVVersion, UserSession } from '../types';
 import { JobotIcon } from './JobotIcon';
 import { SovereigntyVaultPanel } from './SovereigntyVaultPanel';
+
+/**
+ * Distintivo oficial con el isotipo característico de 4 colores de Google
+ */
+export function GoogleAccountBadge({
+  email,
+  className = '',
+}: {
+  email?: string;
+  className?: string;
+}) {
+  return (
+    <div
+      title={email ? `Cuenta verificada por Google: ${email}` : 'Cuenta oficial verificada con Google'}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-montserrat font-extrabold bg-white dark:bg-[#141722] text-neutral-800 dark:text-neutral-100 border border-neutral-300 dark:border-[#2f374a] shadow-2xs hover:border-[#4285F4] transition-all cursor-default select-none ${className}`}
+    >
+      <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+      </svg>
+      <span className="tracking-tight">Google Account</span>
+      <i className="ri-checkbox-circle-fill text-[11px] text-[#4285F4]" />
+    </div>
+  );
+}
 
 interface ProfileViewProps {
   session: UserSession;
@@ -82,11 +109,30 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const [postsPage, setPostsPage] = useState<number>(1);
   const POSTS_PER_PAGE = 2;
 
-  // Estado local para los datos editables del perfil profesional
-  const [formData, setFormData] = useState({
-    fullName: activeCv.profile.fullName || session.displayName || 'Profesional de Tecnología',
+  // Identificadores de placeholders genéricos por defecto
+  const isDefaultName = (name?: string) =>
+    !name ||
+    name === 'TU NOMBRE Y APELLIDO' ||
+    name === 'Candidato Profesional' ||
+    name === 'Profesional de Tecnología' ||
+    name.trim() === '';
+
+  const isDefaultEmail = (mail?: string) =>
+    !mail ||
+    mail === 'tu.correo@ejemplo.com' ||
+    mail === 'usuario@jobsbot.pro' ||
+    mail.includes('@ejemplo.com') ||
+    mail.trim() === '';
+
+  // Estado local para los datos editables del perfil profesional (autollenado con datos de sesión Google)
+  const [formData, setFormData] = useState(() => ({
+    fullName: isDefaultName(activeCv.profile.fullName) && session.displayName
+      ? session.displayName
+      : (activeCv.profile.fullName && !isDefaultName(activeCv.profile.fullName) ? activeCv.profile.fullName : (session.displayName || 'TU NOMBRE Y APELLIDO')),
     headline: activeCv.profile.headline || 'Analista QA Web & Ingeniero de Software',
-    email: activeCv.profile.email || session.email || 'usuario@jobsbot.pro',
+    email: isDefaultEmail(activeCv.profile.email) && session.email
+      ? session.email
+      : (activeCv.profile.email && !isDefaultEmail(activeCv.profile.email) ? activeCv.profile.email : (session.email || 'tu.correo@ejemplo.com')),
     phone: activeCv.profile.phone || '+54 9 11 5555-4321',
     location: activeCv.profile.location || 'Santiago, Chile (Disponible Remoto)',
     availability: activeCv.profile.availability || 'Búsqueda Activa (Inmediata)',
@@ -96,7 +142,57 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     github: 'https://github.com/developer-latam',
     portfolio: 'https://portfolio.dev',
     showPhotoInCV: activeCv.profile.showPhotoInCV,
-  });
+  }));
+
+  // Sincronización automática si la sesión de Google termina de autenticarse en segundo plano
+  useEffect(() => {
+    if (session.isAuthenticated) {
+      setFormData((prev) => {
+        const needsName = isDefaultName(prev.fullName) && Boolean(session.displayName);
+        const needsEmail = isDefaultEmail(prev.email) && Boolean(session.email);
+        if (!needsName && !needsEmail) return prev;
+        return {
+          ...prev,
+          fullName: needsName && session.displayName ? session.displayName : prev.fullName,
+          email: needsEmail && session.email ? session.email : prev.email,
+        };
+      });
+    }
+  }, [session.isAuthenticated, session.displayName, session.email]);
+
+  // Función para re-sincronizar explícitamente desde Google a petición del usuario
+  const handleSyncWithGoogleAccount = () => {
+    if (!session.isAuthenticated) return;
+    const newName = session.displayName || formData.fullName;
+    const newEmail = session.email || formData.email;
+    const newAvatar = session.photoURL || activeCv.profile.avatarUrl;
+
+    setFormData((prev) => ({
+      ...prev,
+      fullName: newName,
+      email: newEmail,
+    }));
+
+    setCvVersions((prev) =>
+      prev.map((v) =>
+        v.id === activeCv.id
+          ? {
+              ...v,
+              profile: {
+                ...v.profile,
+                fullName: newName,
+                email: newEmail,
+                avatarUrl: newAvatar,
+                showPhotoInCV: Boolean(newAvatar),
+              },
+            }
+          : v
+      )
+    );
+
+    setSaveSuccessMessage('¡Datos sincronizados exitosamente desde tu Cuenta de Google!');
+    setTimeout(() => setSaveSuccessMessage(null), 3500);
+  };
 
   // Feed de la Red Profesional sin Burocracia (Muro de Valor Anti-LinkedIn)
   const [posts, setPosts] = useState<CommunityPost[]>([
@@ -249,9 +345,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
         <div className="relative pt-6 sm:pt-8 flex flex-col md:flex-row items-start md:items-end justify-between gap-5">
           <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 sm:gap-5">
-            {/* Avatar interactivo con botón de edición */}
+            {/* Avatar interactivo con botón de edición y sello oficial de Google */}
             <div className="relative group shrink-0">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-4 border-white dark:border-[#12151c] shadow-lg bg-neutral-900">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-4 border-white dark:border-[#12151c] shadow-lg bg-neutral-900 relative">
                 <img
                   src={
                     activeCv.profile.avatarUrl ||
@@ -262,6 +358,22 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   className="w-full h-full object-cover"
                 />
               </div>
+
+              {/* Distintivo de Google en la esquina superior del avatar */}
+              {session.authProvider === 'google' && (
+                <div
+                  title="Foto de perfil sincronizada con tu cuenta de Google"
+                  className="absolute -top-1.5 -left-1.5 w-6 h-6 rounded-full bg-white dark:bg-[#12151c] shadow-md border border-neutral-200 dark:border-[#2d3548] flex items-center justify-center p-1"
+                >
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                  </svg>
+                </div>
+              )}
+
               <button
                 onClick={onTriggerAvatarUpload}
                 title="Cambiar foto de perfil"
@@ -281,9 +393,18 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   <ShieldCheck className="w-3 h-3" />
                   Verificado
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-neutral-100 dark:bg-[#1a1f2b] text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-[#282f40]">
-                  {session.authProvider === 'google' ? 'Google Account' : 'Miembro Pro'}
-                </span>
+                {session.authProvider === 'google' ? (
+                  <GoogleAccountBadge email={session.email} />
+                ) : session.isAuthenticated ? (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-montserrat font-bold uppercase tracking-wider bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/25">
+                    <i className="ri-mail-check-line text-xs" />
+                    Cuenta Verificada
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-neutral-100 dark:bg-[#1a1f2b] text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-[#282f40]">
+                    Modo Invitado
+                  </span>
+                )}
               </div>
 
               <p className="font-montserrat text-xs sm:text-sm font-bold text-sky-700 dark:text-sky-300">
@@ -419,6 +540,40 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               </h3>
               <span className="text-[11px] text-neutral-400">Sincronizado con IA</span>
             </div>
+
+            {/* BANNER DE VINCULACIÓN CON GOOGLE ACCOUNT */}
+            {session.authProvider === 'google' && (
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-blue-50/70 dark:bg-[#111728] border border-blue-200/80 dark:border-[#1d2a4a] text-xs">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#161d30] border border-blue-200 dark:border-[#24355d] flex items-center justify-center shrink-0 shadow-2xs">
+                    <svg className="w-4 h-4" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="font-montserrat font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5">
+                      <span>Cuenta de Google Vinculada</span>
+                      <span className="text-[10px] font-mono font-normal text-blue-600 dark:text-blue-400">({session.email})</span>
+                    </div>
+                    <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                      Tu nombre, correo y avatar se sincronizan automáticamente con tu cuenta oficial.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSyncWithGoogleAccount}
+                  className="px-3 py-1.5 rounded-lg bg-white dark:bg-[#1a233a] hover:bg-neutral-100 dark:hover:bg-[#222e4d] text-blue-700 dark:text-blue-300 font-montserrat text-[11px] font-bold border border-blue-200 dark:border-[#2b3c66] transition-colors cursor-pointer shrink-0 self-start sm:self-auto shadow-2xs"
+                  title="Vuelve a cargar tu nombre, correo y foto desde tu cuenta de Google"
+                >
+                  <i className="ri-refresh-line mr-1 text-xs" />
+                  Restablecer datos de Google
+                </button>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>

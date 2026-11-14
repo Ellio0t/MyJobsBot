@@ -183,6 +183,11 @@ Este inventario audita las herramientas y tecnologías utilizadas en todos los p
 - **¿Por qué la IA depende del humano aquí?:** Las IAs renderizan SVGs estáticos mediante etiquetas `<img>` sin calcular el contraste del fondo en estados activos (`active` / `selected`), lo que genera elementos invisibles (verde sobre verde). Además, las IAs tienden a redactar etiquetas verborrágicas ("Asistente JoBOT", "Editar a Mano") que provocan saltos de línea antiestéticos en pantallas medianas. El arquitecto humano sintetiza a micro-copys de impacto (`JOBOT` y `EDITAR`) y parametriza la propiedad `currentColor` del vector SVG.
 
 
+### **Google OAuth Identity Sync & Official 4-Color Account Badge**
+- **Proyectos:** `JobsBOT` (`src/services/firebaseAuth.ts`, `src/components/ProfileView.tsx`, `src/App.tsx`)
+- **Función:** Sistema de onboarding "One-Tap Profile Ingestion" y verificación de identidad: (1) Extracción automática de metadatos de usuario desde el token de Google (`displayName`, `email`, y `photoURL` optimizado a alta resolución `s300-c`), (2) Poblado automático de campos de perfil y currículum ATS suprimiendo los placeholders genéricos de plantilla, (3) Distintivo cromático característico de Google Account con el isotipo oficial de 4 colores (`#4285F4`, `#34A853`, `#FBBC05`, `#EA4335`) y check de verificación azul, y (4) Sello visual de Google vinculado en la miniatura del avatar y botón de re-sincronización con un clic.
+- **¿Por qué la IA depende del humano aquí?:** La IA suele autenticar al usuario y dejar el estado del perfil completamente desconectado, forzando al usuario a volver a tipear su nombre y correo a mano, o renderiza textos genéricos sin marcas registradas oficiales que restan credibilidad a la plataforma. El arquitecto humano concibe la autenticación como un acelerador de onboarding y dota a la UI de confianza visual institucional.
+
 ---
 
 ## 🛡️ 5. Soberanía de Datos, Cripto-Privacidad & Portabilidad Abierta

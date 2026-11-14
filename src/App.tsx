@@ -30,7 +30,7 @@ import { PortalBadge } from './components/PortalBadge';
 import { NetworkTrustBanner } from './components/NetworkTrustBanner';
 import { MidScrollIncentiveModal } from './components/MidScrollIncentiveModal';
 import { AppSplashScreen } from './components/AppSplashScreen';
-import { PostJobModal } from './components/PostJobModal';
+import { PublishJobView } from './components/PublishJobView';
 import { SponsoredFeedCard } from './components/SponsoredFeedCard';
 import { buildAffiliateApplyUrl, recordOutboundClick } from './services/affiliateEngine';
 import { JobotIcon } from './components/JobotIcon';
@@ -87,7 +87,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.39';
+  const APP_VERSION = 'v1.2.40';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -146,8 +146,90 @@ export function App() {
     null
   );
 
-  // 3. Pestaña Principal ('jobs' = EMPLEOS | 'studio' = My CV | 'profile' = Mi Perfil)
-  const [activeTab, setActiveTab] = useState<'jobs' | 'studio' | 'profile'>('jobs');
+  // Enrutamiento SPA nativo con sincronización bidireccional de URL (Deep Linking & Historial)
+  const getPageFromUrl = (): 'jobs' | 'studio' | 'profile' | 'publish' => {
+    if (typeof window === 'undefined') return 'jobs';
+    const path = window.location.pathname.toLowerCase();
+    const hash = window.location.hash.toLowerCase();
+
+    if (path.includes('/cv') || path.includes('/estudio') || hash.includes('cv') || hash.includes('estudio')) {
+      return 'studio';
+    }
+    if (path.includes('/perfil') || path.includes('/profile') || hash.includes('perfil') || hash.includes('profile')) {
+      return 'profile';
+    }
+    if (path.includes('/publicar') || path.includes('/publish') || hash.includes('publicar') || hash.includes('publish')) {
+      return 'publish';
+    }
+    return 'jobs';
+  };
+
+  // 3. Pestaña / Página Principal ('jobs' = / | 'studio' = /cv | 'profile' = /perfil | 'publish' = /publicar)
+  const [activeTab, setActiveTab] = useState<'jobs' | 'studio' | 'profile' | 'publish'>(() => getPageFromUrl());
+
+  const navigateTo = (tab: 'jobs' | 'studio' | 'profile' | 'publish', replace = false) => {
+    setActiveTab(tab);
+
+    let targetPath = '/';
+    let pageTitle = 'JobsBOT • Ofertas de Empleo Remoto y Tech';
+
+    switch (tab) {
+      case 'studio':
+        targetPath = '/cv';
+        pageTitle = 'JobsBOT • Creador de CV A4 y Asistente JoBOT';
+        break;
+      case 'profile':
+        targetPath = '/perfil';
+        pageTitle = 'JobsBOT • Mi Perfil y Portabilidad';
+        break;
+      case 'publish':
+        targetPath = '/publicar';
+        pageTitle = 'JobsBOT • Publicar Oferta de Empleo';
+        break;
+      case 'jobs':
+      default:
+        targetPath = '/';
+        pageTitle = 'JobsBOT • Ofertas de Empleo Remoto y Tech';
+        break;
+    }
+
+    document.title = pageTitle;
+
+    try {
+      if (replace) {
+        window.history.replaceState({ tab }, '', targetPath);
+      } else if (window.location.pathname !== targetPath) {
+        window.history.pushState({ tab }, '', targetPath);
+      }
+    } catch {
+      window.location.hash = targetPath === '/' ? '' : targetPath;
+    }
+  };
+
+  // Escuchar eventos de navegación del navegador (atrás/adelante)
+  useEffect(() => {
+    const handlePopState = () => {
+      const page = getPageFromUrl();
+      setActiveTab(page);
+
+      if (page === 'studio') document.title = 'JobsBOT • Creador de CV A4 y Asistente JoBOT';
+      else if (page === 'profile') document.title = 'JobsBOT • Mi Perfil y Portabilidad';
+      else if (page === 'publish') document.title = 'JobsBOT • Publicar Oferta de Empleo';
+      else document.title = 'JobsBOT • Ofertas de Empleo Remoto y Tech';
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener('hashchange', handlePopState);
+
+    // Sincronizar ruta inicial en la barra de direcciones
+    const initialPage = getPageFromUrl();
+    navigateTo(initialPage, true);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('hashchange', handlePopState);
+    };
+  }, []);
 
   // 4. CVs: El visitante NUNCA ve el CV personal del dueño, solo una plantilla base de ejemplo
   const [cvVersions, setCvVersions] = useState<CVVersion[]>([VISITOR_SAMPLE_CV]);
@@ -233,7 +315,6 @@ export function App() {
   const [selectedJobForDetails, setSelectedJobForDetails] = useState<JobOffer | null>(null);
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [showScrollLeadModal, setShowScrollLeadModal] = useState(false);
-  const [showPostJobModal, setShowPostJobModal] = useState(false);
   const scrollTriggerFiredRef = useRef(false);
 
   // Trigger mid-scroll: cuando el visitante no logueado scrollea a la mitad del feed
@@ -340,7 +421,7 @@ export function App() {
       setPendingActionAfterAuth(target);
       setShowAuthModal(true);
     } else {
-      setActiveTab('studio');
+      navigateTo('studio');
       if (target === 'upload') {
         setTimeout(() => cvFileInputRef.current?.click(), 150);
       }
@@ -350,7 +431,7 @@ export function App() {
   const handleLoginSuccess = (newSession: UserSession) => {
     setSession(newSession);
     if (pendingActionAfterAuth === 'studio' || pendingActionAfterAuth === 'upload') {
-      setActiveTab('studio');
+      navigateTo('studio');
       if (pendingActionAfterAuth === 'upload') {
         setTimeout(() => cvFileInputRef.current?.click(), 200);
       }
@@ -413,7 +494,7 @@ export function App() {
 
       setCvVersions((prev) => [version, ...prev]);
       setActiveCvId(version.id);
-      setActiveTab('studio'); // Directo al Estudio para ver el CV Virtual rellenado
+      navigateTo('studio'); // Directo al Estudio para ver el CV Virtual rellenado
 
       setChatMessages((prev) => [
         ...prev,
@@ -435,7 +516,7 @@ export function App() {
       );
       setCvVersions((prev) => [newVersion, ...prev]);
       setActiveCvId(newVersion.id);
-      setActiveTab('studio');
+      navigateTo('studio');
     }
   };
 
@@ -495,7 +576,7 @@ export function App() {
         createdVersionId: newVersion.id,
       },
     ]);
-    setActiveTab('studio');
+    navigateTo('studio');
   };
 
   const handleWhatsAppContact = (job: JobOffer) => {
@@ -644,7 +725,7 @@ export function App() {
             {/* LOGO: Ícono Oficial de Robot y Título en Verde Claro Neón (#4ade80) */}
             <button
               onClick={() => {
-                setActiveTab('jobs');
+                navigateTo('jobs');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               className="flex items-center gap-2 sm:gap-2.5 text-left cursor-pointer group hover:opacity-95 transition-all bg-transparent border-0 p-0 outline-hidden flex-1 min-w-0 pr-1"
@@ -667,10 +748,10 @@ export function App() {
               </div>
             </button>
 
-            {/* NAVEGACIÓN DESKTOP: "EMPLEOS", "CV" Y "PUBLICAR" (Visible en pantallas sm: en adelante) */}
+            {/* NAVEGACIÓN DESKTOP: "EMPLEOS", "CV", "PERFIL" Y "PUBLICAR" (Páginas Dedicadas) */}
             <nav className="hidden sm:flex items-center gap-1 bg-neutral-100 dark:bg-[#15181f] p-1 rounded-lg border border-neutral-200 dark:border-[#232732] shrink-0">
               <button
-                onClick={() => setActiveTab('jobs')}
+                onClick={() => navigateTo('jobs')}
                 className={`px-3.5 py-1.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
                   activeTab === 'jobs'
                     ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
@@ -689,7 +770,7 @@ export function App() {
               </button>
 
               <button
-                onClick={() => setActiveTab('studio')}
+                onClick={() => navigateTo('studio')}
                 className={`px-3.5 py-1.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
                   activeTab === 'studio'
                     ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
@@ -711,7 +792,7 @@ export function App() {
                   if (!session.isAuthenticated) {
                     setShowAuthModal(true);
                   } else {
-                    setActiveTab('profile');
+                    navigateTo('profile');
                   }
                 }}
                 className={`px-3.5 py-1.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
@@ -725,14 +806,18 @@ export function App() {
                 <span>PERFIL</span>
               </button>
 
-              {/* BOTÓN B2B: PUBLICAR OFERTA DESTACADA */}
+              {/* PESTAÑA B2B: PUBLICAR OFERTA DESTACADA */}
               <button
-                onClick={() => setShowPostJobModal(true)}
-                className="px-3 py-1.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
+                onClick={() => navigateTo('publish')}
+                className={`px-3 py-1.5 rounded-md font-montserrat text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-xs ${
+                  activeTab === 'publish'
+                    ? 'bg-amber-500 text-black border border-amber-500 shadow-sm'
+                    : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30'
+                }`}
                 title="Publicar oferta de empleo para empresas"
               >
-                <PlusCircle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                <span>Publicar</span>
+                <PlusCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>PUBLICAR</span>
               </button>
             </nav>
 
@@ -802,7 +887,7 @@ export function App() {
               ) : (
                 <div className="flex items-center gap-1.5 sm:gap-2.5 pl-1.5 sm:pl-2 border-l border-neutral-200 dark:border-[#20242c]">
                   <div
-                    onClick={() => setActiveTab('profile')}
+                    onClick={() => navigateTo('profile')}
                     title="Ver mi perfil completo y red profesional"
                     className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden border cursor-pointer relative group shrink-0 transition-all ${
                       activeTab === 'profile'
@@ -831,7 +916,7 @@ export function App() {
           {/* FILA 2 MÓVIL: ACCIONES EXCLUSIVAS POR DEBAJO DEL LOGO (EMPLEOS, CV, PERFIL, PUBLICAR) */}
           <div className="sm:hidden flex items-center gap-1.5 pb-2 pt-1 border-t border-neutral-100 dark:border-[#1a1e27] w-full">
             <button
-              onClick={() => setActiveTab('jobs')}
+              onClick={() => navigateTo('jobs')}
               className={`flex-1 py-1.5 px-1.5 rounded-lg font-montserrat text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1 cursor-pointer ${
                 activeTab === 'jobs'
                   ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
@@ -850,7 +935,7 @@ export function App() {
             </button>
 
             <button
-              onClick={() => setActiveTab('studio')}
+              onClick={() => navigateTo('studio')}
               className={`flex-1 py-1.5 px-1.5 rounded-lg font-montserrat text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1 cursor-pointer ${
                 activeTab === 'studio'
                   ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-xs'
@@ -871,7 +956,7 @@ export function App() {
                 if (!session.isAuthenticated) {
                   setShowAuthModal(true);
                 } else {
-                  setActiveTab('profile');
+                  navigateTo('profile');
                 }
               }}
               className={`flex-1 py-1.5 px-1.5 rounded-lg font-montserrat text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1 cursor-pointer ${
@@ -885,11 +970,15 @@ export function App() {
             </button>
 
             <button
-              onClick={() => setShowPostJobModal(true)}
-              className="flex-1 py-1.5 px-1.5 rounded-lg font-montserrat text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-400 border border-amber-500/35 transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap shadow-xs"
+              onClick={() => navigateTo('publish')}
+              className={`flex-1 py-1.5 px-1.5 rounded-lg font-montserrat text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap shadow-xs ${
+                activeTab === 'publish'
+                  ? 'bg-amber-500 text-black border border-amber-500 shadow-sm'
+                  : 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-400 border border-amber-500/35'
+              }`}
               title="Publicar oferta de empleo"
             >
-              <PlusCircle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <PlusCircle className="w-3.5 h-3.5 shrink-0" />
               <span>Publicar</span>
             </button>
           </div>
@@ -911,17 +1000,29 @@ export function App() {
             setCvVersions={setCvVersions}
             setActiveCvId={setActiveCvId}
             onNavigateToStudio={() => {
-              setActiveTab('studio');
+              navigateTo('studio');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onNavigateToJobs={() => {
-              setActiveTab('jobs');
+              navigateTo('jobs');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             onTriggerAvatarUpload={() => avatarInputRef.current?.click()}
             onTriggerCvUpload={() => cvFileInputRef.current?.click()}
             onLogout={handleLogout}
             totalJobsIndexed={jobs.length}
+          />
+        ) : activeTab === 'publish' ? (
+          <PublishJobView
+            onBackToJobs={() => {
+              navigateTo('jobs');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onJobPublished={(newJob) => {
+              setJobs((prev) => [newJob, ...prev]);
+              setSelectedJobForDetails(newJob);
+              navigateTo('jobs');
+            }}
           />
         ) : activeTab === 'jobs' ? (
           <div className="jobs-feed-section space-y-6">
@@ -1686,7 +1787,7 @@ export function App() {
           <div className="flex items-center">
             <button
               onClick={() => {
-                setActiveTab('jobs');
+                navigateTo('jobs');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
               className="flex items-center gap-2.5 text-left cursor-pointer group hover:opacity-90 transition-all bg-transparent border-0 p-0 outline-hidden"
@@ -1793,7 +1894,7 @@ export function App() {
           onClose={() => setSelectedJobForEmail(null)}
           onPrintCv={() => {
             setSelectedJobForEmail(null);
-            setActiveTab('studio');
+            navigateTo('studio');
             setTimeout(() => window.print(), 300);
           }}
         />
@@ -1826,18 +1927,6 @@ export function App() {
           onAdaptCv={(job) => {
             setSelectedJobForDetails(null);
             handleAdaptCvToJob(job);
-          }}
-        />
-      )}
-
-      {/* MODAL B2B: PUBLICAR OFERTA DESTACADA */}
-      {showPostJobModal && (
-        <PostJobModal
-          isOpen={showPostJobModal}
-          onClose={() => setShowPostJobModal(false)}
-          onJobPublished={(newJob) => {
-            setJobs((prev) => [newJob, ...prev]);
-            setSelectedJobForDetails(newJob);
           }}
         />
       )}

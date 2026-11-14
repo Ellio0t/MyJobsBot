@@ -48,6 +48,12 @@ export interface CVProfile {
   phone: string;
   email: string;
   linkedin: string;
+  github?: string;
+  portfolio?: string;
+  twitter?: string;
+  whatsapp?: string;
+  publicSlug?: string;
+  isPublic?: boolean;
   location: string;
   summary: string;
   skills: CVSkill[];

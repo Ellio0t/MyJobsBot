@@ -35,6 +35,7 @@ import { SponsoredFeedCard } from './components/SponsoredFeedCard';
 import { buildAffiliateApplyUrl, recordOutboundClick } from './services/affiliateEngine';
 import { JobotIcon } from './components/JobotIcon';
 import { ProfileView } from './components/ProfileView';
+import { PublicBentoProfileView } from './components/PublicBentoProfileView';
 import {
   saveVaultLocally,
   loadVaultLocally,
@@ -87,7 +88,7 @@ const CATEGORY_ITEMS: { id: JobCategory; label: string; icon: string }[] = [
 
 export function App() {
   const brand = BRAND_OPTIONS[0];
-  const APP_VERSION = 'v1.2.41';
+  const APP_VERSION = 'v1.2.42';
   const [showSplash, setShowSplash] = useState(true);
 
   // 1. MODO DARK CARBONE / CLARO (Fondo #0a0a0c profundo vs tarjetas #16181d carbón)
@@ -193,13 +194,16 @@ export function App() {
   );
 
   // Enrutamiento SPA nativo con sincronización bidireccional de URL (Deep Linking & Historial)
-  const getPageFromUrl = (): 'jobs' | 'studio' | 'profile' | 'publish' => {
+  const getPageFromUrl = (): 'jobs' | 'studio' | 'profile' | 'publish' | 'bento' => {
     if (typeof window === 'undefined') return 'jobs';
     const path = window.location.pathname.toLowerCase();
     const hash = window.location.hash.toLowerCase();
 
     if (path.includes('/cv') || path.includes('/estudio') || hash.includes('cv') || hash.includes('estudio')) {
       return 'studio';
+    }
+    if (path.includes('/p/') || path.includes('/u/') || hash.includes('/p/') || hash.includes('/u/')) {
+      return 'bento';
     }
     if (path.includes('/perfil') || path.includes('/profile') || hash.includes('perfil') || hash.includes('profile')) {
       return 'profile';
@@ -210,10 +214,10 @@ export function App() {
     return 'jobs';
   };
 
-  // 3. Pestaña / Página Principal ('jobs' = / | 'studio' = /cv | 'profile' = /perfil | 'publish' = /publicar)
-  const [activeTab, setActiveTab] = useState<'jobs' | 'studio' | 'profile' | 'publish'>(() => getPageFromUrl());
+  // 3. Pestaña / Página Principal ('jobs' = / | 'studio' = /cv | 'profile' = /perfil | 'publish' = /publicar | 'bento' = /p/:slug)
+  const [activeTab, setActiveTab] = useState<'jobs' | 'studio' | 'profile' | 'publish' | 'bento'>(() => getPageFromUrl());
 
-  const navigateTo = (tab: 'jobs' | 'studio' | 'profile' | 'publish', replace = false) => {
+  const navigateTo = (tab: 'jobs' | 'studio' | 'profile' | 'publish' | 'bento', replace = false) => {
     setActiveTab(tab);
 
     let targetPath = '/';
@@ -231,6 +235,10 @@ export function App() {
       case 'publish':
         targetPath = '/publicar';
         pageTitle = 'JobsBOT • Publicar Oferta de Empleo';
+        break;
+      case 'bento':
+        targetPath = `/p/${activeCv.profile.publicSlug || 'perfil'}`;
+        pageTitle = `JobsBOT • ${activeCv.profile.fullName} | Perfil Profesional Bento`;
         break;
       case 'jobs':
       default:
@@ -1042,7 +1050,55 @@ export function App() {
           CONTENIDO: MODO DARK CARBONE (#121419 / #191c24 CON CONTRASTE ELEVADO)
           ===================================================================== */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
-        {activeTab === 'profile' ? (
+        {activeTab === 'bento' ? (
+          <div className="max-w-5xl w-full mx-auto space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-neutral-200 dark:border-[#252a36]">
+              <button
+                onClick={() => {
+                  navigateTo('profile');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-montserrat font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white bg-neutral-100 dark:bg-[#181c25] border border-neutral-200 dark:border-[#2b3345] cursor-pointer"
+              >
+                <i className="ri-arrow-left-line text-sm" />
+                <span>Volver a Mi Perfil</span>
+              </button>
+              <span className="text-xs text-neutral-400 font-mono">
+                Modo Vista Pública Bento
+              </span>
+            </div>
+
+            <PublicBentoProfileView
+              profile={activeCv.profile}
+              session={session}
+              isOwner={true}
+              onDownloadPdf={() => window.print()}
+              onOpenCvStudio={() => {
+                navigateTo('studio');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onCreateYourOwn={() => {
+                navigateTo('jobs');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onUpdateSocialLinks={(updatedLinks) => {
+                setCvVersions((prev) =>
+                  prev.map((v) =>
+                    v.id === activeCv.id
+                      ? {
+                          ...v,
+                          profile: {
+                            ...v.profile,
+                            ...updatedLinks,
+                          },
+                        }
+                      : v
+                  )
+                );
+              }}
+            />
+          </div>
+        ) : activeTab === 'profile' ? (
           <ProfileView
             session={session}
             activeCv={activeCv}

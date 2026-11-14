@@ -29,6 +29,7 @@ import {
 import { CVVersion, UserSession } from '../types';
 import { JobotIcon } from './JobotIcon';
 import { SovereigntyVaultPanel } from './SovereigntyVaultPanel';
+import { PublicBentoProfileView } from './PublicBentoProfileView';
 
 /**
  * Distintivo oficial con el isotipo característico de 4 colores de Google
@@ -71,7 +72,7 @@ interface ProfileViewProps {
   totalJobsIndexed: number;
 }
 
-type ProfileTab = 'identity' | 'vault' | 'network' | 'metrics' | 'portability';
+type ProfileTab = 'identity' | 'vault' | 'bento' | 'metrics' | 'portability';
 
 interface CommunityPost {
   id: string;
@@ -490,15 +491,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         </button>
 
         <button
-          onClick={() => setCurrentTab('network')}
+          onClick={() => setCurrentTab('bento')}
           className={`w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl font-montserrat text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer text-center ${
-            currentTab === 'network'
+            currentTab === 'bento'
               ? 'bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] shadow-sm'
               : 'bg-neutral-100/70 dark:bg-[#141822] text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white border border-neutral-200/80 dark:border-[#222838]'
           }`}
         >
-          <Flame className="w-3.5 h-3.5 shrink-0 text-amber-500" />
-          <span className="truncate">Social Jobs</span>
+          <Globe className="w-3.5 h-3.5 shrink-0 text-emerald-500 dark:text-[#4ade80]" />
+          <span className="truncate">Perfil Público</span>
         </button>
 
         <button
@@ -872,171 +873,34 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       )}
 
       {/* =====================================================================
-          CONTENIDO 3: RED PROFESIONAL SIN BUROCRACIA (ANTI-LINKEDIN)
+          CONTENIDO 3: MI PERFIL PÚBLICO COMPARTIBLE (ESTILO BENTO / READ.CV)
           ===================================================================== */}
-      {currentTab === 'network' && (
-        <div className="space-y-6">
-          {/* Manifiesto Anti-Burocracia */}
-          <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-emerald-500/5 to-transparent border border-amber-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[10px] font-montserrat font-black uppercase tracking-wider bg-amber-500 text-black">
-                Manifiesto JobsBOT
-              </span>
-              <h3 className="font-montserrat text-sm sm:text-base font-extrabold text-neutral-900 dark:text-white">
-                Una Red de Profesionales Reales: Sin Burocracia, Sin Algoritmos Tóxicos
-              </h3>
-              <p className="text-xs text-neutral-600 dark:text-neutral-400 max-w-3xl leading-relaxed">
-                En LinkedIn el 40% son ofertas fantasma y publicaciones de autoayuda fingida. Aquí solo compartimos{' '}
-                <strong className="text-neutral-900 dark:text-white">código real, proyectos comprobables en GitHub, vacantes con sueldo público obligatorio y contacto directo sin pagar $40 USD de InMail</strong>.
-              </p>
-            </div>
-          </div>
-
-          {/* Formulario Rápido de Publicación */}
-          <form
-            onSubmit={handlePublishPost}
-            className="bg-white dark:bg-[#12151c] p-4 sm:p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-3"
-          >
-            <div className="flex items-center gap-2 text-xs font-montserrat font-bold uppercase tracking-wider text-neutral-700 dark:text-neutral-300">
-              <Code2 className="w-4 h-4 text-emerald-500" />
-              <span>Comparte un Proyecto, Repositorio o Vacante con Sueldo</span>
-            </div>
-
-            <input
-              type="text"
-              placeholder="Título del Proyecto o Vacante (ej: Lance mi API de Pagos en Go)"
-              value={newPostTitle}
-              onChange={(e) => setNewPostTitle(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl text-xs bg-neutral-50 dark:bg-[#181c25] border border-neutral-300 dark:border-[#2d3444] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80]"
-            />
-
-            <textarea
-              rows={2}
-              placeholder="Describe los desafíos técnicos superados o las condiciones de contratación..."
-              value={newPostContent}
-              onChange={(e) => setNewPostContent(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl text-xs bg-neutral-50 dark:bg-[#181c25] border border-neutral-300 dark:border-[#2d3444] text-neutral-900 dark:text-neutral-100 focus:outline-none focus:border-neutral-900 dark:focus:border-[#4ade80]"
-            />
-
-            <div className="flex justify-between items-center pt-1">
-              <span className="text-[11px] text-neutral-400">
-                Regla: Sueldos obligatorios y proyectos verificados.
-              </span>
-              <button
-                type="submit"
-                className="px-4 py-2 rounded-xl bg-[#111111] text-white dark:bg-[#4ade80] dark:text-[#070709] font-montserrat text-xs font-black uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
-              >
-                Publicar en la Red
-              </button>
-            </div>
-          </form>
-
-          {/* Listado de Publicaciones Paginado */}
-          <div className="space-y-4">
-            {posts
-              .slice((postsPage - 1) * POSTS_PER_PAGE, postsPage * POSTS_PER_PAGE)
-              .map((post) => (
-              <article
-                key={post.id}
-                className="bg-white dark:bg-[#12151c] p-5 rounded-2xl border border-neutral-200 dark:border-[#252a36] shadow-sm space-y-3"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={post.authorAvatar}
-                      alt={post.author}
-                      className="w-10 h-10 rounded-xl object-cover border border-neutral-200 dark:border-[#2b3345]"
-                    />
-                    <div>
-                      <h4 className="font-montserrat text-xs sm:text-sm font-extrabold text-neutral-900 dark:text-white">
-                        {post.author}
-                      </h4>
-                      <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
-                        {post.authorRole} • {post.timeAgo}
-                      </p>
-                    </div>
-                  </div>
-
-                  {post.salaryNote && (
-                    <span className="px-2.5 py-1 rounded-md text-xs font-montserrat font-black bg-emerald-500/10 text-emerald-700 dark:text-[#4ade80] border border-emerald-500/25">
-                      {post.salaryNote}
-                    </span>
-                  )}
-                </div>
-
-                <div className="space-y-1.5">
-                  <h5 className="font-montserrat text-sm sm:text-base font-extrabold text-sky-700 dark:text-sky-300">
-                    {post.title}
-                  </h5>
-                  <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed">
-                    {post.content}
-                  </p>
-                </div>
-
-                {post.projectUrl && (
-                  <div className="pt-1">
-                    <a
-                      href={post.projectUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-[#4ade80] hover:underline"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      <span>Ver Repositorio / Proyecto en Vivo</span>
-                    </a>
-                  </div>
-                )}
-
-                {/* Footer de Interacción */}
-                <div className="pt-2 border-t border-neutral-100 dark:border-[#202636] flex items-center justify-between text-xs text-neutral-500">
-                  <button
-                    onClick={() => handleToggleLike(post.id)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-montserrat font-bold text-xs transition-colors cursor-pointer ${
-                      post.hasLiked
-                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-[#4ade80]'
-                        : 'hover:bg-neutral-100 dark:hover:bg-[#1a1f2b]'
-                    }`}
-                  >
-                    <ThumbsUp className="w-3.5 h-3.5" />
-                    <span>{post.likes}</span>
-                  </button>
-
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1">
-                      <MessageSquare className="w-3.5 h-3.5" />
-                      <span>{post.commentsCount} comentarios</span>
-                    </span>
-                    <button className="hover:text-neutral-900 dark:hover:text-white transition-colors cursor-pointer">
-                      <Share2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))}
-
-            {/* BARRA DE PAGINACIÓN DE SOCIAL JOBS */}
-            {Math.ceil(posts.length / POSTS_PER_PAGE) > 1 && (
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-white dark:bg-[#12151c] border border-neutral-200 dark:border-[#252a36] shadow-xs text-xs font-montserrat font-bold">
-                <button
-                  onClick={() => setPostsPage((p) => Math.max(1, p - 1))}
-                  disabled={postsPage === 1}
-                  className="px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-[#2b3345] bg-neutral-50 dark:bg-[#181c25] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer hover:bg-neutral-100 dark:hover:bg-[#202737] transition-colors"
-                >
-                  <i className="ri-arrow-left-s-line mr-1" /> Anterior
-                </button>
-                <span className="text-neutral-600 dark:text-neutral-400">
-                  Página {postsPage} de {Math.ceil(posts.length / POSTS_PER_PAGE)}
-                </span>
-                <button
-                  onClick={() => setPostsPage((p) => Math.min(Math.ceil(posts.length / POSTS_PER_PAGE), p + 1))}
-                  disabled={postsPage === Math.ceil(posts.length / POSTS_PER_PAGE)}
-                  className="px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-[#2b3345] bg-neutral-50 dark:bg-[#181c25] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer hover:bg-neutral-100 dark:hover:bg-[#202737] transition-colors"
-                >
-                  Siguiente <i className="ri-arrow-right-s-line ml-1" />
-                </button>
-              </div>
-            )}
-          </div>
+      {currentTab === 'bento' && (
+        <div className="animate-fade-in">
+          <PublicBentoProfileView
+            profile={activeCv.profile}
+            session={session}
+            isOwner={true}
+            onDownloadPdf={() => window.print()}
+            onOpenCvStudio={onNavigateToStudio}
+            onUpdateSocialLinks={(updatedLinks) => {
+              setCvVersions((prev) =>
+                prev.map((v) =>
+                  v.id === activeCv.id
+                    ? {
+                        ...v,
+                        profile: {
+                          ...v.profile,
+                          ...updatedLinks,
+                        },
+                      }
+                    : v
+                )
+              );
+              setSaveSuccessMessage('¡Enlaces de redes sociales y perfil público actualizados!');
+              setTimeout(() => setSaveSuccessMessage(null), 3000);
+            }}
+          />
         </div>
       )}
 
